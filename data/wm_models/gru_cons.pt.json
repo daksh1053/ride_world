@@ -1,0 +1,21 @@
+{
+  "name": "gru_cons",
+  "train_cities": [
+    "annarbor",
+    "arlington",
+    "boulder",
+    "chandigarh",
+    "coimbatore",
+    "nagpur",
+    "navimumbai",
+    "panaji",
+    "pittsburgh",
+    "portland",
+    "puducherry",
+    "pune",
+    "sf",
+    "thane",
+    "udaipur"
+  ],
+  "minutes": 13.1
+}

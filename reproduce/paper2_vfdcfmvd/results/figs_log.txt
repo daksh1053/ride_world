@@ -1,0 +1,6 @@
+[fig] wrote /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/figures/fig5a_unfairness.png
+[fig] wrote /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/figures/fig5b_service_rate.png
+[fig] wrote /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/figures/fig5c_idle_rate.png
+[fig] wrote /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/figures/fig5d_total_income.png
+[fig] wrote /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/figures/fig5e_running_time.png
+[fig] 5 panels written to /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/figures

@@ -1,0 +1,6 @@
+{
+  "train_mse": 7.363784985736822,
+  "test_mse": 6.589700240440293,
+  "paper_reported_mse": 94.69,
+  "horizon_hours": 168
+}

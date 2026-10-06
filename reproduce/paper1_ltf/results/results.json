@@ -1,0 +1,742 @@
+{
+  "table1": {
+    "Greedy": {
+      "final": {
+        "total_utility": 8710.22077825975,
+        "fairness": 2.58884799506013,
+        "normalised_fairness": 0.0036944867060810516,
+        "min_utility": 432.27495339758025,
+        "mean_utility": 435.51103891298754,
+        "max_utility": 438.96352973825554,
+        "objective": 8707.63193026469,
+        "n_assigned": 13421,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 1230.7390295717464,
+          "fairness": 4.519637068101665,
+          "normalised_fairness": 0.034547434595790745,
+          "min_utility": 56.99788226489057,
+          "mean_utility": 61.53695147858732,
+          "max_utility": 65.86306718014666,
+          "objective": 1226.2193925036447,
+          "n_assigned": 1920,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 2648.4413754457473,
+          "fairness": 2.0013616686206612,
+          "normalised_fairness": 0.01068322611277984,
+          "min_utility": 128.97059841511853,
+          "mean_utility": 132.42206877228736,
+          "max_utility": 134.7441420762382,
+          "objective": 2646.4400137771268,
+          "n_assigned": 3840,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 3922.865274269875,
+          "fairness": 3.2325375209133744,
+          "normalised_fairness": 0.009166391239377156,
+          "min_utility": 193.32366568420596,
+          "mean_utility": 196.14326371349375,
+          "max_utility": 200.3975445995258,
+          "objective": 3919.6327367489616,
+          "n_assigned": 5759,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 5112.600246710683,
+          "fairness": 2.887744542116647,
+          "normalised_fairness": 0.006647640803318276,
+          "min_utility": 252.35361350264492,
+          "mean_utility": 255.63001233553413,
+          "max_utility": 258.937484315901,
+          "objective": 5109.712502168566,
+          "n_assigned": 7677,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 6276.024743316618,
+          "fairness": 3.729958881517534,
+          "normalised_fairness": 0.006154565112059281,
+          "min_utility": 310.02141462792713,
+          "mean_utility": 313.8012371658309,
+          "max_utility": 317.0760894427704,
+          "objective": 6272.2947844351,
+          "n_assigned": 9597,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 7436.791018131377,
+          "fairness": 5.1207929876658165,
+          "normalised_fairness": 0.006085734867819314,
+          "min_utility": 367.38192045460806,
+          "mean_utility": 371.8395509065689,
+          "max_utility": 376.613548867309,
+          "objective": 7431.670225143712,
+          "n_assigned": 11508,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 8710.22077825975,
+          "fairness": 2.58884799506013,
+          "normalised_fairness": 0.0036944867060810516,
+          "min_utility": 432.27495339758025,
+          "mean_utility": 435.51103891298754,
+          "max_utility": 438.96352973825554,
+          "objective": 8707.63193026469,
+          "n_assigned": 13421,
+          "n_requests": 289911
+        }
+      ]
+    },
+    "REASSIGN": {
+      "final": {
+        "total_utility": 22434.198651309416,
+        "fairness": 33481.33256940418,
+        "normalised_fairness": 0.16312510411523604,
+        "min_utility": 912.8099297084592,
+        "mean_utility": 1121.7099325654708,
+        "max_utility": 1594.1772927843924,
+        "objective": -11047.133918094762,
+        "n_assigned": 6115,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 6738.930418582563,
+          "fairness": 1070.2794368229545,
+          "normalised_fairness": 0.09709293158753587,
+          "min_utility": 274.4783299756364,
+          "mean_utility": 336.94652092912816,
+          "max_utility": 371.5327794657518,
+          "objective": 5668.650981759609,
+          "n_assigned": 1771,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 12880.58924321895,
+          "fairness": 1947.2861495774553,
+          "normalised_fairness": 0.06851870592964365,
+          "min_utility": 564.3210145527339,
+          "mean_utility": 644.0294621609476,
+          "max_utility": 706.6343567838659,
+          "objective": 10933.303093641494,
+          "n_assigned": 3533,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 15434.788801965142,
+          "fairness": 5855.633581276106,
+          "normalised_fairness": 0.0991553725762043,
+          "min_utility": 656.3378891289276,
+          "mean_utility": 771.7394400982571,
+          "max_utility": 921.8584692130725,
+          "objective": 9579.155220689036,
+          "n_assigned": 4225,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 16324.07554930863,
+          "fairness": 6049.706951940593,
+          "normalised_fairness": 0.09529466080758173,
+          "min_utility": 716.4409444121084,
+          "mean_utility": 816.2037774654316,
+          "max_utility": 966.8476698257382,
+          "objective": 10274.368597368037,
+          "n_assigned": 4488,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 18375.74077672269,
+          "fairness": 13094.201494413335,
+          "normalised_fairness": 0.1245445276139093,
+          "min_utility": 752.1429007909787,
+          "mean_utility": 918.7870388361346,
+          "max_utility": 1153.863820745218,
+          "objective": 5281.539282309355,
+          "n_assigned": 5061,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 19243.456980770432,
+          "fairness": 18958.931037744616,
+          "normalised_fairness": 0.1431046763433765,
+          "min_utility": 813.4654099639553,
+          "mean_utility": 962.1728490385216,
+          "max_utility": 1297.7760357355987,
+          "objective": 284.52594302581565,
+          "n_assigned": 5276,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 22434.198651309416,
+          "fairness": 33481.33256940418,
+          "normalised_fairness": 0.16312510411523604,
+          "min_utility": 912.8099297084592,
+          "mean_utility": 1121.7099325654708,
+          "max_utility": 1594.1772927843924,
+          "objective": -11047.133918094762,
+          "n_assigned": 6115,
+          "n_requests": 289911
+        }
+      ]
+    },
+    "LAF": {
+      "final": {
+        "total_utility": 31111.95057079369,
+        "fairness": 10280.116175750405,
+        "normalised_fairness": 0.06517811059522113,
+        "min_utility": 1256.9351962841458,
+        "mean_utility": 1555.5975285396846,
+        "max_utility": 1719.3627614425184,
+        "objective": 20831.834395043286,
+        "n_assigned": 7887,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 7650.91458957857,
+          "fairness": 531.7396005629572,
+          "normalised_fairness": 0.06027901463213671,
+          "min_utility": 315.868067469039,
+          "mean_utility": 382.5457294789285,
+          "max_utility": 410.65334434573606,
+          "objective": 7119.1749890156125,
+          "n_assigned": 1844,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 14441.145983721817,
+          "fairness": 817.2939179550926,
+          "normalised_fairness": 0.03959291439836536,
+          "min_utility": 667.1761399855066,
+          "mean_utility": 722.0572991860909,
+          "max_utility": 789.8935545084329,
+          "objective": 13623.852065766725,
+          "n_assigned": 3653,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 17589.504960447513,
+          "fairness": 1928.5665415990886,
+          "normalised_fairness": 0.049933693689243774,
+          "min_utility": 760.8800282836231,
+          "mean_utility": 879.4752480223757,
+          "max_utility": 960.7284855105963,
+          "objective": 15660.938418848425,
+          "n_assigned": 4443,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 18552.04438166832,
+          "fairness": 1081.3755094217697,
+          "normalised_fairness": 0.03545083638648062,
+          "min_utility": 854.1532566978683,
+          "mean_utility": 927.6022190834159,
+          "max_utility": 1025.5471613918198,
+          "objective": 17470.668872246548,
+          "n_assigned": 4718,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 22850.589028397582,
+          "fairness": 3867.7674001521837,
+          "normalised_fairness": 0.05443306265737992,
+          "min_utility": 995.5568807380854,
+          "mean_utility": 1142.529451419879,
+          "max_utility": 1229.2163232021414,
+          "objective": 18982.821628245398,
+          "n_assigned": 5849,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 25995.25849441673,
+          "fairness": 5881.1502325349265,
+          "normalised_fairness": 0.0590020351590812,
+          "min_utility": 1140.977127834316,
+          "mean_utility": 1299.7629247208365,
+          "max_utility": 1459.6514368254655,
+          "objective": 20114.108261881804,
+          "n_assigned": 6625,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 31111.95057079369,
+          "fairness": 10280.116175750405,
+          "normalised_fairness": 0.06517811059522113,
+          "min_utility": 1256.9351962841458,
+          "mean_utility": 1555.5975285396846,
+          "max_utility": 1719.3627614425184,
+          "objective": 20831.834395043286,
+          "n_assigned": 7887,
+          "n_requests": 289911
+        }
+      ]
+    },
+    "Balance Ride-Pooling": {
+      "final": {
+        "total_utility": 43703.75944145446,
+        "fairness": 199835.4272628657,
+        "normalised_fairness": 0.20457258846034937,
+        "min_utility": 1669.6809159773757,
+        "mean_utility": 2185.187972072723,
+        "max_utility": 2659.770450765651,
+        "objective": -156131.66782141125,
+        "n_assigned": 10771,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 8079.373277845293,
+          "fairness": 114.36778582165357,
+          "normalised_fairness": 0.02647306211618785,
+          "min_utility": 372.2895726395207,
+          "mean_utility": 403.96866389226466,
+          "max_utility": 412.0619451328518,
+          "objective": 7965.00549202364,
+          "n_assigned": 1888,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 15356.21493755695,
+          "fairness": 896.4900061064047,
+          "normalised_fairness": 0.038995863335761466,
+          "min_utility": 689.345629103678,
+          "mean_utility": 767.8107468778475,
+          "max_utility": 792.4771999333466,
+          "objective": 14459.724931450544,
+          "n_assigned": 3726,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 20638.16250246317,
+          "fairness": 24047.493345662264,
+          "normalised_fairness": 0.15027746989166907,
+          "min_utility": 805.598865340377,
+          "mean_utility": 1031.9081251231585,
+          "max_utility": 1187.533508477825,
+          "objective": -3409.3308431990954,
+          "n_assigned": 5004,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 25340.270842422207,
+          "fairness": 74690.09635160948,
+          "normalised_fairness": 0.21570005363871392,
+          "min_utility": 942.0174762053495,
+          "mean_utility": 1267.0135421211103,
+          "max_utility": 1560.608094382843,
+          "objective": -49349.82550918727,
+          "n_assigned": 6194,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 32141.13425748296,
+          "fairness": 87386.1600190257,
+          "normalised_fairness": 0.18394590525028492,
+          "min_utility": 1226.7064922277998,
+          "mean_utility": 1607.0567128741482,
+          "max_utility": 1919.302712662581,
+          "objective": -55245.02576154274,
+          "n_assigned": 7942,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 36811.511657955394,
+          "fairness": 178358.81164752372,
+          "normalised_fairness": 0.22945294103812833,
+          "min_utility": 1342.379397960304,
+          "mean_utility": 1840.5755828977697,
+          "max_utility": 2307.1737476588823,
+          "objective": -141547.29998956833,
+          "n_assigned": 9076,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 43703.75944145446,
+          "fairness": 199835.4272628657,
+          "normalised_fairness": 0.20457258846034937,
+          "min_utility": 1669.6809159773757,
+          "mean_utility": 2185.187972072723,
+          "max_utility": 2659.770450765651,
+          "objective": -156131.66782141125,
+          "n_assigned": 10771,
+          "n_requests": 289911
+        }
+      ]
+    },
+    "Proposed Method": {
+      "final": {
+        "total_utility": 29353.003868319334,
+        "fairness": 3.5810506713864543,
+        "normalised_fairness": 0.001289385188313065,
+        "min_utility": 1464.645588727814,
+        "mean_utility": 1467.6501934159667,
+        "max_utility": 1473.285373326906,
+        "objective": 29349.42281764795,
+        "n_assigned": 13430,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 4265.34881578783,
+          "fairness": 2.188681589925282,
+          "normalised_fairness": 0.00693692078206261,
+          "min_utility": 210.90023915891135,
+          "mean_utility": 213.26744078939151,
+          "max_utility": 216.98508159189242,
+          "objective": 4263.160134197905,
+          "n_assigned": 1920,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 8543.478087402711,
+          "fairness": 1.503445467915246,
+          "normalised_fairness": 0.002870378219324836,
+          "min_utility": 425.0572476588689,
+          "mean_utility": 427.1739043701356,
+          "max_utility": 429.2423734228716,
+          "objective": 8541.974641934796,
+          "n_assigned": 3840,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 12562.593350753614,
+          "fairness": 1.2373312431462842,
+          "normalised_fairness": 0.0017708985539143976,
+          "min_utility": 626.3861610995655,
+          "mean_utility": 628.1296675376807,
+          "max_utility": 631.5172072891148,
+          "objective": 12561.356019510467,
+          "n_assigned": 5755,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 16733.60812262192,
+          "fairness": 1.6786452207069984,
+          "normalised_fairness": 0.0015485308456187699,
+          "min_utility": 835.1096067884049,
+          "mean_utility": 836.6804061310961,
+          "max_utility": 839.5692859417384,
+          "objective": 16731.929477401216,
+          "n_assigned": 7675,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 20888.840997320942,
+          "fairness": 0.9587806311667955,
+          "normalised_fairness": 0.0009375086372359762,
+          "min_utility": 1042.6372590925296,
+          "mean_utility": 1044.442049866047,
+          "max_utility": 1046.5406063476441,
+          "objective": 20887.882216689773,
+          "n_assigned": 9595,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 24979.172469862173,
+          "fairness": 1.437466235504655,
+          "normalised_fairness": 0.000959954779466067,
+          "min_utility": 1246.2894386075768,
+          "mean_utility": 1248.9586234931087,
+          "max_utility": 1251.103801195851,
+          "objective": 24977.73500362667,
+          "n_assigned": 11510,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 29353.003868319334,
+          "fairness": 3.5810506713864543,
+          "normalised_fairness": 0.001289385188313065,
+          "min_utility": 1464.645588727814,
+          "mean_utility": 1467.6501934159667,
+          "max_utility": 1473.285373326906,
+          "objective": 29349.42281764795,
+          "n_assigned": 13430,
+          "n_requests": 289911
+        }
+      ]
+    }
+  },
+  "table2": {
+    "Our Method": {
+      "final": {
+        "total_utility": 29353.003868319334,
+        "fairness": 3.5810506713864543,
+        "normalised_fairness": 0.001289385188313065,
+        "min_utility": 1464.645588727814,
+        "mean_utility": 1467.6501934159667,
+        "max_utility": 1473.285373326906,
+        "objective": 29349.42281764795,
+        "n_assigned": 13430,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 4265.34881578783,
+          "fairness": 2.188681589925282,
+          "normalised_fairness": 0.00693692078206261,
+          "min_utility": 210.90023915891135,
+          "mean_utility": 213.26744078939151,
+          "max_utility": 216.98508159189242,
+          "objective": 4263.160134197905,
+          "n_assigned": 1920,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 8543.478087402711,
+          "fairness": 1.503445467915246,
+          "normalised_fairness": 0.002870378219324836,
+          "min_utility": 425.0572476588689,
+          "mean_utility": 427.1739043701356,
+          "max_utility": 429.2423734228716,
+          "objective": 8541.974641934796,
+          "n_assigned": 3840,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 12562.593350753614,
+          "fairness": 1.2373312431462842,
+          "normalised_fairness": 0.0017708985539143976,
+          "min_utility": 626.3861610995655,
+          "mean_utility": 628.1296675376807,
+          "max_utility": 631.5172072891148,
+          "objective": 12561.356019510467,
+          "n_assigned": 5755,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 16733.60812262192,
+          "fairness": 1.6786452207069984,
+          "normalised_fairness": 0.0015485308456187699,
+          "min_utility": 835.1096067884049,
+          "mean_utility": 836.6804061310961,
+          "max_utility": 839.5692859417384,
+          "objective": 16731.929477401216,
+          "n_assigned": 7675,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 20888.840997320942,
+          "fairness": 0.9587806311667955,
+          "normalised_fairness": 0.0009375086372359762,
+          "min_utility": 1042.6372590925296,
+          "mean_utility": 1044.442049866047,
+          "max_utility": 1046.5406063476441,
+          "objective": 20887.882216689773,
+          "n_assigned": 9595,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 24979.172469862173,
+          "fairness": 1.437466235504655,
+          "normalised_fairness": 0.000959954779466067,
+          "min_utility": 1246.2894386075768,
+          "mean_utility": 1248.9586234931087,
+          "max_utility": 1251.103801195851,
+          "objective": 24977.73500362667,
+          "n_assigned": 11510,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 29353.003868319334,
+          "fairness": 3.5810506713864543,
+          "normalised_fairness": 0.001289385188313065,
+          "min_utility": 1464.645588727814,
+          "mean_utility": 1467.6501934159667,
+          "max_utility": 1473.285373326906,
+          "objective": 29349.42281764795,
+          "n_assigned": 13430,
+          "n_requests": 289911
+        }
+      ]
+    },
+    "Our Method w/o Prediction": {
+      "final": {
+        "total_utility": 32948.47374837072,
+        "fairness": 13234.973475161813,
+        "normalised_fairness": 0.0698322815446629,
+        "min_utility": 1465.7788311269976,
+        "mean_utility": 1647.423687418536,
+        "max_utility": 1762.0236562086272,
+        "objective": 19713.50027320891,
+        "n_assigned": 9877,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 7344.0721661956895,
+          "fairness": 24.669469678848593,
+          "normalised_fairness": 0.013526111609358673,
+          "min_utility": 346.42502009040174,
+          "mean_utility": 367.2036083097845,
+          "max_utility": 370.7258240567724,
+          "objective": 7319.402696516841,
+          "n_assigned": 1887,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 13825.658126305096,
+          "fairness": 122.65695674535796,
+          "normalised_fairness": 0.0160210241315153,
+          "min_utility": 670.6600683000353,
+          "mean_utility": 691.2829063152548,
+          "max_utility": 701.0302031380644,
+          "objective": 13703.001169559739,
+          "n_assigned": 3729,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 17773.78426953728,
+          "fairness": 6883.682788123291,
+          "normalised_fairness": 0.09335992961519213,
+          "min_utility": 767.1649176718932,
+          "mean_utility": 888.6892134768639,
+          "max_utility": 989.2821032188375,
+          "objective": 10890.101481413987,
+          "n_assigned": 4892,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 19791.577441847927,
+          "fairness": 8165.734901628709,
+          "normalised_fairness": 0.09131607243463453,
+          "min_utility": 877.161300110606,
+          "mean_utility": 989.5788720923963,
+          "max_utility": 1095.6921855557164,
+          "objective": 11625.842540219219,
+          "n_assigned": 5839,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 25147.419227041162,
+          "fairness": 2983.02939152393,
+          "normalised_fairness": 0.04343755181718103,
+          "min_utility": 1154.372868106866,
+          "mean_utility": 1257.3709613520582,
+          "max_utility": 1308.151195332509,
+          "objective": 22164.38983551723,
+          "n_assigned": 7520,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 28286.909110953708,
+          "fairness": 16546.885769298384,
+          "normalised_fairness": 0.09094998568230249,
+          "min_utility": 1250.7040935090872,
+          "mean_utility": 1414.3454555476853,
+          "max_utility": 1570.5267364255326,
+          "objective": 11740.023341655324,
+          "n_assigned": 8465,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 32948.47374837072,
+          "fairness": 13234.973475161813,
+          "normalised_fairness": 0.0698322815446629,
+          "min_utility": 1465.7788311269976,
+          "mean_utility": 1647.423687418536,
+          "max_utility": 1762.0236562086272,
+          "objective": 19713.50027320891,
+          "n_assigned": 9877,
+          "n_requests": 289911
+        }
+      ]
+    },
+    "Our Method w/o Fairness": {
+      "final": {
+        "total_utility": 34707.23430393631,
+        "fairness": 102016.30484771173,
+        "normalised_fairness": 0.18405379746805742,
+        "min_utility": 1150.2614049507258,
+        "mean_utility": 1735.3617151968156,
+        "max_utility": 2222.653897366748,
+        "objective": -67309.07054377542,
+        "n_assigned": 9147,
+        "n_requests": 289911
+      },
+      "horizon": [
+        {
+          "total_utility": 7369.317951392187,
+          "fairness": 341.18668677603915,
+          "normalised_fairness": 0.05013011942398595,
+          "min_utility": 315.742773196504,
+          "mean_utility": 368.46589756960935,
+          "max_utility": 388.9979154135677,
+          "objective": 7028.131264616148,
+          "n_assigned": 1878,
+          "n_requests": 42558
+        },
+        {
+          "total_utility": 13951.656339499827,
+          "fairness": 1041.9441826463376,
+          "normalised_fairness": 0.046272871701645776,
+          "min_utility": 619.0672423595906,
+          "mean_utility": 697.5828169749914,
+          "max_utility": 742.7174914384468,
+          "objective": 12909.71215685349,
+          "n_assigned": 3703,
+          "n_requests": 73032
+        },
+        {
+          "total_utility": 17744.51760692227,
+          "fairness": 5433.92277473819,
+          "normalised_fairness": 0.08308498185421131,
+          "min_utility": 779.8430944568152,
+          "mean_utility": 887.2258803461134,
+          "max_utility": 1026.2059334312578,
+          "objective": 12310.594832184079,
+          "n_assigned": 4723,
+          "n_requests": 110774
+        },
+        {
+          "total_utility": 19808.61074705508,
+          "fairness": 16122.499375544718,
+          "normalised_fairness": 0.12820122120875363,
+          "min_utility": 815.3401087891096,
+          "mean_utility": 990.4305373527541,
+          "max_utility": 1237.602083635267,
+          "objective": 3686.111371510364,
+          "n_assigned": 5297,
+          "n_requests": 155659
+        },
+        {
+          "total_utility": 25339.91843666639,
+          "fairness": 28808.156164274224,
+          "normalised_fairness": 0.133962275006784,
+          "min_utility": 964.7905306679852,
+          "mean_utility": 1266.9959218333195,
+          "max_utility": 1561.9166723437015,
+          "objective": -3468.237727607833,
+          "n_assigned": 6805,
+          "n_requests": 199137
+        },
+        {
+          "total_utility": 28774.734670778715,
+          "fairness": 65930.21563797475,
+          "normalised_fairness": 0.17846822982757948,
+          "min_utility": 1005.8038718005845,
+          "mean_utility": 1438.7367335389358,
+          "max_utility": 1839.16347562501,
+          "objective": -37155.48096719603,
+          "n_assigned": 7665,
+          "n_requests": 242800
+        },
+        {
+          "total_utility": 34707.23430393631,
+          "fairness": 102016.30484771173,
+          "normalised_fairness": 0.18405379746805742,
+          "min_utility": 1150.2614049507258,
+          "mean_utility": 1735.3617151968156,
+          "max_utility": 2222.653897366748,
+          "objective": -67309.07054377542,
+          "n_assigned": 9147,
+          "n_requests": 289911
+        }
+      ]
+    }
+  }
+}

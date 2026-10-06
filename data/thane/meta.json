@@ -1,0 +1,36 @@
+{
+  "city": "Thane",
+  "osm_query": "",
+  "crs_metric": "EPSG:32643",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "processed_at": "2026-10-04T21:38:38+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 7863,
+  "n_edges": 17642,
+  "road_km": 1473.8,
+  "bounds_lonlat": [
+    72.9193564,
+    19.1585293,
+    73.0361344,
+    19.2784357
+  ],
+  "speed_from_osm_tag_frac": 0.013,
+  "road_km_by_class": {
+    "living_street": 43.4,
+    "primary": 49.5,
+    "residential": 929.3,
+    "secondary": 113.7,
+    "tertiary": 236.6,
+    "trunk": 67.8,
+    "unclassified": 33.5
+  },
+  "n_zones": 119,
+  "h3_res": 8,
+  "n_pois": 2856,
+  "zone_nodes_min_median_max": [
+    1,
+    61,
+    217
+  ]
+}

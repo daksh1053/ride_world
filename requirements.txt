@@ -1,0 +1,16 @@
+folium==0.20.0
+geopandas==1.1.4
+h3==4.5.0
+matplotlib==3.11.2
+networkx==3.7
+osmnx==2.1.1
+pandas==3.0.6
+pyarrow==25.0.1
+scikit-learn==1.9.1
+scipy==1.18.1
+shapely==2.1.2
+tqdm==4.70.1
+numba==0.67.0
+tabulate==0.10.0
+adjustText==1.4.0
+torch==2.14.1+cu126

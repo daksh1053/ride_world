@@ -1,0 +1,16 @@
+{
+  "name": "gru_cons_os_nosmall",
+  "train_cities": [
+    "arlington",
+    "chandigarh",
+    "coimbatore",
+    "nagpur",
+    "navimumbai",
+    "pittsburgh",
+    "portland",
+    "pune",
+    "sf",
+    "thane"
+  ],
+  "minutes": 0.6
+}

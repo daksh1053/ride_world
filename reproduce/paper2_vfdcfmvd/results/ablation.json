@@ -1,0 +1,265 @@
+{
+  "n_orders": 29627,
+  "n_drivers": 2500,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "table3": {
+    "VFDCFMVD": {
+      "mean": {
+        "unfairness": 8979.604246077264,
+        "total_income": 77140.567684756,
+        "idle_driver_rate": 0.1104,
+        "order_service_rate": 0.4978004297881437,
+        "running_time": 16.194268559999426,
+        "n_orders": 29627.0,
+        "n_matched": 14748.333333333334,
+        "n_drivers": 2500.0,
+        "mean_income": 30.856227073902392,
+        "min_income": 0.0,
+        "max_income": 127.43321996076152
+      },
+      "std": {
+        "unfairness": 41.86849941336337,
+        "total_income": 360.85920410957743,
+        "idle_driver_rate": 0.006433246976967905,
+        "order_service_rate": 0.004514525371642033,
+        "running_time": 0.10548715336668574,
+        "n_orders": 0.0,
+        "n_matched": 133.75184318563822,
+        "n_drivers": 0.0,
+        "mean_income": 0.14434368164383066,
+        "min_income": 0.0,
+        "max_income": 11.681292642168575
+      }
+    },
+    "w/o dynamic clustering": {
+      "mean": {
+        "unfairness": 8940.526450101324,
+        "total_income": 77044.03890480875,
+        "idle_driver_rate": 0.13573333333333334,
+        "order_service_rate": 0.4943463732406251,
+        "running_time": 15.926512305667226,
+        "n_orders": 29627.0,
+        "n_matched": 14646.0,
+        "n_drivers": 2500.0,
+        "mean_income": 30.817615561923503,
+        "min_income": 0.0,
+        "max_income": 141.06481135808644
+      },
+      "std": {
+        "unfairness": 391.068058978122,
+        "total_income": 410.630588084384,
+        "idle_driver_rate": 0.005926962872238097,
+        "order_service_rate": 0.004638387036797104,
+        "running_time": 0.15463069041645838,
+        "n_orders": 0.0,
+        "n_matched": 137.42149273918787,
+        "n_drivers": 0.0,
+        "mean_income": 0.16425223523375393,
+        "min_income": 0.0,
+        "max_income": 32.01992388375838
+      }
+    },
+    "w/o driver-order matching": {
+      "mean": {
+        "unfairness": 9668.871636215174,
+        "total_income": 98073.80284421169,
+        "idle_driver_rate": 0.1052,
+        "order_service_rate": 0.6803816338700059,
+        "running_time": 5.3905413936663535,
+        "n_orders": 29627.0,
+        "n_matched": 20157.666666666668,
+        "n_drivers": 2500.0,
+        "mean_income": 39.22952113768468,
+        "min_income": 0.0,
+        "max_income": 131.3959274602622
+      },
+      "std": {
+        "unfairness": 57.47750200709659,
+        "total_income": 627.6241135585939,
+        "idle_driver_rate": 0.008769644614616184,
+        "order_service_rate": 0.005271041777496241,
+        "running_time": 0.08248309857695156,
+        "n_orders": 0.0,
+        "n_matched": 156.1651547418807,
+        "n_drivers": 0.0,
+        "mean_income": 0.2510496454234365,
+        "min_income": 0.0,
+        "max_income": 5.044100028988294
+      }
+    },
+    "w/o idle vehicle dispatching": {
+      "mean": {
+        "unfairness": 8968.876073844685,
+        "total_income": 77259.57077151348,
+        "idle_driver_rate": 0.10946666666666667,
+        "order_service_rate": 0.49873426266581156,
+        "running_time": 15.786449408001014,
+        "n_orders": 29627.0,
+        "n_matched": 14776.0,
+        "n_drivers": 2500.0,
+        "mean_income": 30.903828308605387,
+        "min_income": 0.0,
+        "max_income": 117.63190353801525
+      },
+      "std": {
+        "unfairness": 44.93386717156798,
+        "total_income": 459.8139273492043,
+        "idle_driver_rate": 0.0073054013502947875,
+        "order_service_rate": 0.00544341401152063,
+        "running_time": 0.07694745418561293,
+        "n_orders": 0.0,
+        "n_matched": 161.27202691932246,
+        "n_drivers": 0.0,
+        "mean_income": 0.18392557093968084,
+        "min_income": 0.0,
+        "max_income": 13.004061337489183
+      }
+    }
+  },
+  "table4": {
+    "0.1": {
+      "mean": {
+        "unfairness": 9124.460725499079,
+        "total_income": 76375.95500345826,
+        "idle_driver_rate": 0.10840000000000001,
+        "order_service_rate": 0.48480552649047604,
+        "running_time": 16.86437480933455,
+        "n_orders": 29627.0,
+        "n_matched": 14363.333333333334,
+        "n_drivers": 2500.0,
+        "mean_income": 30.55038200138331,
+        "min_income": 0.0,
+        "max_income": 148.3240535976227
+      },
+      "std": {
+        "unfairness": 55.85015178679721,
+        "total_income": 548.9927287139118,
+        "idle_driver_rate": 0.007596490417730195,
+        "order_service_rate": 0.0047688044425601836,
+        "running_time": 0.2714100871922157,
+        "n_orders": 0.0,
+        "n_matched": 141.28536921973046,
+        "n_drivers": 0.0,
+        "mean_income": 0.2195970914855643,
+        "min_income": 0.0,
+        "max_income": 8.987521735381335
+      }
+    },
+    "0.2": {
+      "mean": {
+        "unfairness": 10169.431932129344,
+        "total_income": 76430.60617509039,
+        "idle_driver_rate": 0.10866666666666668,
+        "order_service_rate": 0.4879895590733678,
+        "running_time": 16.8396069329962,
+        "n_orders": 29627.0,
+        "n_matched": 14457.666666666666,
+        "n_drivers": 2500.0,
+        "mean_income": 30.57224247003616,
+        "min_income": 0.0,
+        "max_income": 145.1634050603565
+      },
+      "std": {
+        "unfairness": 1716.6112409001055,
+        "total_income": 690.9326949851923,
+        "idle_driver_rate": 0.007626853144573382,
+        "order_service_rate": 0.00551599637769032,
+        "running_time": 0.2842490449495087,
+        "n_orders": 0.0,
+        "n_matched": 163.4224246818315,
+        "n_drivers": 0.0,
+        "mean_income": 0.27637307799407723,
+        "min_income": 0.0,
+        "max_income": 9.87952484926396
+      }
+    },
+    "0.3": {
+      "mean": {
+        "unfairness": 8979.604246077264,
+        "total_income": 77140.567684756,
+        "idle_driver_rate": 0.1104,
+        "order_service_rate": 0.4978004297881437,
+        "running_time": 16.386466406331845,
+        "n_orders": 29627.0,
+        "n_matched": 14748.333333333334,
+        "n_drivers": 2500.0,
+        "mean_income": 30.856227073902392,
+        "min_income": 0.0,
+        "max_income": 127.43321996076152
+      },
+      "std": {
+        "unfairness": 41.86849941336337,
+        "total_income": 360.85920410957743,
+        "idle_driver_rate": 0.006433246976967905,
+        "order_service_rate": 0.004514525371642033,
+        "running_time": 0.18374844994011458,
+        "n_orders": 0.0,
+        "n_matched": 133.75184318563822,
+        "n_drivers": 0.0,
+        "mean_income": 0.14434368164383066,
+        "min_income": 0.0,
+        "max_income": 11.681292642168575
+      }
+    },
+    "0.4": {
+      "mean": {
+        "unfairness": 8993.725119612942,
+        "total_income": 77864.62075350918,
+        "idle_driver_rate": 0.10973333333333334,
+        "order_service_rate": 0.5088039063466883,
+        "running_time": 15.245560420335096,
+        "n_orders": 29627.0,
+        "n_matched": 15074.333333333334,
+        "n_drivers": 2500.0,
+        "mean_income": 31.14584830140367,
+        "min_income": 0.0,
+        "max_income": 115.83331873296378
+      },
+      "std": {
+        "unfairness": 58.38942582543183,
+        "total_income": 320.6829010319265,
+        "idle_driver_rate": 0.007563655788630845,
+        "order_service_rate": 0.002836635342334791,
+        "running_time": 0.15382429822343224,
+        "n_orders": 0.0,
+        "n_matched": 84.040995287353,
+        "n_drivers": 0.0,
+        "mean_income": 0.12827316041277023,
+        "min_income": 0.0,
+        "max_income": 11.450995138321133
+      }
+    },
+    "0.5": {
+      "mean": {
+        "unfairness": 9394.82332500316,
+        "total_income": 78634.27712200639,
+        "idle_driver_rate": 0.11,
+        "order_service_rate": 0.5167696133031807,
+        "running_time": 14.606686166999376,
+        "n_orders": 29627.0,
+        "n_matched": 15310.333333333334,
+        "n_drivers": 2500.0,
+        "mean_income": 31.453710848802555,
+        "min_income": 0.0,
+        "max_income": 106.36708243474693
+      },
+      "std": {
+        "unfairness": 619.5656797585782,
+        "total_income": 645.4112005588141,
+        "idle_driver_rate": 0.006843001290856715,
+        "order_service_rate": 0.0038474796046931016,
+        "running_time": 0.11280940344212245,
+        "n_orders": 0.0,
+        "n_matched": 113.98927824824383,
+        "n_drivers": 0.0,
+        "mean_income": 0.2581644802235249,
+        "min_income": 0.0,
+        "max_income": 5.354912599202545
+      }
+    }
+  }
+}

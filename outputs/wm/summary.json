@@ -1,0 +1,46 @@
+{
+  "cities": [
+    "sf",
+    "pune",
+    "navimumbai",
+    "thane",
+    "arlington",
+    "nagpur",
+    "coimbatore",
+    "chandigarh",
+    "pittsburgh",
+    "portland",
+    "panaji",
+    "udaipur",
+    "puducherry",
+    "boulder",
+    "annarbor"
+  ],
+  "n_train_runs": 225,
+  "n_test_runs": 180,
+  "e3": {
+    "mlp_nll_with_actions": 0.3435797393321991,
+    "mlp_nll_without_actions": 0.34547147154808044,
+    "mlp_idle_nll_with_vs_without": [
+      0.646465539932251,
+      0.6494819521903992
+    ],
+    "gru_nll_with_actions": 0.341154545545578,
+    "gru_nll_without_actions": 0.3435327708721161,
+    "gru_idle_nll_with_vs_without": [
+      0.6449391841888428,
+      0.6498242020606995
+    ],
+    "gru_idle_mae_in_dispatch_target_zones": 0.2934432625770569,
+    "gru_noact_idle_mae_in_dispatch_target_zones": 0.5891709327697754,
+    "gru_cons_os_nll_seen_policies": 0.3424336612224579,
+    "gru_cons_os_nll_unseen_policy_p2_ilp": 0.3487662076950073,
+    "mlp_nll_seen_policies": 0.3435797393321991,
+    "mlp_nll_unseen_policy_p2_ilp": 0.34952041506767273,
+    "policy_gap_corr": 0.8744779023236103,
+    "policy_gap_corr_noact_control": 0.7815000453705322,
+    "policy_gap_sign_agreement": 0.7227272727272728,
+    "policy_gap_n": 9900
+  },
+  "minutes": 47.1
+}

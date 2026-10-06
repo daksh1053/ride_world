@@ -1,0 +1,15 @@
+{
+  "name": "gru_cons_os_india",
+  "train_cities": [
+    "chandigarh",
+    "coimbatore",
+    "nagpur",
+    "navimumbai",
+    "panaji",
+    "puducherry",
+    "pune",
+    "thane",
+    "udaipur"
+  ],
+  "minutes": 0.6
+}

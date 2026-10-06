@@ -1,0 +1,37 @@
+{
+  "city": "Nagpur",
+  "osm_query": "R12969115",
+  "crs_metric": "EPSG:32644",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "processed_at": "2026-10-04T23:21:20+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 39808,
+  "n_edges": 110265,
+  "road_km": 7014.7,
+  "bounds_lonlat": [
+    78.9960793,
+    21.0601316,
+    79.1779456,
+    21.2265933
+  ],
+  "speed_from_osm_tag_frac": 0.007,
+  "road_km_by_class": {
+    "living_street": 25.7,
+    "other": 0.3,
+    "primary": 123.3,
+    "residential": 6051.7,
+    "secondary": 222.5,
+    "tertiary": 439.2,
+    "trunk": 131.9,
+    "unclassified": 20.1
+  },
+  "n_zones": 50,
+  "h3_res": 7,
+  "n_pois": 2506,
+  "zone_nodes_min_median_max": [
+    21,
+    702,
+    2001
+  ]
+}

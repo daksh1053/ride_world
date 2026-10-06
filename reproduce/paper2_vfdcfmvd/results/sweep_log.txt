@@ -1,0 +1,73 @@
+[exp] |L|=66 zones, 29,627 orders (scale 0.35), vehicles (1500, 2000, 2500, 3000, 3500)
+  |D|= 1500  VFDCFMVD    unfair=   5102.1  income=    63563.8  service=40.17%  idle= 8.20%  time=  8.68s
+  |D|= 1500  LAF         unfair=   4637.1  income=    48398.1  service=30.00%  idle=10.73%  time= 10.78s
+  |D|= 1500  SID         unfair=   5814.4  income=    69443.9  service=58.96%  idle= 9.13%  time=  2.12s
+  |D|= 1500  ILP         unfair=   6261.6  income=    48217.1  service=51.18%  idle= 8.73%  time=  0.69s
+  |D|= 1500  WDF         unfair=   5650.0  income=    76015.9  service=53.42%  idle= 7.40%  time=  0.90s
+  |D|= 1500  NM          unfair=   5660.4  income=    62089.6  service=53.21%  idle=14.27%  time=  0.97s
+  |D|= 2000  VFDCFMVD    unfair=   6990.8  income=    70534.0  service=45.10%  idle= 9.40%  time= 12.70s
+  |D|= 2000  LAF         unfair=   6580.6  income=    54121.5  service=33.75%  idle=12.60%  time= 15.88s
+  |D|= 2000  SID         unfair=   7857.0  income=    81751.3  service=68.63%  idle=10.75%  time=  3.17s
+  |D|= 2000  ILP         unfair=   8358.9  income=    61115.0  service=61.97%  idle=10.35%  time=  0.99s
+  |D|= 2000  WDF         unfair=   7749.9  income=    84277.3  service=63.12%  idle= 9.20%  time=  1.37s
+  |D|= 2000  NM          unfair=   7907.6  income=    72375.7  service=62.00%  idle=17.95%  time=  1.20s
+  |D|= 2500  VFDCFMVD    unfair=   8958.4  income=    77145.4  service=49.82%  idle=10.80%  time= 16.47s
+  |D|= 2500  LAF         unfair=   8498.4  income=    57924.4  service=36.48%  idle=14.64%  time= 19.85s
+  |D|= 2500  SID         unfair=   9948.1  income=    92324.0  service=75.72%  idle=12.52%  time=  4.33s
+  |D|= 2500  ILP         unfair=  10490.7  income=    73150.5  service=69.61%  idle=12.48%  time=  1.38s
+  |D|= 2500  WDF         unfair=   9840.7  income=    88946.9  service=70.30%  idle=10.24%  time=  1.88s
+  |D|= 2500  NM          unfair=  10123.2  income=    79998.0  service=68.41%  idle=21.12%  time=  1.42s
+  |D|= 3000  VFDCFMVD    unfair=  11494.1  income=    81007.7  service=52.48%  idle=11.97%  time= 20.59s
+  |D|= 3000  LAF         unfair=  11778.0  income=    59767.8  service=37.87%  idle=16.57%  time= 25.35s
+  |D|= 3000  SID         unfair=  12000.2  income=    99984.8  service=80.09%  idle=13.50%  time=  5.74s
+  |D|= 3000  ILP         unfair=  12527.0  income=    82558.0  service=74.92%  idle=13.50%  time=  1.77s
+  |D|= 3000  WDF         unfair=  12014.6  income=    91335.2  service=75.25%  idle=11.40%  time=  2.48s
+  |D|= 3000  NM          unfair=  13399.3  income=    86365.8  service=73.07%  idle=23.20%  time=  1.61s
+  |D|= 3500  VFDCFMVD    unfair=  13489.7  income=    83452.3  service=53.81%  idle=12.77%  time= 24.42s
+  |D|= 3500  LAF         unfair=  15871.2  income=    60535.7  service=38.36%  idle=18.11%  time= 30.16s
+  |D|= 3500  SID         unfair=  14244.9  income=   105302.1  service=83.16%  idle=14.34%  time=  7.36s
+  |D|= 3500  ILP         unfair=  14594.9  income=    88555.2  service=78.55%  idle=14.03%  time=  2.21s
+  |D|= 3500  WDF         unfair=  14137.4  income=    93052.8  service=78.46%  idle=12.34%  time=  3.11s
+  |D|= 3500  NM          unfair=  15865.4  income=    90520.2  service=76.25%  idle=25.29%  time=  1.84s
+
+--- unfairness ---
+        VFDCFMVD         LAF         SID         ILP         WDF          NM
+1500  5,102.1011  4,637.1255  5,814.3720  6,261.6069  5,649.9980  5,660.3684
+2000  6,990.7856  6,580.5505  7,857.0143  8,358.8718  7,749.8648  7,907.6469
+2500  8,958.3652  8,498.3548  9,948.0817 10,490.7406  9,840.7015 10,123.1965
+3000 11,494.1487 11,778.0252 12,000.1909 12,527.0008 12,014.6262 13,399.2712
+3500 13,489.6779 15,871.2382 14,244.9299 14,594.9171 14,137.3557 15,865.3903
+
+--- total_income ---
+        VFDCFMVD         LAF          SID         ILP         WDF          NM
+1500 63,563.8064 48,398.0737  69,443.9058 48,217.1230 76,015.9381 62,089.6117
+2000 70,534.0017 54,121.4609  81,751.2553 61,114.9668 84,277.3134 72,375.6795
+2500 77,145.3922 57,924.4043  92,324.0209 73,150.4699 88,946.9178 79,997.9727
+3000 81,007.7088 59,767.7587  99,984.8050 82,558.0231 91,335.2272 86,365.7595
+3500 83,452.2827 60,535.6647 105,302.0969 88,555.2284 93,052.8495 90,520.1832
+
+--- order_service_rate ---
+      VFDCFMVD    LAF    SID    ILP    WDF     NM
+1500    0.4017 0.3000 0.5896 0.5118 0.5342 0.5321
+2000    0.4510 0.3375 0.6863 0.6197 0.6312 0.6200
+2500    0.4982 0.3648 0.7572 0.6961 0.7030 0.6841
+3000    0.5248 0.3787 0.8009 0.7492 0.7525 0.7307
+3500    0.5381 0.3836 0.8316 0.7855 0.7846 0.7625
+
+--- idle_driver_rate ---
+      VFDCFMVD    LAF    SID    ILP    WDF     NM
+1500    0.0820 0.1073 0.0913 0.0873 0.0740 0.1427
+2000    0.0940 0.1260 0.1075 0.1035 0.0920 0.1795
+2500    0.1080 0.1464 0.1252 0.1248 0.1024 0.2112
+3000    0.1197 0.1657 0.1350 0.1350 0.1140 0.2320
+3500    0.1277 0.1811 0.1434 0.1403 0.1234 0.2529
+
+--- running_time ---
+      VFDCFMVD     LAF    SID    ILP    WDF     NM
+1500    8.6814 10.7792 2.1205 0.6896 0.9016 0.9749
+2000   12.7041 15.8816 3.1720 0.9933 1.3718 1.1989
+2500   16.4676 19.8489 4.3278 1.3782 1.8807 1.4163
+3000   20.5930 25.3550 5.7358 1.7736 2.4755 1.6124
+3500   24.4167 30.1582 7.3624 2.2101 3.1110 1.8437
+
+[exp] wrote /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/results/fig5_sweep.json

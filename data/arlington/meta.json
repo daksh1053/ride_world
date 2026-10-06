@@ -1,0 +1,35 @@
+{
+  "city": "Arlington, TX",
+  "osm_query": "R115329",
+  "crs_metric": "EPSG:32614",
+  "currency": "USD",
+  "timezone": "America/Los_Angeles",
+  "processed_at": "2026-10-04T22:19:04+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 12120,
+  "n_edges": 29637,
+  "road_km": 4127.3,
+  "bounds_lonlat": [
+    -97.2324211,
+    32.5894992,
+    -97.0400079,
+    32.8145822
+  ],
+  "speed_from_osm_tag_frac": 0.363,
+  "road_km_by_class": {
+    "motorway": 126.8,
+    "primary": 104.3,
+    "residential": 2762.4,
+    "secondary": 525.5,
+    "tertiary": 542.1,
+    "unclassified": 66.1
+  },
+  "n_zones": 54,
+  "h3_res": 7,
+  "n_pois": 8869,
+  "zone_nodes_min_median_max": [
+    15,
+    245,
+    434
+  ]
+}

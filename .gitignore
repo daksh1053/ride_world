@@ -1,0 +1,27 @@
+# environment and caches
+.venv/
+cache/
+__pycache__/
+*.pyc
+
+# third-party inputs (copyrighted papers, NYC data over GitHub's size limit)
+*.pdf
+*.parquet
+
+# large regenerable data: keep only small result files
+data/**
+!data/
+!data/*/
+!data/*/meta.json
+!data/*/fleet.json
+!data/*/traffic/
+!data/*/traffic/calibration.csv
+!data/*/traffic/meta.json
+!data/wm_models/
+!data/wm_models/**
+!data/wm_runs.csv
+data/*.log
+
+# keep result tables in outputs even though data parquet files are ignored above
+!outputs/**/*.parquet
+outputs/wm_trial/

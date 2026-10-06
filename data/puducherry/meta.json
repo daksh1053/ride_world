@@ -1,0 +1,36 @@
+{
+  "city": "Puducherry",
+  "osm_query": "R10088305",
+  "crs_metric": "EPSG:32644",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "processed_at": "2026-10-04T20:10:27+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 4092,
+  "n_edges": 10815,
+  "road_km": 729.7,
+  "bounds_lonlat": [
+    79.782709,
+    11.8821516,
+    79.8406803,
+    11.958336
+  ],
+  "speed_from_osm_tag_frac": 0.248,
+  "road_km_by_class": {
+    "living_street": 27.9,
+    "primary": 3.3,
+    "residential": 566.5,
+    "secondary": 24.0,
+    "tertiary": 44.9,
+    "trunk": 8.5,
+    "unclassified": 54.6
+  },
+  "n_zones": 40,
+  "h3_res": 8,
+  "n_pois": 1918,
+  "zone_nodes_min_median_max": [
+    19,
+    97,
+    256
+  ]
+}

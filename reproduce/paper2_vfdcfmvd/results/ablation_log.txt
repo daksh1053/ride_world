@@ -1,0 +1,46 @@
+[abl] 29,627 orders, 2500 vehicles, 3 seeds
+
+================ Table III: module ablation ================
+  VFDCFMVD                       unfair=     8,979.60 +- 41.87  service=   49.78 +- 0.45  idle=   11.04 +- 0.64  income=     77,140.57 +- 360.86
+  w/o dynamic clustering         unfair=    8,940.53 +- 391.07  service=   49.43 +- 0.46  idle=   13.57 +- 0.59  income=     77,044.04 +- 410.63
+  w/o driver-order matching      unfair=     9,668.87 +- 57.48  service=   68.04 +- 0.53  idle=   10.52 +- 0.88  income=     98,073.80 +- 627.62
+  w/o idle vehicle dispatching   unfair=     8,968.88 +- 44.93  service=   49.87 +- 0.54  idle=   10.95 +- 0.73  income=     77,259.57 +- 459.81
+
+--- reproduction ---
+                                      Unfairness Order Service Rate Idle Driver Rate Drivers' Total Income
+VFDCFMVD                       8,979.60 +- 41.87      49.78 +- 0.45    11.04 +- 0.64   77,140.57 +- 360.86
+w/o dynamic clustering        8,940.53 +- 391.07      49.43 +- 0.46    13.57 +- 0.59   77,044.04 +- 410.63
+w/o driver-order matching      9,668.87 +- 57.48      68.04 +- 0.53    10.52 +- 0.88   98,073.80 +- 627.62
+w/o idle vehicle dispatching   8,968.88 +- 44.93      49.87 +- 0.54    10.95 +- 0.73   77,259.57 +- 459.81
+
+--- paper (Table III) ---
+                              unfairness  order_service_rate  idle_driver_rate  total_income
+VFDCFMVD                      3,902.6300              0.7740            0.0594  173,157.3000
+w/o dynamic clustering        4,852.9100              0.7486            0.0883  166,842.5700
+w/o driver-order matching     5,887.3400              0.6974            0.1264  144,728.3600
+w/o idle vehicle dispatching  5,426.7600              0.7158            0.1827  150,436.8200
+
+================ Table IV: low-income threshold ================
+  threshold=10%  unfair=     9,124.46 +- 55.85  income=     76,375.96 +- 548.99
+  threshold=20%  unfair= 10,169.43 +- 1,716.61  income=     76,430.61 +- 690.93
+  threshold=30%  unfair=     8,979.60 +- 41.87  income=     77,140.57 +- 360.86
+  threshold=40%  unfair=     8,993.73 +- 58.39  income=     77,864.62 +- 320.68
+  threshold=50%  unfair=    9,394.82 +- 619.57  income=     78,634.28 +- 645.41
+
+--- reproduction ---
+                Unfairness Drivers' Total Income
+10%      9,124.46 +- 55.85   76,375.96 +- 548.99
+20%  10,169.43 +- 1,716.61   76,430.61 +- 690.93
+30%      8,979.60 +- 41.87   77,140.57 +- 360.86
+40%      8,993.73 +- 58.39   77,864.62 +- 320.68
+50%     9,394.82 +- 619.57   78,634.28 +- 645.41
+
+--- paper (Table IV) ---
+     unfairness  total_income
+0.1    4,032.24    176,268.45
+0.2    3,956.83    175,584.91
+0.3    3,902.63    173,157.30
+0.4    3,872.34    172,632.22
+0.5    3,853.85    172,264.85
+
+[abl] wrote /home/daksh/Desktop/btp/reproduce/paper2_vfdcfmvd/results/ablation.json

@@ -1,0 +1,38 @@
+{
+  "city": "Pittsburgh",
+  "osm_query": "R188553",
+  "crs_metric": "EPSG:32617",
+  "currency": "USD",
+  "timezone": "America/Los_Angeles",
+  "processed_at": "2026-10-04T21:33:22+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 9026,
+  "n_edges": 23517,
+  "road_km": 3020.1,
+  "bounds_lonlat": [
+    -80.0889916,
+    40.363729,
+    -79.8666147,
+    40.4998432
+  ],
+  "speed_from_osm_tag_frac": 0.237,
+  "road_km_by_class": {
+    "living_street": 0.9,
+    "motorway": 98.7,
+    "other": 41.2,
+    "primary": 195.2,
+    "residential": 1935.6,
+    "secondary": 229.6,
+    "tertiary": 362.5,
+    "trunk": 63.7,
+    "unclassified": 92.6
+  },
+  "n_zones": 180,
+  "h3_res": 8,
+  "n_pois": 7503,
+  "zone_nodes_min_median_max": [
+    15,
+    46,
+    124
+  ]
+}

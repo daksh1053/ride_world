@@ -1,0 +1,38 @@
+{
+  "city": "San Francisco",
+  "osm_query": "San Francisco, California, USA",
+  "crs_metric": "EPSG:32610",
+  "currency": "USD",
+  "timezone": "America/Los_Angeles",
+  "processed_at": "2026-09-26T19:23:52+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 9975,
+  "n_edges": 27547,
+  "road_km": 3111.2,
+  "bounds_lonlat": [
+    -122.51194,
+    37.708264,
+    -122.3616383,
+    37.8320262
+  ],
+  "speed_from_osm_tag_frac": 0.263,
+  "road_km_by_class": {
+    "living_street": 2.3,
+    "motorway": 96.1,
+    "other": 21.7,
+    "primary": 150.6,
+    "residential": 2044.0,
+    "secondary": 291.6,
+    "tertiary": 389.3,
+    "trunk": 31.2,
+    "unclassified": 84.5
+  },
+  "n_zones": 156,
+  "h3_res": 8,
+  "n_pois": 27562,
+  "zone_nodes_min_median_max": [
+    15,
+    61,
+    165
+  ]
+}

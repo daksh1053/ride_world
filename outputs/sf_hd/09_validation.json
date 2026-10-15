@@ -1,0 +1,10 @@
+{
+  "taz_pickups_log_corr": 0.9679807057265525,
+  "taz_drop-offs_log_corr": 0.9653238486286917,
+  "company_share_of_market": 0.0750061079486019,
+  "hour_profile_corr": 0.9984130894023706,
+  "trip_km_median": 3.5637531350239833,
+  "trip_min_median": 8.967460667855873,
+  "season": "season_2025-03-03_seed0",
+  "days": 14
+}

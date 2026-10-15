@@ -1,0 +1,13 @@
+{
+  "share_bike": 0.29759399294928396,
+  "share_auto": 0.36187036508368575,
+  "share_cab": 0.3405356419670303,
+  "completion_bike": 0.8452966569621524,
+  "completion_auto": 0.8408707298279089,
+  "completion_cab": 0.8097870058975484,
+  "cab_trip_min_mean": 29.150164089554746,
+  "note": "trip durations exclude intercity trips",
+  "airport_trips_per_day": 859.4285714285714,
+  "season": "season_2025-07-07_seed0",
+  "days": 14
+}

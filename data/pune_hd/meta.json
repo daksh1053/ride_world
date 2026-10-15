@@ -1,0 +1,38 @@
+{
+  "city": "Pune metro (detailed)",
+  "osm_query": "R10351626",
+  "crs_metric": "EPSG:32643",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "processed_at": "2026-10-14T19:27:31+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 51639,
+  "n_edges": 119369,
+  "road_km": 9777.5,
+  "bounds_lonlat": [
+    73.7018707,
+    18.4324295,
+    74.0187046,
+    18.7077069
+  ],
+  "speed_from_osm_tag_frac": 0.031,
+  "road_km_by_class": {
+    "living_street": 166.8,
+    "motorway": 0.2,
+    "other": 74.1,
+    "primary": 562.7,
+    "residential": 7174.6,
+    "secondary": 380.5,
+    "tertiary": 1087.3,
+    "trunk": 255.4,
+    "unclassified": 76.0
+  },
+  "n_zones": 137,
+  "h3_res": 7,
+  "n_pois": 11798,
+  "zone_nodes_min_median_max": [
+    18,
+    335,
+    1350
+  ]
+}

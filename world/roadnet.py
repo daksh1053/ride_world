@@ -112,6 +112,15 @@ def download(city: City) -> None:
     else:
         by_id = city.osm_query[:1] in "RWN" and city.osm_query[1:].isdigit()
         boundary = ox.geocode_to_gdf(city.osm_query, by_osmid=by_id)
+    if city.extra_circles:
+        # widen the admin boundary with circles around adjoining urban areas
+        pts = gpd.GeoDataFrame(geometry=gpd.points_from_xy([c[1] for c in city.extra_circles],
+                                                           [c[0] for c in city.extra_circles]), crs="EPSG:4326")
+        discs = pts.to_crs(city.utm_crs).buffer(pd.Series([c[2] * 1000 for c in city.extra_circles]).values,
+                                                resolution=32)
+        merged = boundary.to_crs(city.utm_crs).geometry.union_all().union(discs.union_all())
+        boundary = gpd.GeoDataFrame({"display_name": [f"{city.name}: admin boundary + {len(city.extra_circles)} circles"]},
+                                    geometry=[merged], crs=city.utm_crs).to_crs("EPSG:4326")
     boundary.to_file(raw / "boundary.gpkg", driver="GPKG")
     # ~50 m simplification keeps Overpass requests small (detailed polygons draw HTTP 413)
     poly = boundary.geometry.iloc[0].simplify(0.0005, preserve_topology=True)
@@ -168,10 +177,34 @@ def process(city: City) -> nx.MultiDiGraph:
         d["lanes_dir"] = float(lanes)
         d["speed_src"] = "osm" if d.get("maxspeed") is not None else "default"
 
+    if city.detail == "high":
+        add_intersection_delays(G)
     ox.save_graphml(G, city.data_dir / "graph.graphml")
     print(f"[{city.key}] largest SCC: {G.number_of_nodes():,}/{n_raw:,} nodes kept, "
           f"{G.number_of_edges():,} edges")
     return G
+
+
+# ASSUMPTION: expected free-flow delay when approaching a controlled junction. A signal
+# costs about half a 60-90 s cycle's red time on average, a stop sign a full stop and go.
+# Freeway and ramp approaches are exempt. Applied to high-detail cities only.
+SIGNAL_DELAY_S, STOP_DELAY_S = 20.0, 6.0
+
+
+def add_intersection_delays(G: nx.MultiDiGraph) -> None:
+    control = {n: str(d.get("highway", "")) for n, d in G.nodes(data=True)}
+    n_sig = n_stop = 0
+    for u, v, d in G.edges(data=True):
+        if d["road_class"] in ("motorway", "trunk"):
+            continue
+        c = control.get(v, "")
+        extra = SIGNAL_DELAY_S if "traffic_signals" in c else STOP_DELAY_S if c == "stop" else 0.0
+        if extra:
+            d["travel_time"] = float(d["travel_time"]) + extra
+            d["junction_delay_s"] = extra
+            n_sig += extra == SIGNAL_DELAY_S
+            n_stop += extra == STOP_DELAY_S
+    print(f"    junction delays on {n_sig:,} signal and {n_stop:,} stop-sign approaches")
 
 
 def tables(city: City, G: nx.MultiDiGraph) -> tuple[pd.DataFrame, pd.DataFrame]:

@@ -110,7 +110,7 @@ def _status_series(tb, n_drivers, step=300.0, end=86400.0):
     st = tb["status"].sort_values("t")
     grid = pd.DataFrame({"t": np.arange(0, end + 1, step)})
     out = {}
-    counts = np.zeros((len(grid), 7), int)
+    counts = np.zeros((len(grid), len(D_STATUS)), int)
     for d, g in st.groupby("driver_id"):
         idx = np.searchsorted(g.t.to_numpy(), grid.t.to_numpy(), side="right") - 1
         s = np.where(idx >= 0, g.status.to_numpy()[np.maximum(idx, 0)], 0)
@@ -170,6 +170,9 @@ def build_replay(city, nodes, zone_geoms, tb, drivers, w0_h, w1_h, path, summary
         "led_a": _b64(dl.amount.to_numpy().astype(np.float32)), "led_off": _b64(loff),
         "profile": prof[["vehicle_type", "tenure_days", "rating"]].to_dict("list"),
         "trips": per_driver.trips.tolist(),
+        # vehicle mode per driver (detailed cities): 0 cab (circle), 1 auto (square), 2 bike (small dot)
+        "dmode": (drivers["mode"].map({"cab": 0, "auto": 1, "bike": 2}).fillna(0).astype(int).tolist()
+                  if "mode" in drivers else []),
         "status_series": _status_series(tb, n_drivers),
         "kpi": kpi, "summary": summary,
         "colours": {str(k): v for k, v in STATUS_COLOURS.items()},
@@ -237,7 +240,7 @@ function lastKf(d, t) {
 }
 function at(d, t) {
   const k = lastKf(d, t), s = KS[k];
-  if (s === 0 || s === 6) return null;
+  if (s === 0 || s === 6 || s === 7) return null;   // offline, outside, on break
   const a = KN[k];
   let lat = C[2 * a], lon = C[2 * a + 1];
   if (k + 1 < KOFF[d + 1] && KM[k + 1] === 1) {
@@ -267,7 +270,7 @@ function drawTrail(d, p, col, span, R) {
   let k = lastKf(d, simT), prev = p, tPrev = simT;
   ctx.strokeStyle = col; ctx.lineWidth = R * 0.9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   while (k >= lo) {
-    const s = KS[k]; if (s === 0 || s === 6) break;
+    const s = KS[k]; if (s === 0 || s === 6 || s === 7) break;
     let tk = KT[k], a = KN[k], lat = C[2 * a], lon = C[2 * a + 1];
     if (tk < t0) {                         // cut the last segment at t0
       if (k + 1 >= KOFF[d + 1] || KM[k + 1] !== 1) break;
@@ -313,7 +316,11 @@ function frame(now) {
     counts[cur[2]]++;
     const p = map.latLngToContainerPoint([cur[0], cur[1]]), col = COL[cur[2]];
     if (trails && cur[2] !== 1) drawTrail(d, p, col, trailSpan, R);
-    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(p.x, p.y, R, 0, 6.283); ctx.fill();
+    ctx.fillStyle = col; ctx.beginPath();
+    const md = D.dmode.length ? D.dmode[d] : 0;
+    if (md === 1) ctx.rect(p.x - R * 0.9, p.y - R * 0.9, R * 1.8, R * 1.8);
+    else ctx.arc(p.x, p.y, md === 2 ? R * 0.65 : R, 0, 6.283);
+    ctx.fill();
     if (d === sel) selPos = [p, cur];
   }
   if (selPos) {
@@ -328,7 +335,8 @@ function frame(now) {
 }
 
 function updatePanel() {
-  document.getElementById('legend').innerHTML = [1, 3, 4, 5].map(s =>
+  document.getElementById('legend').innerHTML = (D.dmode.length && D.dmode.some(m => m > 0) ?
+    '<div class="muted" style="margin-bottom:4px">shape: ● cab · ■ auto-rickshaw · • bike taxi</div>' : '') + [1, 3, 4, 5].map(s =>
     `<div class="stat"><span><span class="dot" style="background:${COL[s]}"></span>${NAMES[s]}</span><b>${counts[s]}</b></div>`).join('') +
     `<div class="stat muted"><span><span class="dot" style="border:1.5px dashed #898781"></span>outside the city (intercity)</span><b>${counts.out}</b></div>`;
   if (sel >= 0) showDriver(sel);
@@ -358,7 +366,7 @@ function drawCharts(h) {
 function showDriver(d) {
   const t = D.w0 + simT, cur = at(d, simT), k = lastKf(d, simT);
   let earned = 0; for (let j = LOFF[d]; j < LOFF[d + 1] && LT[j] <= t; j++) earned += LA[j];
-  const P = D.profile, st = cur ? NAMES[cur[2]] : (KS[k] === 6 ? 'outside the city' : 'offline');
+  const P = D.profile, st = cur ? NAMES[cur[2]] : (KS[k] === 6 ? "outside the city" : KS[k] === 7 ? "on a break" : "offline");
   document.getElementById('driver').innerHTML = `<table class="kv">
     <tr><td>driver</td><td><b>#${d}</b></td></tr><tr><td>status</td><td>${st}</td></tr>
     <tr><td>vehicle</td><td>${P.vehicle_type[d]}</td></tr><tr><td>rating (before today)</td><td>${P.rating[d] ?? '–'}</td></tr>

@@ -1,0 +1,86 @@
+{
+ "congestion": {
+  "sf_hd": {
+   "tokens (trained)": {
+    "r2_all": 0.7154069572622896,
+    "r2_no_gps_now": 0.5285215128132166,
+    "alpha": 0.1,
+    "share_no_gps": 0.3856985698569857
+   },
+   "tokens (untrained)": {
+    "r2_all": 0.4349604520763284,
+    "r2_no_gps_now": 0.26307887786193773,
+    "alpha": 1,
+    "share_no_gps": 0.3856985698569857
+   },
+   "raw input patch": {
+    "r2_all": 0.5906775534136988,
+    "r2_no_gps_now": 0.4652172714143745,
+    "alpha": 0.1,
+    "share_no_gps": 0.3856985698569857
+   }
+  },
+  "pune_hd": {
+   "tokens (trained)": {
+    "r2_all": 0.7532564549371145,
+    "r2_no_gps_now": -1.1524852881984469,
+    "alpha": 0.1,
+    "share_no_gps": 0.2606456724103783
+   },
+   "tokens (untrained)": {
+    "r2_all": 0.44771453464172417,
+    "r2_no_gps_now": -1.8248488206374338,
+    "alpha": 10,
+    "share_no_gps": 0.2606456724103783
+   },
+   "raw input patch": {
+    "r2_all": 0.6607325402734213,
+    "r2_no_gps_now": -0.7626952477622857,
+    "alpha": 1,
+    "share_no_gps": 0.2606456724103783
+   }
+  }
+ },
+ "policy": {
+  "sf_hd": {
+   "tokens (trained)": {
+    "explore_r2": 0.04892615063953043,
+    "rebalancing_on_acc": 0.8118811881188119,
+    "rebalancing_on_base": 0.8118811881188119,
+    "max_moves_r2": -0.01048275695163281
+   },
+   "tokens (untrained)": {
+    "explore_r2": 0.020198303944628737,
+    "rebalancing_on_acc": 0.8118811881188119,
+    "rebalancing_on_base": 0.8118811881188119,
+    "max_moves_r2": 0.02890262360187923
+   },
+   "raw input patch": {
+    "explore_r2": 0.07109369461433046,
+    "rebalancing_on_acc": 0.8118811881188119,
+    "rebalancing_on_base": 0.8118811881188119,
+    "max_moves_r2": -0.01706576342757682
+   }
+  },
+  "pune_hd": {
+   "tokens (trained)": {
+    "explore_r2": 0.7064642831629275,
+    "rebalancing_on_acc": 0.7676767676767676,
+    "rebalancing_on_base": 0.7676767676767676,
+    "max_moves_r2": -0.11727247479576919
+   },
+   "tokens (untrained)": {
+    "explore_r2": 0.020684857271718426,
+    "rebalancing_on_acc": 0.7676767676767676,
+    "rebalancing_on_base": 0.7676767676767676,
+    "max_moves_r2": -0.03604252195975999
+   },
+   "raw input patch": {
+    "explore_r2": 0.3695158103045333,
+    "rebalancing_on_acc": 0.7676767676767676,
+    "rebalancing_on_base": 0.7676767676767676,
+    "max_moves_r2": -0.047197730605465615
+   }
+  }
+ }
+}

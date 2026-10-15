@@ -563,6 +563,8 @@ class World:
             self.end_leg(i, t)
         minutes = (t - self.r_times["pickup"][k]) / 60
         f = fare(self.city, km_in, minutes, outside_km)
+        if getattr(self, "_fare_override", None) is not None:     # set by subclasses (world/hd)
+            f, self._fare_override = round(self._fare_override, 2), None
         self.r_status[k] = COMPLETED
         self.r_times["dropoff"][k] = t
         self.r_fare[k] = f

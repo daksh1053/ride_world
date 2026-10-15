@@ -110,6 +110,10 @@ class City:
     country: str = ""             # "IN" or "US"
     tier: str = ""                # "core", "metro", "medium", "small"
     population: int = 0           # approximate, for scaling demand
+    # High-detail cities: extra circles (lat, lon, km) unioned with the admin boundary,
+    # and delays at intersections (OSM highway=traffic_signals / stop on nodes).
+    extra_circles: tuple = ()
+    detail: str = "standard"      # "standard" or "high"
 
     @property
     def data_dir(self) -> Path:
@@ -366,6 +370,32 @@ for _row in _NEW:
     CITIES[_k] = _make(_k, _n, _q, _c, _t, _p, _ctr, _lvl, _src, circle_km=_r)
 CITIES["pune"] = replace(CITIES["pune"], country="IN", tier="core", population=3_500_000)
 CITIES["sf"] = replace(CITIES["sf"], country="US", tier="core", population=810_000)
+
+# ---------------------------------------------------------------- high-detail cities
+#
+# sf_hd and pune_hd are the two cities modelled in depth (world/hd/). Same road and
+# traffic machinery, plus real population (GHSL 2025, 100 m), land use, trip purposes,
+# rider choice, surge pricing, vehicle modes, driver strategies and multi-week dynamics.
+# SF demand is calibrated to SFCTA "TNCs Today" (Uber + Lyft pickups / drop-offs by zone,
+# hour and weekday, Nov-Dec 2016).
+CITIES["sf_hd"] = replace(CITIES["sf"], key="sf_hd", name="San Francisco (detailed)", detail="high",
+                          tier="detailed", h3_res=8)
+CITIES["pune_hd"] = replace(
+    CITIES["pune"], key="pune_hd", name="Pune metro (detailed)", detail="high", tier="detailed",
+    # Pune City Subdistrict + Pimpri-Chinchwad (r 9 km) + Hinjewadi IT park (r 4 km);
+    # the airport (Lohegaon) is already inside the subdistrict
+    extra_circles=((18.6298, 73.7997, 9.0), (18.5913, 73.7389, 4.0)),
+    population=7_400_000, h3_res=7,
+    # the airport, Hinjewadi and PCMC are inside this map: intercity trips now leave the metro
+    # (ASSUMPTION: shares and outside distances / times from road distances)
+    market=replace(CITIES["pune"].market, external=(
+        ExternalDest("Mumbai / Lonavala (expressway)", (73.70, 18.69), 140, 180, 0.35),
+        ExternalDest("Chakan MIDC / Nashik road", (73.86, 18.70), 25, 45, 0.20),
+        ExternalDest("Satara / Bengaluru highway", (73.86, 18.43), 100, 120, 0.20),
+        ExternalDest("Solapur highway (Loni Kalbhor)", (74.00, 18.48), 35, 55, 0.15),
+        ExternalDest("Ahmednagar road (Wagholi)", (73.98, 18.58), 45, 65, 0.10))),
+    traffic=replace(CITIES["pune"].traffic, external_share=0.12,
+                    source=CITIES["pune"].traffic.source + "; extent widened to PCMC and Hinjewadi"))
 
 TIERS = {"core": ["sf", "pune"], "metro": ["navimumbai", "thane", "arlington"],
          "medium": ["nagpur", "coimbatore", "chandigarh", "pittsburgh", "portland"],

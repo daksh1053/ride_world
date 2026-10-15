@@ -57,10 +57,32 @@ def main():
                          "zones": int(s["zones"]), "drivers": int(s["drivers"]), "requests": int(s["requests_day"]),
                          "currency": s["currency"], "peak_tti": float(s["peak_tti_target"]),
                          "extent": s["extent"], "methods": per})
+    rows += detailed_rows(out)
     data = {"cities": rows, "methods": {m: v[0] for m, v in METHODS.items()},
             "files": {m: v[1] for m, v in METHODS.items()}}
     (out / "index.html").write_text(HTML.replace("__DATA__", json.dumps(data, separators=(",", ":"))))
     print(f"wrote {out / 'index.html'} with {len(rows)} cities")
+
+
+def detailed_rows(out):
+    """The two high-detail cities (stage 9): one season replay each, season-mean numbers."""
+    import geopandas as gpd
+    rows = []
+    for k in ("sf_hd", "pune_hd"):
+        if not (out / k / "09_replay.html").exists():
+            continue
+        c = cities.get(k)
+        df = pd.read_csv(out / k / "09_season.csv")
+        zg = gpd.read_file(c.data_dir / "zone_geoms.geojson").to_crs(c.utm_crs)
+        road_km = pd.read_parquet(c.data_dir / "edges.parquet", columns=["length_m"]).length_m.sum() / 1000
+        m = {"completion": round(float(df.completion.mean()), 3), "wait": round(float(df.wait_min.mean()), 1),
+             "gini": round(float(df.gini.mean()), 3), "hourly": round(float(df.net_per_hour.mean()), 1)}
+        rows.append({"key": k, "name": c.name, "tier": "detailed", "country": c.country, "population": int(c.population),
+                     "area": int(zg.area.sum() / 1e6), "road_km": float(road_km), "zones": len(zg),
+                     "drivers": int(df.drivers_pool.iat[0]), "requests": int(df.requests.mean()), "currency": c.currency,
+                     "peak_tti": 0.0, "extent": f"{len(df)}-day season", "methods": {"baseline": m},
+                     "replay": "09_replay.html"})
+    return rows
 
 
 HTML = r"""<!doctype html>
@@ -97,7 +119,7 @@ a{color:#2a78d6;text-decoration:none} a:hover{text-decoration:underline}
 <iframe id="frame" title="cab replay"></iframe>
 <script>
 const D = __DATA__;
-const TIERS = {core: 'core cities', metro: 'metro siblings', medium: 'medium cities', small: 'small cities'};
+const TIERS = {detailed: 'detailed cities (stage 9 seasons)', core: 'core cities', metro: 'metro siblings', medium: 'medium cities', small: 'small cities'};
 const sel = document.getElementById('method');
 Object.entries(D.methods).forEach(([k, v]) => sel.add(new Option(v, k)));
 const q = new URLSearchParams(location.hash.slice(1));
@@ -123,7 +145,7 @@ function show() {
     m ? `<span>driver net <b>${fmt(m.hourly, 1)} ${c.currency}/h</b>${delta(m.hourly, b.hourly, 1)}</span>` : '',
     m ? `<span>earnings Gini <b>${m.gini.toFixed(3)}</b>${delta(m.gini, b.gini, 3)}</span>` : '',
   ].join('');
-  const f = `${c.key}/${D.files[method]}`;
+  const f = c.replay ? `${c.key}/${c.replay}` : `${c.key}/${D.files[method]}`;
   document.getElementById('links').innerHTML = `<a href="${f}" target="_blank">open replay ↗</a> · <a href="${c.key}/01_explorer.html" target="_blank">map</a> · <a href="${c.key}/02_explorer.html" target="_blank">traffic</a> · <a href="04_dashboard.html" target="_blank">method comparison</a> · <a href="wm/06_wm_viewer.html" target="_blank">world model</a>`;
   const fr = document.getElementById('frame');
   if (fr.dataset.src !== f) { fr.src = f; fr.dataset.src = f; }

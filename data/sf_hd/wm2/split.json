@@ -1,0 +1,8 @@
+{
+ "train_until": "2025-04-05",
+ "val_from": "2025-04-06",
+ "val_until": "2025-04-17",
+ "test_from": "2025-04-18",
+ "test_until": "2025-05-05",
+ "note": "fixed in step 4 from the step-3 split (75/10/15 by date); days added later before val_from are training days"
+}

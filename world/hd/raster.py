@@ -45,6 +45,11 @@ STATIC = ["roads_km", "major_roads_km", "residents", "work", "shop", "food_night
           "hub", "leisure", "airport", "has_road"]
 CONTEXT = ["sin_hour", "cos_hour", "sin_week", "cos_week", "weekend", "rain"]
 ACTION_CHANNELS = ["dispatch_from", "dispatch_to"]
+# added in step 4 (kept in separate files so older stores and models still load):
+# repositioning orders counted at their origin cell by the compass octant of their target,
+# which ties each "from" to its "to" (octant k covers angles around k x 45 degrees,
+# measured from +column towards +row of the grid)
+DIR_CHANNELS = [f"dispatch_dir{k}" for k in range(8)]
 S_ = {s: i for i, s in enumerate(D_STATUS)}
 
 
@@ -111,6 +116,23 @@ class CityRaster:
         self.traffic = T.TrafficModel(city)
 
     # -------------------------------------------------------------- one day
+    def dispatch_dirs(self, day_dir: Path) -> np.ndarray:
+        """(T, 8, G, G) uint8: orders issued in each 5-minute step, at their origin cell,
+        split by the direction of their target zone (see DIR_CHANNELS)."""
+        ev = pd.read_parquet(day_dir / "events.parquet", columns=["t_event", "type", "node", "value"])
+        ds = ev[ev.type == "dispatch_sent"]
+        nT = int(86400 / TICK_S)
+        out = np.zeros((nT, 8, G * G), np.float32)
+        if len(ds):
+            a = self.node_cell[ds.node.to_numpy()]
+            b = self.zone_centre_cell[ds.value.to_numpy().astype(int)]
+            ang = np.arctan2(b // G - a // G, b % G - a % G)
+            octant = np.round(ang / (np.pi / 4)).astype(int) % 8
+            k = np.ceil(ds.t_event.to_numpy() / TICK_S).astype(int) - 1
+            ok = (k >= 0) & (k < nT)
+            np.add.at(out, (k[ok], octant[ok], a[ok]), 1.0)
+        return np.clip(out, 0, 255).astype(np.uint8).reshape(nT, 8, G, G)
+
     def day(self, day_dir: Path, seed: int):
         tb = {n: pd.read_parquet(day_dir / f"{n}.parquet")
               for n in ("requests", "status", "legs", "events", "surge", "drivers")}

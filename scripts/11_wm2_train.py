@@ -1,6 +1,8 @@
 """Stage 11: train and evaluate world model v2 (the 64 x 64 spatio-temporal models).
 
     .venv/bin/python scripts/11_wm2_train.py --build                  # pack the rasters into stores
+    .venv/bin/python scripts/11_wm2_train.py --build-dirs             # step 4: dispatch-direction channels
+    .venv/bin/python scripts/11_wm2_train.py --model st --K 12 --dirs --steps 40000 --tag st4_k12_dirs --outdir step4
     .venv/bin/python scripts/11_wm2_train.py --model st --steps 20000 --tag st_small
     .venv/bin/python scripts/11_wm2_train.py --model cnn --steps 6000 --tag cnn
     .venv/bin/python scripts/11_wm2_train.py --finetune st_small --rollout 6 --steps 4000 --tag st_ro
@@ -76,13 +78,14 @@ def climatology(stores, splits):
     return tabs
 
 
-def make_model(kind, K):
+def make_model(kind, K, dirs=False):
+    c_in = C_IN + (WD.N_DIRS if dirs else 0)
     if kind == "st":
-        return WM.STTransformer(C_IN, K=K)
+        return WM.STTransformer(c_in, K=K)
     if kind == "st_large":
-        return WM.STTransformer(C_IN, d=256, layers=8, heads=8, K=K)
+        return WM.STTransformer(c_in, d=256, layers=8, heads=8, K=K)
     if kind == "cnn":
-        return WM.LocalCNN(C_IN)
+        return WM.LocalCNN(c_in)
     raise SystemExit(kind)
 
 
@@ -101,7 +104,8 @@ def fixed_windows(stores, splits, which, n, K, seed):
 
 
 @torch.no_grad()
-def evaluate(model, batcher, items, clim=None, bs=8):
+def evaluate(model, batcher, items, clim=None, bs=8, last=None):
+    """Mean losses over the windows; `last`: score only the last n positions of each."""
     model.eval()
     agg, n = {}, 0
     for i in range(0, len(items), bs):
@@ -112,6 +116,8 @@ def evaluate(model, batcher, items, clim=None, bs=8):
                 out = model(inp, ctx, None, keys).to(DEV)
             else:
                 out = model(inp, ctx, x[:, :-1].float())
+        if last:
+            out, tgt = out[:, -last:], tgt[:, -last:]
         ls = WM.losses(out.float(), tgt, road_mask(S))
         for k, v in ls.items():
             agg[k] = agg.get(k, 0) + v.double().cpu().numpy() * len(keys)
@@ -151,17 +157,26 @@ def rollout_loss(model, x, c, S, K, R, backward=False):
     return total
 
 
+def load_ckpt(tag):
+    ck = torch.load(MODELS / f"{tag}.pt", map_location=DEV)
+    m = make_model(ck["kind"], ck["K"], ck.get("dirs", False)).to(DEV)
+    m.load_state_dict(ck["state"])
+    return m, ck
+
+
 def train(args, stores, splits):
     R = args.rollout
+    WD.DIRS = args.dirs
     batcher = WD.Batcher(stores, {k: v[0] for k, v in splits.items()}, args.K + R, DEV, seed=args.seed)
     torch.manual_seed(args.seed)
     if args.finetune:
-        ck = torch.load(MODELS / f"{args.finetune}.pt", map_location=DEV)
-        args.model = ck["kind"]
-        model = make_model(args.model, args.K).to(DEV)
-        model.load_state_dict(ck["state"])
+        model, ck = load_ckpt(args.finetune)
+        args.model, args.dirs = ck["kind"], ck.get("dirs", False)
+        WD.DIRS = args.dirs
+        if ck["K"] != args.K:
+            raise SystemExit(f"{args.finetune} was trained with K={ck['K']}")
     else:
-        model = make_model(args.model, args.K).to(DEV)
+        model = make_model(args.model, args.K, args.dirs).to(DEV)
     n_par = sum(p.numel() for p in model.parameters())
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.05)
     warm = 100 if args.finetune else 500
@@ -205,7 +220,7 @@ def train(args, stores, splits):
             if vl < best:
                 best = vl
                 torch.save({"state": model.state_dict(), "kind": args.model, "K": args.K, "cities": args.cities, "rollout": R,
-                            "from": args.finetune}, MODELS / f"{args.tag}.pt")
+                            "from": args.finetune, "dirs": args.dirs}, MODELS / f"{args.tag}.pt")
                 flag = " *"
             print(f"  step {step:6d}  train {loss.item():.4f}  val {vl:.4f}  (poisson {log[-1]['val_poisson']:.4f}, "
                   f"speed {log[-1]['val_speed']:.3f}, surge {log[-1]['val_surge']:.5f})"
@@ -215,27 +230,29 @@ def train(args, stores, splits):
 
 
 def run_eval(args, stores, splits):
-    batcher = WD.Batcher(stores, {}, args.K, DEV)
-    items = fixed_windows(stores, splits, 2, args.n_test, args.K, seed=11)
     res = {}
     clim = WM.Climatology(climatology(stores, splits))
-    models = {"persistence": WM.Persistence(), "climatology": clim}
+    models = {"persistence": (WM.Persistence(), {"K": args.K}), "climatology": (clim, {"K": args.K})}
     for tag in args.eval:
-        ck = torch.load(MODELS / f"{tag}.pt", map_location=DEV)
-        m = make_model(ck["kind"], ck["K"]).to(DEV)
-        m.load_state_dict(ck["state"])
-        models[tag] = m
-    for name, m in models.items():
+        models[tag] = load_ckpt(tag)
+    # the same test frames for every model: windows of the longest history used, each model
+    # reads its own K frames before the scored ones and is scored on the last args.K frames
+    k_max = max(ck["K"] for _, ck in models.values())
+    base = fixed_windows(stores, splits, 2, args.n_test, k_max, seed=11)
+    for name, (m, ck) in models.items():
+        K = ck["K"]
+        items = [(s, d, t + k_max - K) for s, d, t in base]
+        batcher = WD.Batcher(stores, {}, K, DEV, dirs=ck.get("dirs", False))
         per_city = {}
         for s in stores:
             it = [x for x in items if x[0] is s]
-            r = evaluate(m, batcher, it)
+            r = evaluate(m, batcher, it, last=args.K)
             per_city[s.key] = {"poisson_mean": float(r["poisson"].mean()), "speed_nll": float(r["speed"]),
                                "surge_mse": float(r["surge"]),
                                **{f"nll_{c}": float(v) for c, v in zip(WD.COUNT_NAMES, r["poisson"])}}
         res[name] = per_city
         print(f"  {name:16s} " + "  ".join(f"{k}: poisson {v['poisson_mean']:.4f} speed {v['speed_nll']:.3f} surge {v['surge_mse']:.5f}"
-                                           for k, v in per_city.items()))
+                                           for k, v in per_city.items()), flush=True)
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "results.json").write_text(json.dumps(res, indent=2))
     rows = [{"model": m, "city": c, **v} for m, d in res.items() for c, v in d.items()]
@@ -258,13 +275,17 @@ def main():
     ap.add_argument("--finetune", default=None, help="start from this checkpoint tag")
     ap.add_argument("--rollout", type=int, default=0, help="train on R-step rollouts of the model's own predictions")
     ap.add_argument("--n-test", type=int, default=600)
+    ap.add_argument("--build-dirs", action="store_true", help="step 4: add the dispatch-direction channels to the stores")
+    ap.add_argument("--dirs", action="store_true", help="step 4: feed the dispatch-direction channels to the model")
     ap.add_argument("--outdir", default="step3", help="results go to outputs/wm2/<outdir>/")
     args = ap.parse_args()
     global OUT
     OUT = cities.OUTPUTS / "wm2" / args.outdir
-    if args.build:
+    if args.build or args.build_dirs:
         for k in args.cities:
-            WD.build_store(cities.get(k))
+            if args.build:
+                WD.build_store(cities.get(k))
+            WD.build_dirs(cities.get(k))
         return
     stores, splits = load(args.cities)
     if args.eval is not None:

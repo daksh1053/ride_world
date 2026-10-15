@@ -8,6 +8,8 @@ afresh each day, so the data shows the effect of different actions:
     reposition_every  0 (never), 4, 10 or 20 epochs of 30 s
     max_moves         20, 60 or 150 instructions per rebalancing
     explore           0, 0.05, 0.15 or 0.3 (random moves of long-idle drivers)
+With --blocks (step 4) the platform also issues random concentrated orders during the day,
+10 to 60 (SF) or 120 (Pune) drivers from one area to one zone, about every 40 minutes.
 Each day's tables go to data/<city>/hd_runs/<name>/<date>/ and its raster (world/hd/raster.py)
 to data/<city>/wm2/<date>.npz. Also writes data/<city>/wm2/static.npz (static layers, grid)
 and data/<city>/wm2/days_seed<seed>.csv (date, policy settings, day summary). Several seasons
@@ -29,7 +31,7 @@ import pandas as pd
 from world import cities
 from world.hd import raster as R
 from world.hd.run import Season
-from world.hd.sim import HDDispatch
+from world.hd.sim import HDDispatch, HDDispatchBlocks
 
 GRID = {"reposition_every": [0, 4, 10, 20], "max_moves": [20, 60, 150], "explore": [0.0, 0.05, 0.15, 0.3]}
 
@@ -40,6 +42,8 @@ def main():
     ap.add_argument("--days", type=int, default=120)
     ap.add_argument("--start", default="2025-01-06")
     ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--blocks", action="store_true",
+                    help="step 4: add random concentrated orders (HDDispatchBlocks) for action coverage")
     args = ap.parse_args()
     city = cities.get(args.city)
     name = f"wm2_seed{args.seed}"
@@ -56,6 +60,9 @@ def main():
     def factory():
         p = {k: v[rng.integers(len(v))] for k, v in GRID.items()}
         params.update(p)
+        if args.blocks:
+            params["blocks"] = 1.0
+            return HDDispatchBlocks(n_max={"sf_hd": 60, "pune_hd": 120}[args.city], seed=int(rng.integers(1 << 30)), **p)
         return HDDispatch(seed=int(rng.integers(1 << 30)), **p)
 
     season = Season(args.city, seed=args.seed, policy_factory=factory)

@@ -31,3 +31,6 @@ outputs/wm_trial/
 !data/wm2_models/**
 !data/*/wm2/
 !data/*/wm2/days*.csv
+!data/*/wm2/split.json
+!data/*/wm2_cf/
+!data/*/wm2_cf/pairs.json

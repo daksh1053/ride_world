@@ -437,3 +437,54 @@ class HDDispatch(Policy):
                 deficit[tgt] -= 1
                 deficit[z] += 1
         return out
+
+
+def block_move(obs, act, n: int, rng=None, max_tt: float = 1200.0):
+    """Add one concentrated repositioning order to `act`: n free idle drivers from a crowded
+    area (the zone with most of them, or a random zone weighted by them when `rng` is given,
+    plus its nearest zones until n drivers) all sent to one zone within max_tt seconds (the
+    most under-supplied one, or a random one when `rng` is given). Returns a record."""
+    used = {d for d, _ in act.offers} | {d for d, _ in act.dispatches}
+    free = obs.idle[~obs.idle.driver_id.isin(used)]
+    Z = len(obs.recent_demand)
+    cnt = np.bincount(free.zone, minlength=Z)
+    if cnt.sum() == 0:
+        return {}
+    src = int(cnt.argmax()) if rng is None else int(rng.choice(Z, p=cnt / cnt.sum()))
+    near = np.argsort(obs.zone_tt[src])
+    take = near[: int(np.searchsorted(np.cumsum(cnt[near]), n)) + 1]
+    need = obs.recent_demand / obs.recent_window_s * 600 + np.bincount(obs.pending.origin_zone, minlength=Z)
+    deficit = need - (np.bincount(obs.idle.zone, minlength=Z) + obs.repositioning_to)
+    reach = np.flatnonzero((obs.zone_tt[src] <= max_tt) & ~np.isin(np.arange(Z), take))
+    if not len(reach):
+        return {}
+    dst = int(reach[np.argmax(deficit[reach])]) if rng is None else int(rng.choice(reach))
+    movers = free[free.zone.isin(take)].sort_values("idle_since").driver_id.to_numpy()[:n]
+    act.dispatches = act.dispatches + [(int(d), dst) for d in movers]
+    return {"t": float(obs.t), "src_zone": src, "src_zones": [int(z) for z in take], "dst_zone": dst,
+            "n_moved": int(len(movers)), "idle_in_src": int(cnt[take].sum()), "deficit_dst": float(deficit[dst]),
+            "travel_s": float(obs.zone_tt[src, dst])}
+
+
+class HDDispatchBlocks(HDDispatch):
+    """HDDispatch plus random concentrated orders between 05:00 and 24:00 (on average one
+    every `every_s` seconds, each moving 10..n_max drivers to a random zone within 20 min).
+    Used for training data that covers strong actions, which the rule above rarely takes."""
+
+    name = "hd_blocks"
+
+    def __init__(self, n_max: int = 60, every_s: float = 2400.0, **kw):
+        super().__init__(**kw)
+        self.n_max, self.every_s = n_max, every_s
+        self.next_t = 5 * 3600 + self.rng.exponential(every_s)
+        self.blocks = []
+
+    def act(self, obs):
+        act = super().act(obs)
+        if obs.t >= self.next_t:
+            self.next_t = obs.t + self.rng.exponential(self.every_s)
+            rec = block_move(obs, act, int(self.rng.integers(10, self.n_max + 1)), rng=self.rng)
+            if rec:
+                self.blocks.append(rec)
+            act.info["block"] = rec.get("n_moved", 0)
+        return act

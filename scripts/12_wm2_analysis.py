@@ -49,10 +49,9 @@ CITY_NAME = {"sf_hd": "San Francisco", "pune_hd": "Pune"}
 
 
 def load_model(tag):
-    ck = torch.load(TR.MODELS / f"{tag}.pt", map_location=DEV)
-    m = TR.make_model(ck["kind"], ck["K"]).to(DEV).eval()
-    m.load_state_dict(ck["state"])
-    return m, ck["K"]
+    m, ck = TR.load_ckpt(tag)
+    WD.DIRS = ck.get("dirs", False)                  # every Batcher below then matches the model
+    return m.eval(), ck["K"]
 
 
 def amp():
@@ -183,7 +182,7 @@ def collect(models, K, stores, splits, which, n, seed):
 
 
 def run_probes(model, K, stores, splits):
-    rand = TR.make_model("st", K).to(DEV).eval()                       # same architecture, untrained
+    rand = TR.make_model("st", K, WD.DIRS).to(DEV).eval()                       # same architecture, untrained
     models = {"trained": model, "untrained": rand}
     tr = collect(models, K, stores, splits, 0, 400, 21)
     te = collect(models, K, stores, splits, 2, 200, 22)
@@ -279,6 +278,9 @@ def counterfactual(model, K, stores, splits, path, n_extra=40, H=6):
             for (u, v) in cells:
                 arr[0, K, ch, u, v] += n_extra / len(cells)
         spread(xc, to, a); spread(xc, fr, b)
+        if xc.shape[2] > len(CH):                                       # direction channels: source -> target octant
+            ang = np.arctan2(to[0] - fr[0], to[1] - fr[1])
+            spread(xc, fr, len(CH) + int(np.round(ang / (np.pi / 4))) % 8)
         idle_ch = [CH.index(f"idle_{m}") for m in R.MODES3]
         rep_ch = CH.index("repositioning")
         res = {}

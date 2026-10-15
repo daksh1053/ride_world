@@ -26,3 +26,18 @@ Rollout to 60 min: st_small explodes (12.1 / 18.5); st_ro stays below climatolog
 (.123 vs .128), in Pune until about 40 min (.612 at 60 min vs .333).
 Congestion probe R2 (SF / Pune): trained tokens .70/.77, raw inputs .59/.66, untrained .45/.45.
 Counterfactual (move 40 drivers): drivers leave the source but never arrive in the target.
+
+## Step 4: action understanding, direction channels, action-rich data (outputs/wm2/step4/)
+4a. Ground-truth counterfactuals (13_cf_truth.py, data/<city>/wm2_cf/): same morning twice, with
+    and without one extra order at 08:00 (SF 40, Pune 80 drivers to an under-supplied zone),
+    SF 12 seeds, Pune 8 seeds; 13b_cf_eval.py compares the models' predicted effect.
+    First finding (SF, 4 seeds): true effect -20 idle in the source at +10 min, +8 idle in
+    the target at +30 min; st_small one-step predicts only -5.7 of the -39 immediate drop and its
+    rollout diverges; st_ro barely reacts. Cause: the training data almost never has such
+    concentrated orders (99.99th percentile 6 orders per 4x4 block per 5 min).
+4b. Dispatch-direction channels (raster DIR_CHANNELS, store/dirs.npy, --dirs): orders counted at
+    their origin by the compass octant of their target. Model st4_k6_dirs = st_small + dirs.
+4c. Action-rich data: 10_hd_dataset.py --blocks (HDDispatchBlocks: random block moves of 10-60 / 10-120
+    drivers about every 40 min). SF seed 3 60 days from 2024-11-06, Pune seeds 3, 4 30 days each from
+    2025-03-06. Split fixed by date (data/<city>/wm2/split.json) so these are training days only and
+    the val/test days are unchanged.

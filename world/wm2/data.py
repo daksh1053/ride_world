@@ -31,6 +31,25 @@ SURGE = [CH.index(f"surge_{m}") for m in R.MODES3]
 SPEED, SAMPLES = CH.index("gps_speed_kmh"), CH.index("gps_samples")
 COUNT = [i for i in OBS if i not in SURGE and i != SPEED]             # 16 Poisson targets
 COUNT_NAMES = [CH[i] for i in COUNT]
+N_DIRS = len(R.DIR_CHANNELS)
+DIRS = False          # step 4: append the 8 dispatch-direction channels (store/dirs.npy) to every frame
+
+
+def build_dirs(city, log=print) -> Path:
+    """Step 4 backfill: the dispatch-direction channels of every stored day, recomputed from
+    the saved event tables (data/<city>/hd_runs/wm2_seed*/<date>/events.parquet)."""
+    s = city.data_dir / "wm2" / "store"
+    info = json.loads((s / "days.json").read_text())
+    D, T, _, G, _ = info["shape"]
+    cr = R.CityRaster(city)
+    out = np.lib.format.open_memmap(s / "dirs.npy", "w+", np.uint8, (D, T, N_DIRS, G, G))
+    runs = city.data_dir / "hd_runs"
+    for i, date in enumerate(info["dates"]):
+        day_dir = next(runs.glob(f"wm2_seed*/{date}"))
+        out[i] = cr.dispatch_dirs(day_dir)[:T]
+    out.flush()
+    log(f"  dirs {city.key}: {D} days")
+    return s / "dirs.npy"
 
 
 def build_store(city, log=print) -> Path:
@@ -65,6 +84,7 @@ class CityStore:
     def __init__(self, city, key_id: int):
         s = city.data_dir / "wm2" / "store"
         self.key, self.id = city.key, key_id
+        self.root = city.data_dir / "wm2"
         self.X = np.load(s / "X.npy", mmap_mode="r")
         self.cong = np.load(s / "cong.npy", mmap_mode="r")
         self.ctx = np.load(s / "ctx.npy")
@@ -72,9 +92,19 @@ class CityStore:
         info = json.loads((s / "days.json").read_text())
         self.dates, self.meta = info["dates"], info["meta"]
         self.D, self.T = self.X.shape[:2]
+        self.dirs = np.load(s / "dirs.npy", mmap_mode="r") if (s / "dirs.npy").exists() else None
 
     def split(self, val=0.1, test=0.15):
-        """Chronological: train on the first days, validate, test on the last."""
+        """Chronological: train on the first days, validate, test on the last. Since step 4
+        the boundaries are fixed dates (data/<city>/wm2/split.json) so that days added later
+        never move earlier days between the sets."""
+        f = self.root / "split.json"
+        if f.exists():
+            sp = json.loads(f.read_text())
+            dts = np.array(self.dates)
+            idx = np.arange(self.D)
+            return (idx[dts < sp["val_from"]], idx[(dts >= sp["val_from"]) & (dts <= sp["val_until"])],
+                    idx[(dts >= sp["test_from"]) & (dts <= sp["test_until"])])
         n_te, n_va = max(1, round(self.D * test)), max(1, round(self.D * val))
         idx = np.arange(self.D)
         return idx[: self.D - n_te - n_va], idx[self.D - n_te - n_va: self.D - n_te], idx[self.D - n_te:]
@@ -83,8 +113,9 @@ class CityStore:
 class Batcher:
     """Random windows from several cities' stores; returns uint8 tensors on the device."""
 
-    def __init__(self, stores, days: dict, K: int, device, seed=0):
+    def __init__(self, stores, days: dict, K: int, device, seed=0, dirs=None):
         self.stores, self.days, self.K, self.device = stores, days, K, device
+        self.use_dirs = DIRS if dirs is None else dirs
         self.rng = np.random.default_rng(seed)
         self.S = {s.id: torch.tensor(s.S, device=device) for s in stores}
 
@@ -100,6 +131,8 @@ class Batcher:
     def gather(self, items):
         K = self.K
         x = np.stack([s.X[d, t: t + K + 1] for s, d, t in items])            # (B, K+1, C, G, G)
+        if self.use_dirs:                                                      # + 8 direction channels
+            x = np.concatenate([x, np.stack([s.dirs[d, t: t + K + 1] for s, d, t in items])], 2)
         c = np.stack([s.ctx[d, t: t + K + 1] for s, d, t in items])
         y = np.stack([s.cong[d, t: t + K + 1] for s, d, t in items])
         S = torch.stack([self.S[s.id] for s, _, _ in items])
@@ -123,7 +156,8 @@ def make_io(x_u8, ctx, S):
     feats[:, :, cnt] = torch.log1p(feats[:, :, cnt])
     feats[:, :, j_surge] = feats[:, :, j_surge] / 100.0
     feats[:, :, j_speed] = feats[:, :, j_speed] / 60.0
-    act = torch.log1p(x[:, 1:][:, :, ACT])                                   # actions during (k, k+1]
+    act_idx = ACT + list(range(len(CH), C))                                  # + direction channels if present
+    act = torch.log1p(x[:, 1:][:, :, act_idx])                               # actions during (k, k+1]
     stat = S[:, None].expand(B, K1 - 1, *S.shape[1:])
     inp = torch.cat([feats, act, stat], 2)
     return inp, ctx[:, 1:], x[:, 1:]

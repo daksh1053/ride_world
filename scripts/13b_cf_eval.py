@@ -53,7 +53,7 @@ QUANT = {   # name -> (channels, region)
 
 def load_pairs(city, folder="wm2_cf"):
     d = city.data_dir / folder
-    pairs = json.loads((d / "pairs.json").read_text())
+    pairs = [p for p in json.loads((d / "pairs.json").read_text()) if p["travel_s"] <= 1800]   # targets within 30 min
     st = np.load(city.data_dir / "wm2" / "static.npz")
     out = []
     for p in pairs:

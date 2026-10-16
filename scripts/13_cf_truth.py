@@ -59,6 +59,10 @@ class Intervene(HDDispatch):
             need = obs.recent_demand / obs.recent_window_s * 600 + np.bincount(obs.pending.origin_zone, minlength=Z)
             deficit = need - (np.bincount(obs.idle.zone, minlength=Z) + obs.repositioning_to)
             reach = np.flatnonzero((obs.zone_tt[src] <= 1200) & ~np.isin(np.arange(Z), take))
+            if not len(reach):          # the source area already covers every zone within 20 min
+                reach = np.flatnonzero((obs.zone_tt[src] <= 1800) & ~np.isin(np.arange(Z), take))
+            if not len(reach):
+                reach = np.flatnonzero(~np.isin(np.arange(Z), take))
             dst = int(reach[np.argmax(deficit[reach])])
             movers = free[free.zone.isin(take)].sort_values("idle_since").driver_id.to_numpy()[: self.n]
             act.dispatches = act.dispatches + [(int(d), dst) for d in movers]

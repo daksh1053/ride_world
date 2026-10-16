@@ -68,7 +68,10 @@ def climatology(stores, splits):
                 sp_s += sp * m; sp_q += sp ** 2 * m; sp_n += m
             acc /= len(days)
             out = np.zeros((s.T, WM.N_OUT) + s.X.shape[3:], np.float32)
-            out[:, :WM.N_COUNT] = np.log(acc[:, WD.COUNT] + 0.02)
+            # floor 0.001 per cell (until step 4d it was 0.02, which made this baseline weaker:
+            # test Poisson NLL SF .127 -> .114, Pune .316 -> .309; chosen on test days, so it is if
+            # anything slightly favourable to the baseline)
+            out[:, :WM.N_COUNT] = np.log(acc[:, WD.COUNT] + 0.001)
             out[:, WM.N_COUNT:WM.N_COUNT + WM.N_SURGE] = acc[:, WD.SURGE] / 100.0
             mu = np.where(sp_n > 0, sp_s / np.maximum(sp_n, 1), 30.0)
             var = np.where(sp_n > 1, sp_q / np.maximum(sp_n, 1) - mu ** 2, 64.0)
@@ -135,12 +138,14 @@ def to_frame(out):
     return f
 
 
-def rollout_loss(model, x, c, S, K, R, backward=False):
+def rollout_loss(model, x, c, S, K, R, backward=False, feed="mean"):
     """Unroll R steps: each new frame the model predicts (detached, as an expected value)
     replaces the true one in its input; every step is scored on the true frames. This
     teaches the model to stay on track when it reads its own predictions (exposure bias).
     The fed-back frames are detached, so with backward=True each step's gradient is
-    accumulated right away and only one step's graph is held in GPU memory."""
+    accumulated right away and only one step's graph is held in GPU memory.
+    feed="sample" (step 4d) feeds back Poisson-sampled whole counts instead of expected ones,
+    so the inputs look like real frames (scheduled sampling)."""
     buf = x.float().clone()
     total = 0.0
     for r in range(R + 1):
@@ -153,7 +158,10 @@ def rollout_loss(model, x, c, S, K, R, backward=False):
         total += loss.item()
         if r < R:
             with torch.no_grad():
-                buf[:, r + K, WD.OBS] = to_frame(out[:, -1].detach())[:, WD.OBS]
+                f = to_frame(out[:, -1].detach())
+                if feed == "sample":
+                    f[:, WD.COUNT] = torch.poisson(f[:, WD.COUNT])
+                buf[:, r + K, WD.OBS] = f[:, WD.OBS].clamp(0, 255)
     return total
 
 
@@ -204,7 +212,7 @@ def train(args, stores, splits):
         x, c, S, _, _ = batcher.sample(args.batch)
         opt.zero_grad(set_to_none=True)
         if R:
-            loss = torch.tensor(rollout_loss(model, x, c, S, args.K, R, backward=True))
+            loss = torch.tensor(rollout_loss(model, x, c, S, args.K, R, backward=True, feed=args.roll_feed))
         else:
             inp, ctx, tgt = WD.make_io(x, c, S)
             with torch.autocast("cuda", torch.bfloat16, enabled=DEV.type == "cuda"):
@@ -227,7 +235,7 @@ def train(args, stores, splits):
             if vl < best:
                 best = vl
                 torch.save({"state": model.state_dict(), "kind": args.model, "K": args.K, "cities": args.cities, "rollout": R,
-                            "from": args.finetune, "dirs": args.dirs, "skip": args.skip}, MODELS / f"{args.tag}.pt")
+                            "from": args.finetune, "dirs": args.dirs, "skip": args.skip, "roll_feed": args.roll_feed}, MODELS / f"{args.tag}.pt")
                 flag = " *"
             print(f"  step {step:6d}  train {loss.item():.4f}  val {vl:.4f}  (poisson {log[-1]['val_poisson']:.4f}, "
                   f"speed {log[-1]['val_speed']:.3f}, surge {log[-1]['val_surge']:.5f})"
@@ -285,6 +293,7 @@ def main():
     ap.add_argument("--build-dirs", action="store_true", help="step 4: add the dispatch-direction channels to the stores")
     ap.add_argument("--dirs", action="store_true", help="step 4: feed the dispatch-direction channels to the model")
     ap.add_argument("--skip", action="store_true", help="step 4d: add the per-cell skip path to the transformer")
+    ap.add_argument("--roll-feed", default="mean", choices=["mean", "sample"], help="step 4d: what rollout training feeds back")
     ap.add_argument("--act-focus", type=float, default=0.0, help="step 4d: share of windows centred on large repositioning orders")
     ap.add_argument("--outdir", default="step3", help="results go to outputs/wm2/<outdir>/")
     args = ap.parse_args()

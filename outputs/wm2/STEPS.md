@@ -71,14 +71,61 @@ Counterfactual (move 40 drivers): drivers leave the source but never arrive in t
       validation loss so far, but the same action response and rollouts still blow up.
     - rollouts that feed back Poisson samples clamped to 0-255 instead of means (13b --feed sample):
       blow-ups are smaller (SF rel. error 17 vs 72, Pune .91 vs 2.3) but not gone.
-    - st4_skip_ro: st4_skip_ft fine-tuned on 6-step rollouts with --act-focus .5 (running).
+    - st4_skip_ro: st4_skip_ft fine-tuned on 6-step rollouts (mean feedback), --act-focus .5.
+    - st4_skip_ros: the same but rollout training feeds back Poisson samples (--roll-feed sample,
+      scheduled sampling), so the fed-back frames look like real ones. One-step val Poisson .1834
+      (vs .1868 for mean feedback), rollout val .2060.
+    Counterfactual on the mid-frame truth (outputs/wm2/step4d_cf2/, 13b --cf wm2_cf2; a target over
+    30 min away is skipped, SF seed 110):
+                      rel. error SF / Pune     map r SF / Pune
+      st4_large         23.8 / 4.43             .01 / .03     (rollout blows up)
+      st4_skip_ft       51.3 / 12.7             .07 / .09     (rollout blows up)
+      st4_blocks_ro      .98 / .81              .38 / .58
+      st4_skip_ro       1.02 / .82              .30 / .57
+      st4_skip_ros       .93 / .72              .82 / .71     best: right places, too small
+    st4_skip_ros puts the effect in the right cells but at a fraction of its size (Pune source
+    idle -15 vs -30 at 30 min, target +4 vs +40).
+    Conclusions of step 4: (1) the dispatch-to-idle relation in the data is weak (30% declines,
+    orders to drivers who just became idle), so even a calibrated model expects much less than a
+    concentrated order of long-idle drivers does: which drivers comply is a hidden variable the
+    raster does not show. (2) Teacher-forced models compound errors in free rollouts; rollout
+    training makes them stable but damps action responses; sampled feedback damps them less.
 
 ## Step 5: planning with the world model (14_wm_plan.py, outputs/wm2/step5/)
-    At 08:00 send N drivers (SF 40, Pune 80) from the crowded source area to one of the 6 most
-    under-supplied zones within 20 min, or do nothing. Each of the 7 candidates simulated on the
-    same morning, 4 seeds (data/<city>/wm2_plan/), outcome = pickups / lost riders 08:00-09:00.
-    Truth: SF every forced move costs 5-12 pickups (the dispatcher is already balanced; doing nothing
-    is best). Pune differs by target: zone 6 +7, zone 31 +5, zone 45 -19 pickups.
-    Models (first version, order on the snapshot boundary): rank correlation of predicted vs true
-    pickup effects SF -0.86 to 0.07, Pune -0.04 to 0.43. st4_large and st4_blocks choose "do nothing"
-    in SF (regret 0) and in Pune (regret 7); none can rank the candidates yet.
+    At 08:02:30 (mid-frame) send N drivers (SF 40, Pune 80) from the crowded source area to one of
+    the most under-supplied zones within 20 min (SF 6, Pune 5 candidates), or do nothing. Every
+    candidate simulated on the same morning for 12 seeds (data/<city>/wm2_plan2/, seeds 200-211;
+    the first 4-seed version with the order on the 08:00 snapshot is kept in wm2_plan/).
+    Outcome: pickups and lost riders (unmatched + cancelled) city-wide 08:00-09:00, versus no order.
+    Truth (12 seeds): SF best is zone 99 (+6.4 pickups, se 2.4), zone 61 costs 11. Pune every move
+    costs 6-22 pickups; doing nothing is best. With 4 seeds the truth ranking was different, so
+    the noise is large and 12 seeds are the minimum for this test.
+    Regret in pickups/h (truth of the best candidate minus truth of the chosen one), SF + Pune:
+      no order 6.4 + 0      largest deficit 0 + 7.0      random 5.9 + 12.5
+      st4_large 6.4 + 0     st4_skip_ft 6.4 + 0          st4_blocks_ro 5.1 + 6.4
+      st4_skip_ro 5.1 + 0   st4_skip_ros 6.8 + 0
+    Rank correlation of predicted vs true pickup effects: st4_skip_ro SF .50 Pune .83, others
+    between -.57 and .66. Teacher-forced models predict every move loses 15-90 pickups (their
+    rollouts drift); rollout-trained ones predict effects of a few pickups.
+    Conclusion: st4_skip_ro is the only model that does at least as well as both simple rules in
+    both cities (total regret 5.1 vs 6.4 and 7.0), but the margin is within the noise. The world
+    model is not yet a reliable planner; its action effects are too small (step 4d).
+
+## Correction (step 4d): climatology baseline was too weak
+    The climatology baseline used log(mean count + 0.02) per cell; a floor of 0.001 fits much
+    better (test Poisson NLL SF .127 -> .115, Pune .318 -> .314). All numbers below use 0.001.
+    Old files kept: outputs/wm2/step3/st_ro/12_rollout_clim_floor_0.02.*,
+    outputs/wm2/step4/results_clim_floor_0.02.json. Corrected test table: outputs/wm2/step4d/results.*
+    One-step test Poisson NLL (SF / Pune): persistence .228/.501, climatology .115/.314,
+      st_small .0963/.2479, st4_large .0960/.2456, st4_skip_ft .0951/.2398 (best),
+      st_ro .1026/.2641, st4_skip_ro .1033/.2600, st4_skip_ros .1008/.2555.
+    Free rollouts, Poisson NLL at 5 / 30 / 60 min (climatology SF .116 .117 .117, Pune .323 .323 .325):
+      st_ro         SF .105 .116 .123   Pune .271 .315 .612
+      st4_skip_ro   SF .106 .118 .121   Pune .270 .320 .336
+      st4_skip_ros  SF .103 .117 .130   Pune .262 .318 .357
+    So the step-3 statement "st_ro beats climatology at 60 min in SF" is wrong: with the fair
+    baseline every model is about level with climatology at 30 min and worse at 60 min. The
+    models' edge is the first 5-20 minutes.
+    Prediction pages now store 16-bit values (8-bit rounded every rate below 0.025 per cell to zero,
+    so the model's city totals looked too low) and say "rebalancing every N min" correctly
+    (reposition_every counts 30 s epochs). Regenerated: outputs/<city>_hd/12_wm2_predictions_{st_ro,st4_skip_ros}.html

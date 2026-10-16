@@ -328,8 +328,8 @@ def counterfactual(model, K, stores, splits, path, n_extra=40, H=6):
 
 
 # ----------------------------------------------------------------------------- prediction viewer
-def pack(a):
-    return base64.b64encode(gzip.compress(np.ascontiguousarray(a, np.uint8).tobytes(), 6)).decode()
+def pack(a, dtype=np.uint8):
+    return base64.b64encode(gzip.compress(np.ascontiguousarray(a, dtype).astype(dtype).tobytes(), 6)).decode()
 
 
 @torch.no_grad()
@@ -356,14 +356,16 @@ def prediction_page(model, K, s, splits, clim, tag):
     for t in range(T):
         true[t] = s.X[d, t][show].astype(np.float32)
         pc[t] = to_frame(clim[(s.id, wk)][t][None].to(DEV))[0].cpu().numpy()[show]
-    scale = 20.0                                     # bytes = value x 20 for counts (fractional rates)
-    q = lambda a, sc: np.clip(np.round(a * sc), 0, 255)  # noqa: E731
-    sc = np.array([1.0 if CH[i] in ("gps_speed_kmh",) or CH[i].startswith("surge") else scale for i in show])
+    # 16-bit values = value x 500 for counts: with 8 bits (x 20) every rate below 0.025 per cell
+    # rounded to zero, so the smooth predictions' city totals looked too low
+    scale = 500.0
+    q = lambda a, sc: np.clip(np.round(a * sc), 0, 65535).astype(np.uint16)  # noqa: E731
+    sc = np.array([100.0 if CH[i] in ("gps_speed_kmh",) or CH[i].startswith("surge") else scale for i in show])
     Q = lambda a: q(a, sc[None, :, None, None])  # noqa: E731
     pm[0] = true[0]
     data = {"city": CITY_NAME[s.key], "date": s.dates[d], "T": T, "G": R.G, "names": [CH[i] for i in show],
             "scale": sc.tolist(), "road": pack((s.S[-1] > 0).astype(np.uint8)), "tag": tag,
-            "truth": pack(Q(true)), "model": pack(Q(pm)), "clim": pack(Q(pc)),
+            "truth": pack(Q(true), np.uint16), "model": pack(Q(pm), np.uint16), "clim": pack(Q(pc), np.uint16),
             "policy": {k: s.meta[d][k] for k in ("reposition_every", "max_moves", "explore")}}
     out = cities.get(s.key).out_dir / f"12_wm2_predictions_{tag}.html"
     out.write_text(PAGE.replace("__DATA__", json.dumps(data, separators=(",", ":"), default=float)))
@@ -399,12 +401,12 @@ canvas{width:100%;image-rendering:pixelated;display:block}#chart{height:190px}.n
 </main>
 <script>
 const D=__DATA__;
-async function unpack(b){const bin=Uint8Array.from(atob(b),c=>c.charCodeAt(0));const s=new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip'));return new Uint8Array(await new Response(s).arrayBuffer());}
+async function unpack(b,w16){const bin=Uint8Array.from(atob(b),c=>c.charCodeAt(0));const s=new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip'));const buf=await new Response(s).arrayBuffer();return w16?new Uint16Array(buf):new Uint8Array(buf);}
 (async()=>{
 const G=D.G,T=D.T,NC=D.names.length;
-const [tru,mod,cli,road]=await Promise.all([unpack(D.truth),unpack(D.model),unpack(D.clim),unpack(D.road)]);
+const [tru,mod,cli,road]=await Promise.all([unpack(D.truth,1),unpack(D.model,1),unpack(D.clim,1),unpack(D.road)]);
 document.getElementById('title').textContent=`${D.city}: the world model's next-5-minute predictions on a test day (${D.date})`;
-document.getElementById('sub').textContent=`A day the model never trained on. Platform setting that day: rebalancing every ${D.policy.reposition_every||'never'} min, up to ${D.policy.max_moves} moves, exploration ${D.policy.explore}. Model: ${D.tag}.`;
+document.getElementById('sub').textContent=`A day the model never trained on. Platform setting that day: ${D.policy.reposition_every > 0 ? `rebalancing every ${D.policy.reposition_every / 2} min, up to ${D.policy.max_moves} moves` : 'no rebalancing'}, exploration ${D.policy.explore}. Model: ${D.tag}.`;
 document.getElementById('mname').textContent='world model prediction ('+D.tag+')';
 const sel=document.getElementById('ch');D.names.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;sel.appendChild(o)});
 sel.value=D.names.indexOf('new_requests_cab');

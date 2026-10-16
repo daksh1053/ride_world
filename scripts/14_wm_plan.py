@@ -101,15 +101,25 @@ class Planner(HDDispatch):
         return act
 
 
-def simulate(key, n_seeds, date):
+def _records(out):
+    """cands.json (seeds run one after another) plus rec_seed<k>.json (seeds run in parallel)."""
+    f = out / "cands.json"
+    recs = json.loads(f.read_text()) if f.exists() else []
+    recs += [json.loads(g.read_text()) for g in sorted(out.glob("rec_seed*.json"))]
+    return sorted(recs, key=lambda r: r["seed"])
+
+
+def simulate(key, n_seeds, date, seed0=200):
     city = cities.get(key)
     out = city.data_dir / FOLDER
-    tmp = out / "runs"
+    tmp = out / f"runs{seed0}"
     out.mkdir(exist_ok=True)
     cr = R.CityRaster(city)
     f = out / "cands.json"
-    recs = json.loads(f.read_text()) if f.exists() else []
+    recs = _records(out)
     done = {r["seed"] for r in recs}
+    if seed0 != 200 and not recs:
+        raise SystemExit("run the first seed (200) before seeds in parallel: it fixes the candidates")
     n = CF.N_MOVE[key]
 
     first = recs[0] if recs else None
@@ -124,7 +134,7 @@ def simulate(key, n_seeds, date):
         np.save(out / f"seed{seed}_c{j}_dirs.npy", cr.dispatch_dirs(tmp / f"c{j}" / date))
         return pol.record
 
-    for seed in range(200, 200 + n_seeds):
+    for seed in range(seed0, seed0 + n_seeds):
         if seed in done:
             continue
         t0 = time.time()
@@ -133,9 +143,12 @@ def simulate(key, n_seeds, date):
         for j, z in enumerate(rec["cands"], 1):
             rec["n_moved"].append(run(seed, z, j)["n_moved"])
         shutil.rmtree(tmp)
-        recs.append(rec)
-        first = recs[0]
-        f.write_text(json.dumps(recs, indent=1))
+        if seed0 == 200:
+            recs.append(rec)
+            first = recs[0]
+            f.write_text(json.dumps([r for r in recs if r["seed"] < 200 + n_seeds], indent=1))
+        else:
+            (out / f"rec_seed{seed}.json").write_text(json.dumps(rec, indent=1))
         print(f"  {key} seed {seed}: source zone {rec['src_zone']}, candidates {rec['cands']}  "
               f"({time.time() - t0:.0f} s)", flush=True)
 
@@ -143,16 +156,20 @@ def simulate(key, n_seeds, date):
 def load(key):
     city = cities.get(key)
     d = city.data_dir / FOLDER
-    recs = json.loads((d / "cands.json").read_text())
+    recs = _records(d)
     for r in recs:
-        r["arms"] = []
+        days = [R.load_day(d / f"seed{r['seed']}_c{j}.npz") for j in (0, 1)]
+        diff = np.abs(days[0][0][:, WD.ACT] - days[1][0][:, WD.ACT]).reshape(len(days[0][0]), -1).sum(1)
+        a = int(np.argmax(diff > 0))
+        lo, hi = a - 16, a + H                     # keep only the frames a rollout uses (K <= 16)
+        r["arms"], r["a"] = [], 16
         for j in range(len(r["cands"]) + 1):
-            X, C, _, _ = R.load_day(d / f"seed{r['seed']}_c{j}.npz")
+            X, C, _, _ = days[j] if j < 2 else R.load_day(d / f"seed{r['seed']}_c{j}.npz")
+            X = X[lo:hi].copy()
             X[:, WD.SURGE] *= 100
-            r["arms"].append((np.clip(np.round(X), 0, 255), C, np.load(d / f"seed{r['seed']}_c{j}_dirs.npy").astype(np.float32)))
-        X0, X1 = r["arms"][0][0], r["arms"][1][0]
-        diff = np.abs(X0[:, WD.ACT] - X1[:, WD.ACT]).reshape(len(X0), -1).sum(1)
-        r["a"] = int(np.argmax(diff > 0))
+            Dd = np.load(d / f"seed{r['seed']}_c{j}_dirs.npy", mmap_mode="r")[lo:hi].astype(np.float32)
+            r["arms"].append((np.clip(np.round(X), 0, 255), C[lo:hi], Dd))
+        del days
     return recs, np.load(city.data_dir / "wm2" / "static.npz")["S"].astype(np.float32)
 
 
@@ -224,11 +241,20 @@ def score(tags, outdir):
             print(f"  {key} {tag}: rank correlation pickups {r[tag]['spearman_pickups']:.2f}, lost {r[tag]['spearman_lost']:.2f}; "
                   f"chooses candidate {pick} (best {best}), regret {r[tag]['regret_pickups']:.1f} pickups/h", flush=True)
         r["best"] = best
+        add_baselines(r)
         res[key] = r
         print(f"  {key} truth: pickups effect {np.round(teff['pickups'], 1).tolist()} (se {np.round(tse['pickups'], 1).tolist()})")
     (out_dir / "14_plan.json").write_text(json.dumps(res, indent=1))
     plot(res, tags, out_dir / "14_plan.png")
     print(f"  wrote {out_dir / '14_plan.png'}")
+
+
+def add_baselines(r):
+    """Regret of two rules that need no model: never act, and always send to the zone with the
+    largest deficit (candidate 1, what the dispatcher's own rule would pick)."""
+    e = np.array(r["truth"]["pickups"]["effect"])
+    r["baselines"] = {"no_order": float(e.max() - e[0]), "largest_deficit": float(e.max() - e[1]),
+                      "random": float(e.max() - e.mean())}
 
 
 def plot(res, tags, path):
@@ -248,12 +274,12 @@ def plot(res, tags, path):
                 ax.bar(x - 0.4 + w * (j + 1.5), r[tag]["effect"][name], w, color=pal[j % len(pal)], label=lab)
             ax.axhline(0, color="#898781", lw=.7)
             ax.set_xticks(x, labels, fontsize=8)
-            ax.set_title(f"{CITY_NAME[key]}: change in {'pickups' if name == 'pickups' else 'unmatched + cancelled riders'} "
-                         f"08:00-09:00 vs no order", fontsize=9.5)
+            ax.set_title(f"{CITY_NAME[key]} ({r['n_moved'][0]} drivers): change in "
+                         f"{'pickups' if name == 'pickups' else 'unmatched + cancelled riders'} 08:00-09:00 vs no order", fontsize=9.5)
             ax.legend(fontsize=7)
         axs[ci, 0].annotate("best (truth)", (r["best"] - 0.4 + w / 2, r["truth"]["pickups"]["effect"][r["best"]]),
                             fontsize=7, ha="center", va="bottom")
-    fig.suptitle(f"Planning with the world model: send {r['n_moved'][0]} drivers at 08:00 to which zone? "
+    fig.suptitle("Planning with the world model: send idle drivers at 08:02 to which zone? "
                  f"(mean over {len(r['seeds'])} seeds; error bars = ±2 standard errors)", fontsize=11)
     fig.savefig(path, dpi=110)
     plt.close(fig)
@@ -263,13 +289,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--city", choices=["sf_hd", "pune_hd"])
     ap.add_argument("--seeds", type=int, default=4)
+    ap.add_argument("--seed0", type=int, default=200, help="first seed; > 200 runs seeds in parallel with others")
     ap.add_argument("--score", nargs="+", default=None, help="model tags to score")
     ap.add_argument("--outdir", default="step5")
     args = ap.parse_args()
     if args.score:
         score(args.score, args.outdir)
     else:
-        simulate(args.city, args.seeds, DATES[args.city])
+        simulate(args.city, args.seeds, DATES[args.city], args.seed0)
 
 
 if __name__ == "__main__":

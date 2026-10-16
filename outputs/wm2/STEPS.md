@@ -41,3 +41,44 @@ Counterfactual (move 40 drivers): drivers leave the source but never arrive in t
     drivers about every 40 min). SF seed 3 60 days from 2024-11-06, Pune seeds 3, 4 30 days each from
     2025-03-06. Split fixed by date (data/<city>/wm2/split.json) so these are training days only and
     the val/test days are unchanged.
+    Stores rebuilt: SF 180 days (150 train / 12 val / 18 test), Pune 160 days (135 / 10 / 15).
+    Models (all 20k steps unless noted, K=6):
+      st4_large      8.79M params (d 256, 8 layers), old data, 15k steps   test NLL SF .0960 Pune .2456 (best one-step)
+      st4_blocks     st + dirs on the action-rich data                       SF .0966 Pune .2478
+      st4_blocks_ro  st4_blocks fine-tuned on 6-step rollouts, 2500 steps   SF .1044 Pune .2689
+    Counterfactual result (outputs/wm2/step4/13_cf_eval.*): more action-rich data did NOT fix it.
+    Teacher-forced models still blow up in 60-min rollouts (relative error 25-75 SF, 2.3-7.6 Pune);
+    rollout fine-tuned ones are stable but barely react (rel. error .96 SF / .82 Pune, map r .38 / .72).
+
+## Step 4d: why the models miss the action (outputs/wm2/step4d/, step4d_sample/)
+    Diagnosis with teacher forcing (true history, scratch scripts):
+    - one step after the order (10 min) all models match the truth (SF source idle -21.4 vs -21.3);
+      at the order frame itself they predict -9 vs -40 (SF), -38 vs -78 (Pune).
+    - on ordinary validation frames the models are calibrated per dispatch (1 order: -0.62 vs -0.77
+      idle; 2 orders: -1.05 vs -0.96). About 30% of dispatch orders are declined within 2-10 s
+      and the driver is idle again, so in the data an order means about -0.75 idle drivers.
+    - the stage-13 order is issued at exactly 08:00:00, the instant of a snapshot, so that frame
+      catches every ordered driver before declines (all 40 gone). Only 0.9% of ordinary orders sit
+      on a snapshot boundary: the benchmark's first frame was out of distribution. Fixed by
+      re-simulating with the order at 08:02:30 (13_cf_truth.py --t-order 28950 --out wm2_cf2,
+      14_wm_plan.py now writes wm2_plan2). The old truth is kept in wm2_cf/ and wm2_plan/.
+    Tried:
+    - action-focused sampling (--act-focus p: share of training windows centred on frames with
+      >= 8 orders from one 4x4 block; store/act_peak.npy): st4_focus_ft (st4_blocks + 5k steps,
+      p .3) val .2786, action response unchanged.
+    - per-cell skip path in the transformer (--skip: 3x3 conv MLP from each step's inputs added to
+      the output, zero-initialised): st4_skip_ft (st4_focus_ft + 5k steps) val .2746, the best
+      validation loss so far, but the same action response and rollouts still blow up.
+    - rollouts that feed back Poisson samples clamped to 0-255 instead of means (13b --feed sample):
+      blow-ups are smaller (SF rel. error 17 vs 72, Pune .91 vs 2.3) but not gone.
+    - st4_skip_ro: st4_skip_ft fine-tuned on 6-step rollouts with --act-focus .5 (running).
+
+## Step 5: planning with the world model (14_wm_plan.py, outputs/wm2/step5/)
+    At 08:00 send N drivers (SF 40, Pune 80) from the crowded source area to one of the 6 most
+    under-supplied zones within 20 min, or do nothing. Each of the 7 candidates simulated on the
+    same morning, 4 seeds (data/<city>/wm2_plan/), outcome = pickups / lost riders 08:00-09:00.
+    Truth: SF every forced move costs 5-12 pickups (the dispatcher is already balanced; doing nothing
+    is best). Pune differs by target: zone 6 +7, zone 31 +5, zone 45 -19 pickups.
+    Models (first version, order on the snapshot boundary): rank correlation of predicted vs true
+    pickup effects SF -0.86 to 0.07, Pune -0.04 to 0.43. st4_large and st4_blocks choose "do nothing"
+    in SF (regret 0) and in Pune (regret 7); none can rank the candidates yet.

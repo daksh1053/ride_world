@@ -84,7 +84,7 @@ class CityStore:
     def __init__(self, city, key_id: int):
         s = city.data_dir / "wm2" / "store"
         self.key, self.id = city.key, key_id
-        self.root = city.data_dir / "wm2"
+        self.root, self.store_dir = city.data_dir / "wm2", s
         self.X = np.load(s / "X.npy", mmap_mode="r")
         self.cong = np.load(s / "cong.npy", mmap_mode="r")
         self.ctx = np.load(s / "ctx.npy")
@@ -93,6 +93,9 @@ class CityStore:
         self.dates, self.meta = info["dates"], info["meta"]
         self.D, self.T = self.X.shape[:2]
         self.dirs = np.load(s / "dirs.npy", mmap_mode="r") if (s / "dirs.npy").exists() else None
+
+    def act_peak(self):
+        return _act_peak(self)
 
     def split(self, val=0.1, test=0.15):
         """Chronological: train on the first days, validate, test on the last. Since step 4
@@ -110,21 +113,50 @@ class CityStore:
         return idx[: self.D - n_te - n_va], idx[self.D - n_te - n_va: self.D - n_te], idx[self.D - n_te:]
 
 
+def _act_peak(store):
+    """(D, T) largest number of orders issued from one 4 x 4 block of cells in each 5-minute
+    step, cached in the store folder (step 4d)."""
+    f = store.store_dir / "act_peak.npy"
+    if f.exists() and np.load(f, mmap_mode="r").shape[0] == store.D:
+        return np.load(f)
+    ch = CH.index("dispatch_from")
+    pk = np.zeros((store.D, store.T), np.uint16)
+    for d in range(store.D):
+        a = np.asarray(store.X[d, :, ch], np.uint16)
+        pk[d] = a.reshape(store.T, R.G // 4, 4, R.G // 4, 4).sum((2, 4)).max((1, 2))
+    np.save(f, pk)
+    return pk
+
+
 class Batcher:
     """Random windows from several cities' stores; returns uint8 tensors on the device."""
 
-    def __init__(self, stores, days: dict, K: int, device, seed=0, dirs=None):
+    def __init__(self, stores, days: dict, K: int, device, seed=0, dirs=None, act_focus=0.0, focus_min=8):
+        """`act_focus` (step 4d): share of windows drawn so that one of their target frames holds
+        a large repositioning order (>= `focus_min` orders from one 4 x 4 block in 5 minutes)."""
         self.stores, self.days, self.K, self.device = stores, days, K, device
         self.use_dirs = DIRS if dirs is None else dirs
         self.rng = np.random.default_rng(seed)
         self.S = {s.id: torch.tensor(s.S, device=device) for s in stores}
+        self.act_focus = act_focus
+        if act_focus:
+            self.focus = {}
+            for s in stores:
+                pk = s.act_peak()
+                d, t = np.nonzero(pk >= focus_min)
+                keep = np.isin(d, days.get(s.key, [])) & (t >= K) & (t < s.T)
+                self.focus[s.key] = np.stack([d[keep], t[keep]], 1)
 
     def sample(self, B):
         out = []
         for _ in range(B):
             s = self.stores[self.rng.integers(len(self.stores))]
-            d = self.rng.choice(self.days[s.key])
-            t = self.rng.integers(0, s.T - self.K)
+            if self.act_focus and len(self.focus[s.key]) and self.rng.random() < self.act_focus:
+                d, ts = self.focus[s.key][self.rng.integers(len(self.focus[s.key]))]
+                t = int(np.clip(ts - 1 - self.rng.integers(self.K), 0, s.T - self.K - 1))   # ts is a target frame
+            else:
+                d = self.rng.choice(self.days[s.key])
+                t = self.rng.integers(0, s.T - self.K)
             out.append((s, d, t))
         return self.gather(out)
 

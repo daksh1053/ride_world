@@ -78,10 +78,10 @@ def climatology(stores, splits):
     return tabs
 
 
-def make_model(kind, K, dirs=False):
+def make_model(kind, K, dirs=False, skip=False):
     c_in = C_IN + (WD.N_DIRS if dirs else 0)
     if kind == "st":
-        return WM.STTransformer(c_in, K=K)
+        return WM.STTransformer(c_in, K=K, skip=skip)
     if kind == "st_large":
         return WM.STTransformer(c_in, d=256, layers=8, heads=8, K=K)
     if kind == "cnn":
@@ -159,7 +159,7 @@ def rollout_loss(model, x, c, S, K, R, backward=False):
 
 def load_ckpt(tag):
     ck = torch.load(MODELS / f"{tag}.pt", map_location=DEV)
-    m = make_model(ck["kind"], ck["K"], ck.get("dirs", False)).to(DEV)
+    m = make_model(ck["kind"], ck["K"], ck.get("dirs", False), ck.get("skip", False)).to(DEV)
     m.load_state_dict(ck["state"])
     return m, ck
 
@@ -167,16 +167,23 @@ def load_ckpt(tag):
 def train(args, stores, splits):
     R = args.rollout
     WD.DIRS = args.dirs
-    batcher = WD.Batcher(stores, {k: v[0] for k, v in splits.items()}, args.K + R, DEV, seed=args.seed)
+    batcher = WD.Batcher(stores, {k: v[0] for k, v in splits.items()}, args.K + R, DEV, seed=args.seed, act_focus=args.act_focus)
     torch.manual_seed(args.seed)
-    if args.finetune:
+    if args.finetune and args.skip:                                       # add the skip path to a model without it
+        ck = torch.load(MODELS / f"{args.finetune}.pt", map_location=DEV)
+        model = make_model(ck["kind"], ck["K"], ck.get("dirs", False), True).to(DEV)
+        model.load_state_dict(ck["state"], strict=ck.get("skip", False))
+        args.model, args.dirs = ck["kind"], ck.get("dirs", False)
+        WD.DIRS = args.dirs
+    elif args.finetune:
         model, ck = load_ckpt(args.finetune)
+        args.skip = ck.get("skip", False)
         args.model, args.dirs = ck["kind"], ck.get("dirs", False)
         WD.DIRS = args.dirs
         if ck["K"] != args.K:
             raise SystemExit(f"{args.finetune} was trained with K={ck['K']}")
     else:
-        model = make_model(args.model, args.K, args.dirs).to(DEV)
+        model = make_model(args.model, args.K, args.dirs, args.skip).to(DEV)
     n_par = sum(p.numel() for p in model.parameters())
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.05)
     warm = 100 if args.finetune else 500
@@ -220,7 +227,7 @@ def train(args, stores, splits):
             if vl < best:
                 best = vl
                 torch.save({"state": model.state_dict(), "kind": args.model, "K": args.K, "cities": args.cities, "rollout": R,
-                            "from": args.finetune, "dirs": args.dirs}, MODELS / f"{args.tag}.pt")
+                            "from": args.finetune, "dirs": args.dirs, "skip": args.skip}, MODELS / f"{args.tag}.pt")
                 flag = " *"
             print(f"  step {step:6d}  train {loss.item():.4f}  val {vl:.4f}  (poisson {log[-1]['val_poisson']:.4f}, "
                   f"speed {log[-1]['val_speed']:.3f}, surge {log[-1]['val_surge']:.5f})"
@@ -277,6 +284,8 @@ def main():
     ap.add_argument("--n-test", type=int, default=600)
     ap.add_argument("--build-dirs", action="store_true", help="step 4: add the dispatch-direction channels to the stores")
     ap.add_argument("--dirs", action="store_true", help="step 4: feed the dispatch-direction channels to the model")
+    ap.add_argument("--skip", action="store_true", help="step 4d: add the per-cell skip path to the transformer")
+    ap.add_argument("--act-focus", type=float, default=0.0, help="step 4d: share of windows centred on large repositioning orders")
     ap.add_argument("--outdir", default="step3", help="results go to outputs/wm2/<outdir>/")
     args = ap.parse_args()
     global OUT

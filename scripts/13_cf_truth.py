@@ -46,7 +46,7 @@ class Intervene(HDDispatch):
 
     def act(self, obs):
         act = super().act(obs)
-        if self.n and not self.done and obs.t >= T_ORDER:
+        if self.n and not self.done and obs.t >= T_ORDER:     # module global, set by --t-order
             self.done = True
             used = {d for d, _ in act.offers} | {d for d, _ in act.dispatches}
             free = obs.idle[~obs.idle.driver_id.isin(used)]
@@ -69,14 +69,19 @@ class Intervene(HDDispatch):
 
 
 def main():
+    global T_ORDER
     ap = argparse.ArgumentParser()
     ap.add_argument("--city", required=True, choices=["sf_hd", "pune_hd"])
     ap.add_argument("--pairs", type=int, default=8)
     ap.add_argument("--date", default=None, help="default: a test-period weekday of the dataset")
+    ap.add_argument("--t-order", type=float, default=T_ORDER,
+                    help="seconds after midnight; step 4d uses 08:02:30 (mid-frame, like the orders in the training data)")
+    ap.add_argument("--out", default="wm2_cf", help="folder under data/<city>/")
     args = ap.parse_args()
     city = cities.get(args.city)
     date = args.date or {"sf_hd": "2025-04-30", "pune_hd": "2025-08-06"}[args.city]
-    out = city.data_dir / "wm2_cf"
+    T_ORDER = args.t_order
+    out = city.data_dir / args.out
     tmp = out / "runs"
     out.mkdir(exist_ok=True)
     cr = R.CityRaster(city)

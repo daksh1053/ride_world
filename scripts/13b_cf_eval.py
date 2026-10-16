@@ -51,8 +51,8 @@ QUANT = {   # name -> (channels, region)
 }
 
 
-def load_pairs(city):
-    d = city.data_dir / "wm2_cf"
+def load_pairs(city, folder="wm2_cf"):
+    d = city.data_dir / folder
     pairs = json.loads((d / "pairs.json").read_text())
     st = np.load(city.data_dir / "wm2" / "static.npz")
     out = []
@@ -72,8 +72,11 @@ def load_pairs(city):
 
 
 @torch.no_grad()
-def model_rollouts(model, K, dirs, pairs, S):
-    """(n_pairs, 2 arms, H, C, G, G) expected frames from the model's own rollouts."""
+def model_rollouts(model, K, dirs, pairs, S, feed="mean"):
+    """(n_pairs, 2 arms, H, C, G, G) expected frames from the model's own rollouts.
+    feed: what goes back into the history, "mean" (expected counts, clamped to the uint8
+    range of the data) or "sample" (Poisson-sampled whole counts, like the frames the model
+    was trained on)."""
     res = np.zeros((len(pairs), 2, H, len(CH), R.G, R.G), np.float32)
     jobs = [(i, j) for i in range(len(pairs)) for j in range(2)]
     St = torch.tensor(S, device=DEV)
@@ -96,7 +99,10 @@ def model_rollouts(model, K, dirs, pairs, S):
             with torch.autocast("cuda", torch.bfloat16, enabled=DEV.type == "cuda"):
                 o = model(inp, cn)[:, -1].float()
             pred = TR.to_frame(o)
-            buf[:, h + K, WD.OBS] = pred[:, WD.OBS]
+            fb = pred.clone()
+            if feed == "sample":
+                fb[:, WD.COUNT] = torch.poisson(pred[:, WD.COUNT])
+            buf[:, h + K, WD.OBS] = fb[:, WD.OBS].clamp(0, 255)
             for k, (i, j) in enumerate(batch):
                 res[i, j, h] = pred[k].cpu().numpy()
     return res
@@ -116,32 +122,45 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tags", nargs="+", required=True)
     ap.add_argument("--outdir", default="step4")
+    ap.add_argument("--cf", default="wm2_cf", help="counterfactual folder under data/<city>/ (step 4d: wm2_cf2)")
+    ap.add_argument("--feed", default="mean", choices=["mean", "sample"], help="step 4d: what a rollout feeds back")
+    ap.add_argument("--samples", type=int, default=4, help="rollouts averaged per run with --feed sample")
     args = ap.parse_args()
     out_dir = cities.OUTPUTS / "wm2" / args.outdir
     out_dir.mkdir(parents=True, exist_ok=True)
     results, maps = {}, {}
     for key in TR.CITIES:
         city = cities.get(key)
-        pairs, S = load_pairs(city)
+        pairs, S = load_pairs(city, args.cf)
         P = len(pairs)
         truth = effects(np.stack([p["arms"]["base"][0][p["a"]: p["a"] + H] for p in pairs]),
                         np.stack([p["arms"]["cf"][0][p["a"]: p["a"] + H] for p in pairs]), pairs)
         r = {"n_pairs": P, "n_moved": [p["n_moved"] for p in pairs],
              "truth": {q: {"mean": v.mean(0).tolist(), "se": (v.std(0, ddof=1) / np.sqrt(P)).tolist()} for q, v in truth.items()}}
-        # true effect map: idle drivers, 10-30 min after the order, mean over pairs
-        tmap = np.mean([(p["arms"]["cf"][0][p["a"] + 2: p["a"] + 6, IDLE].sum((0, 1)) -
-                         p["arms"]["base"][0][p["a"] + 2: p["a"] + 6, IDLE].sum((0, 1))) / 4 for p in pairs], 0)
-        maps[key] = {"truth": tmap, "pairs": pairs}
+        # effect maps (idle drivers, 10-30 min after the order) over the seeds that share the most
+        # common source and target, so the outlines drawn are right for every seed averaged
+        sites = [(p["src_zone"], p["dst_zone"]) for p in pairs]
+        common = max(set(sites), key=sites.count)
+        grp = [i for i, st_ in enumerate(sites) if st_ == common]
+        tmap = np.mean([(pairs[i]["arms"]["cf"][0][pairs[i]["a"] + 2: pairs[i]["a"] + 6, IDLE].sum((0, 1)) -
+                         pairs[i]["arms"]["base"][0][pairs[i]["a"] + 2: pairs[i]["a"] + 6, IDLE].sum((0, 1))) / 4 for i in grp], 0)
+        maps[key] = {"truth": tmap, "pairs": [pairs[i] for i in grp]}
+        r["map_seeds"] = [pairs[i]["seed"] for i in grp]
         for tag in args.tags:
             model, ck = TR.load_ckpt(tag)
             model.eval()
-            fr = model_rollouts(model, ck["K"], ck.get("dirs", False), pairs, S)
+            if args.feed == "sample":
+                torch.manual_seed(0)
+                fr = np.mean([model_rollouts(model, ck["K"], ck.get("dirs", False), pairs, S, "sample")
+                              for _ in range(args.samples)], 0)
+            else:
+                fr = model_rollouts(model, ck["K"], ck.get("dirs", False), pairs, S)
             eff = effects(fr[:, 0], fr[:, 1], pairs)
             err, tot = 0.0, 0.0
             for q in QUANT:
                 err += np.abs(eff[q].mean(0) - truth[q].mean(0)).sum()
                 tot += np.abs(truth[q].mean(0)).sum()
-            mmap = (fr[:, 1, 2:6][:, :, IDLE].sum((1, 2)) - fr[:, 0, 2:6][:, :, IDLE].sum((1, 2))).mean(0) / 4
+            mmap = (fr[grp, 1, 2:6][:, :, IDLE].sum((1, 2)) - fr[grp, 0, 2:6][:, :, IDLE].sum((1, 2))).mean(0) / 4
             blk = lambda m: m.reshape(16, 4, 16, 4).sum((1, 3)).ravel()  # noqa: E731
             corr = float(np.corrcoef(blk(mmap), blk(tmap))[0, 1])
             r[tag] = {"effects": {q: v.mean(0).tolist() for q, v in eff.items()},
@@ -171,22 +190,25 @@ def plot(results, maps, tags, path):
             for j, tag in enumerate(tags):
                 ax.plot(t, r[tag]["effects"][q], "o-", ms=2.5, lw=1.3, color=pal[j % len(pal)], label=tag)
             ax.axhline(0, color="#898781", lw=.7)
+            lim = max(np.abs(m).max() + 2 * se.max(), 1.0) * 2.5             # models that blow up go off the chart
+            ax.set_ylim(-lim, lim)
             ax.set_title(q, fontsize=8.5); ax.set_xlabel("min after the order", fontsize=8); ax.tick_params(labelsize=7)
         axs[0].legend(fontsize=7)
         sub[2 * ci].suptitle(f"{CITY_NAME[key]}: effect of sending {int(np.mean(r['n_moved']))} drivers at 08:00 "
-                             f"(cf minus base, mean of {r['n_pairs']} seeds; band = ±2 standard errors)", fontsize=10)
+                             f"(cf minus base, mean of {r['n_pairs']} seeds; band = ±2 standard errors; lines leaving the chart = rollout blew up)", fontsize=10)
         axs = sub[2 * ci + 1].subplots(1, 1 + len(tags))
         mm = maps[key]
-        v = max(abs(mm["truth"]).max(), 1e-3) * 0.6
+        blk = lambda m: np.kron(m.reshape(16, 4, 16, 4).sum((1, 3)), np.ones((4, 4)))  # noqa: E731  4 x 4 block sums
+        v = max(abs(blk(mm["truth"])).max(), 1e-3) * 0.8
         p0 = mm["pairs"][0]
         for ax, (name, arr) in zip(axs, [("simulator (truth)", mm["truth"])] + [(tg, mm[tg]) for tg in tags]):
-            ax.imshow(arr, cmap="RdBu_r", vmin=-v, vmax=v)
+            ax.imshow(blk(arr), cmap="RdBu_r", vmin=-v, vmax=v)
             ax.contour(p0["masks"]["dst"].astype(float), levels=[.5], colors="#eb6834", linewidths=1)
             ax.contour(p0["masks"]["src"].astype(float), levels=[.5], colors="#2a78d6", linewidths=1)
             title = name if name.startswith("sim") else f"{name}  (r = {results[key][name]['map_corr_4x4']:.2f})"
             ax.set_title(title, fontsize=9); ax.axis("off")
-        sub[2 * ci + 1].suptitle("change in idle drivers 10-30 min after the order (blue outline: source area of the first seed, "
-                                 "orange: target zone)", fontsize=9)
+        sub[2 * ci + 1].suptitle(f"change in idle drivers 10-30 min after the order for the {len(mm['pairs'])} seeds with the "
+                                 "same source (blue outline) and target zone (orange), summed over 4 x 4 blocks; r = correlation with the truth over 4 x 4 blocks", fontsize=9)
     fig.savefig(path, dpi=110); plt.close(fig)
 
 

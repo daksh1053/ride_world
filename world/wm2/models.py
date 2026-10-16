@@ -141,9 +141,19 @@ class STBlock(nn.Module):
 class STTransformer(nn.Module):
     name = "st_transformer"
 
-    def __init__(self, c_in, G=64, patch=4, d=192, layers=6, heads=6, K=6):
+    def __init__(self, c_in, G=64, patch=4, d=192, layers=6, heads=6, K=6, skip=False):
+        """`skip` (step 4d): a per-cell path from each step's own inputs (3 x 3 neighbourhood)
+        added to the output, so cell-exact effects such as "the drivers ordered away from this
+        cell are no longer idle here" need not pass through the 4 x 4 patch tokens. Its last
+        layer starts at zero, so a model fine-tuned with it starts as the model without it."""
         super().__init__()
         self.p, self.G = patch, G
+        self.skip = None
+        if skip:
+            self.skip = nn.Sequential(nn.Conv2d(c_in, 96, 3, padding=1), nn.SiLU(), nn.Conv2d(96, 96, 1), nn.SiLU(),
+                                      nn.Conv2d(96, N_OUT, 1))
+            nn.init.zeros_(self.skip[-1].weight)
+            nn.init.zeros_(self.skip[-1].bias)
         n = G // patch
         self.embed = nn.Conv2d(c_in, d, patch, stride=patch)
         self.pos = nn.Parameter(torch.zeros(1, 1, n * n, d))
@@ -170,4 +180,7 @@ class STTransformer(nn.Module):
         z = self.encode(inp, ctx)
         n, p = self.G // self.p, self.p
         o = self.head(z).view(B, K, n, n, N_OUT, p, p)
-        return o.permute(0, 1, 4, 2, 5, 3, 6).reshape(B, K, N_OUT, self.G, self.G)
+        o = o.permute(0, 1, 4, 2, 5, 3, 6).reshape(B, K, N_OUT, self.G, self.G)
+        if self.skip is not None:
+            o = o + self.skip(inp.flatten(0, 1)).view(B, K, N_OUT, self.G, self.G)
+        return o

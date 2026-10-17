@@ -7,6 +7,8 @@
     .venv/bin/python scripts/11_wm2_train.py --model cnn --steps 6000 --tag cnn
     .venv/bin/python scripts/11_wm2_train.py --finetune st_small --rollout 6 --steps 4000 --tag st_ro
                                               # continue training on the model's own rollouts
+    .venv/bin/python scripts/11_wm2_train.py --finetune st4_skip_ros --rollout 6 --roll-feed sample --pairs 1 --tag st6_pairs --outdir step6
+                                              # step 6: also train on twin runs (scripts/15_pairs.py)
     .venv/bin/python scripts/11_wm2_train.py --eval st_small cnn      # test days, all baselines
 
 One model is trained on both cities at once (the grid, channels and static layers are the
@@ -33,6 +35,7 @@ import torch
 from world import cities
 from world.wm2 import data as WD
 from world.wm2 import models as WM
+from world.wm2 import pairs as WP
 
 CITIES = ["sf_hd", "pune_hd"]
 MODELS = Path(__file__).resolve().parents[1] / "data" / "wm2_models"
@@ -165,6 +168,43 @@ def rollout_loss(model, x, c, S, K, R, backward=False, feed="mean"):
     return total
 
 
+def pair_loss(model, x, c, S, K, H, w, backward=False):
+    """Step 6: roll out a base run and its counterfactual twin (x: the B bases, then the B
+    twins) H steps from their shared history, each with its own actions, feeding back coupled
+    Poisson samples. Each step is scored on its newest frame by the usual loss on both runs,
+    plus w x the squared error of the predicted twin-minus-base difference of every count
+    channel in every 4 x 4 block, scaled by the Poisson variance of the two runs, so the
+    effect of the order itself is trained and not only each run on its own.
+    Returns (usual loss, difference loss), means over the steps."""
+    B = x.shape[0] // 2
+    buf = x.float().clone()
+    m = road_mask(S)[:B, None]
+    nll_t = diff_t = 0.0
+    for r in range(H):
+        inp, ctx, tgt = WD.make_io(buf[:, r: r + K + 1], c[:, r: r + K + 1], S)
+        with torch.autocast("cuda", torch.bfloat16, enabled=DEV.type == "cuda"):
+            out = model(inp, ctx)
+        o, y = out[:, -1:].float(), tgt[:, -1:]
+        nll = total_loss(WM.losses(o, y, road_mask(S)))
+        mu = WM.split_out(o[:, 0])[0].clamp(-12, 8).exp()
+        yc = y[:, 0, WD.COUNT]
+        dp = WP.blocks((mu[B:] - mu[:B]) * m)
+        dt = WP.blocks((yc[B:] - yc[:B]) * m)
+        var = WP.blocks((mu[B:] + mu[:B]) * m).detach() + 1.0
+        diff = ((dp - dt) ** 2 / var).mean()
+        loss = (nll + w * diff) / H
+        if backward:
+            loss.backward()
+        nll_t += nll.item() / H
+        diff_t += diff.item() / H
+        if r < H - 1:
+            with torch.no_grad():
+                f = to_frame(o[:, 0].detach())
+                f[:B, WD.COUNT], f[B:, WD.COUNT] = WP.coupled_poisson(f[:B, WD.COUNT], f[B:, WD.COUNT])
+                buf[:, r + K, WD.OBS] = f[:, WD.OBS].clamp(0, 255)
+    return nll_t, diff_t
+
+
 def load_ckpt(tag):
     ck = torch.load(MODELS / f"{tag}.pt", map_location=DEV)
     m = make_model(ck["kind"], ck["K"], ck.get("dirs", False), ck.get("skip", False)).to(DEV)
@@ -202,6 +242,10 @@ def train(args, stores, splits):
     if R:                                             # rollout runs are chosen by the rollout loss
         val_ro = fixed_windows(stores, splits, 1, 96, args.K + R, seed=8)
         vbatch_ro = WD.Batcher(stores, {}, args.K + R, DEV)
+    if args.pairs:
+        ptr = WP.PairSet(stores, args.K, args.pair_H, DEV, dirs=args.dirs, which="train", seed=args.seed)
+        pva = WP.PairSet(stores, args.K, args.pair_H, DEV, dirs=args.dirs, which="val")
+        print(f"  pairs: {len(ptr)} training, {len(pva)} validation", flush=True)
     best, log = float("inf"), []
     t0 = time.time()
     MODELS.mkdir(parents=True, exist_ok=True)
@@ -219,6 +263,8 @@ def train(args, stores, splits):
                 out = model(inp, ctx)
             loss = total_loss(WM.losses(out.float(), tgt, road_mask(S)))
             loss.backward()
+        if args.pairs:
+            pl = pair_loss(model, *ptr.sample(args.pair_batch), args.K, args.pair_H, args.pairs, backward=True)
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step(); lr_s.step()
         if step % args.eval_every == 0 or step == args.steps:
@@ -231,15 +277,24 @@ def train(args, stores, splits):
                 with torch.no_grad():
                     ro = [rollout_loss(model, *vbatch_ro.gather(val_ro[i: i + 8])[:3], args.K, R) for i in range(0, len(val_ro), 8)]
                 vl = log[-1]["val_rollout"] = float(np.mean(ro))
+            if args.pairs:
+                model.eval()
+                torch.manual_seed(0)
+                with torch.no_grad():
+                    pv = np.mean([pair_loss(model, *pva.gather(np.arange(i, min(i + 4, len(pva)))), args.K, args.pair_H, args.pairs)
+                                  for i in range(0, len(pva), 4)], 0)
+                log[-1].update({"val_pair_nll": float(pv[0]), "val_pair_diff": float(pv[1]), "train_pair_diff": pl[1]})
+                vl = log[-1]["val_select"] = vl + float(pv[0]) + args.pairs * float(pv[1])
+                print(f"    pairs: val usual {pv[0]:.4f}  difference {pv[1]:.4f}  (train difference {pl[1]:.4f})", flush=True)
             flag = ""
             if vl < best:
                 best = vl
                 torch.save({"state": model.state_dict(), "kind": args.model, "K": args.K, "cities": args.cities, "rollout": R,
-                            "from": args.finetune, "dirs": args.dirs, "skip": args.skip, "roll_feed": args.roll_feed}, MODELS / f"{args.tag}.pt")
+                            "from": args.finetune, "dirs": args.dirs, "skip": args.skip, "roll_feed": args.roll_feed, "pairs": args.pairs}, MODELS / f"{args.tag}.pt")
                 flag = " *"
             print(f"  step {step:6d}  train {loss.item():.4f}  val {vl:.4f}  (poisson {log[-1]['val_poisson']:.4f}, "
                   f"speed {log[-1]['val_speed']:.3f}, surge {log[-1]['val_surge']:.5f})"
-                  + (f"  rollout {vl:.4f}" if R else "") + f"  {log[-1]['min']:.1f} min{flag}", flush=True)
+                  + (f"  rollout {log[-1]['val_rollout']:.4f}" if R else "") + (f"  selection {vl:.4f}" if args.pairs else "") + f"  {log[-1]['min']:.1f} min{flag}", flush=True)
     OUT.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(log).to_csv(OUT / f"train_{args.tag}.csv", index=False)
 
@@ -295,6 +350,9 @@ def main():
     ap.add_argument("--skip", action="store_true", help="step 4d: add the per-cell skip path to the transformer")
     ap.add_argument("--roll-feed", default="mean", choices=["mean", "sample"], help="step 4d: what rollout training feeds back")
     ap.add_argument("--act-focus", type=float, default=0.0, help="step 4d: share of windows centred on large repositioning orders")
+    ap.add_argument("--pairs", type=float, default=0.0, help="step 6: weight of the twin-run difference loss (0 = no pairs)")
+    ap.add_argument("--pair-batch", type=int, default=3, help="step 6: twin pairs per step")
+    ap.add_argument("--pair-H", type=int, default=12, help="step 6: rollout steps of each pair")
     ap.add_argument("--outdir", default="step3", help="results go to outputs/wm2/<outdir>/")
     args = ap.parse_args()
     global OUT

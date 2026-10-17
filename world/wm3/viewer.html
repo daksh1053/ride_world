@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World State Viewer</title>
+<style>
+:root{color-scheme:light;--bg:#f6f5f2;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#898781;--line:#e4e3df;
+--road:#cfcdc6;--road2:#b4b2aa;--idle:#898781;--blue:#2a78d6;--orange:#eb6834;--aqua:#1baf7a;--c0:#d9d4f5;--c1:#6250d6;--c2:#2c1f80;--sel:#0b0b0b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121211;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8e86;--line:#2e2e2b;
+--road:#3a3a37;--road2:#55544f;--idle:#a3a29b;--blue:#3987e5;--orange:#d95926;--aqua:#199e70;--c0:#3d3478;--c1:#9085e9;--c2:#d9d4f5;--sel:#f0efec}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121211;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8e86;--line:#2e2e2b;
+--road:#3a3a37;--road2:#55544f;--idle:#a3a29b;--blue:#3987e5;--orange:#d95926;--aqua:#199e70;--c0:#3d3478;--c1:#9085e9;--c2:#d9d4f5;--sel:#f0efec}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1500px;margin:0 auto;padding:18px 16px 40px}h1{font-size:20px;margin:0 0 2px}.sub{color:var(--ink2);margin:0 0 12px;max-width:1100px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}.kpi b{display:block;font-size:19px;font-variant-numeric:tabular-nums}.kpi span{color:var(--ink2);font-size:12px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px}button,select{font:inherit;padding:4px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
+input[type=range]{flex:1;min-width:200px}#tlabel{font-variant-numeric:tabular-nums;min-width:120px;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink2);margin-bottom:8px}.legend label{display:flex;gap:5px;align-items:center;cursor:pointer}
+.sw{width:11px;height:11px;border-radius:50%;display:inline-block}.ramp{width:60px;height:8px;border-radius:2px;display:inline-block;background:linear-gradient(90deg,var(--c0),var(--c1),var(--c2))}
+.wrap{display:grid;grid-template-columns:1fr 360px;gap:12px}@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+#map{width:100%;height:72vh;min-height:420px;background:var(--surface);border:1px solid var(--line);border-radius:8px;display:block;cursor:grab;touch-action:none}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;max-height:72vh;overflow:auto;font-size:12.5px}
+.panel h3{font-size:13px;margin:10px 0 4px}.panel h3:first-child{margin-top:0}table{border-collapse:collapse;width:100%}td{padding:1.5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--ink2);white-space:nowrap}td:last-child{font-variant-numeric:tabular-nums}.muted{color:var(--ink3)}
+#tip{position:fixed;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12px;display:none;z-index:5}
+.note{color:var(--ink2);font-size:12.5px;max-width:1100px;margin-top:10px}#check{font-size:12px;color:var(--ink2)}
+</style></head><body><main>
+<h1 id="title"></h1>
+<p class="sub">The world as world model 3 sees it, rebuilt every 30 seconds from the simulator's logs: every driver at its exact place on the road graph, every open request, every road's travel time. Click a driver or a waiting rider to see its full record (what the model reads at this step) and what happens to it in the next 30 seconds (what the model must predict). Scroll to zoom, drag to pan.</p>
+<div class="kpis" id="kpis"></div>
+<div class="bar"><button id="play">Play</button><select id="speed"><option value="10">10x</option><option value="30" selected>30x</option><option value="120">120x</option><option value="300">300x</option></select>
+<input type="range" id="slider" min="0" step="1"><span id="tlabel"></span><button id="fit">Reset view</button></div>
+<div class="legend" id="legend"></div>
+<div class="wrap"><canvas id="map"></canvas><div class="panel" id="panel"><p class="muted">Click a driver (dot) or a waiting rider (x) on the map.</p></div></div>
+<p class="note">Colours: grey idle; blue filled heading to a pickup, blue ring an offer is out; orange with a rider (ring: outside the city on an intercity trip); aqua repositioning; grey ring on a break. Black x: a rider waiting with no driver yet; blue line: driver to the rider it is driving to. Roads are violet where travel time is at least 1.15 x free-flow, darker = slower. Hidden driver traits (accept bias, compliance) are never shown: they are what the model has to infer from each driver's history.</p>
+<p id="check"></p>
+<div id="tip"></div>
+</main>
+<script>
+const D=/*DATA*/null;
+const dec=(s,T)=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new T(u.buffer)};
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const N={x:dec(D.nodes.x,Uint16Array),y:dec(D.nodes.y,Uint16Array),lon:dec(D.nodes.lon,Float32Array),lat:dec(D.nodes.lat,Float32Array),zone:dec(D.nodes.zone,Int16Array)};
+const E={u:dec(D.edges.u,Uint32Array),v:dec(D.edges.v,Uint32Array),cls:dec(D.edges.cls,Uint8Array)};
+const CG=D.cong.map(c=>({e:dec(c.e,Uint32Array),r:dec(c.r,Uint8Array)}));
+const ids=dec(D.drivers.ids,Int32Array),nd=ids.length,NE=D.ne;
+const PX=dec(D.drivers.x,Uint16Array),PY=dec(D.drivers.y,Uint16Array),ST=dec(D.drivers.st,Int8Array),LG=dec(D.drivers.leg,Int32Array),LEFT=dec(D.drivers.left,Uint16Array);
+const P={mode:dec(D.drivers.mode,Int8Array),cost:dec(D.drivers.cost,Float32Array),tenure:dec(D.drivers.tenure,Int32Array),rsum:dec(D.drivers.rsum,Float32Array),rn:dec(D.drivers.rn,Int32Array),home:dec(D.drivers.home,Int32Array),shift:dec(D.drivers.shift,Float32Array)};
+const LEGS={kind:dec(D.legs.kind,Int8Array),dest:dec(D.legs.dest,Int32Array),req:dec(D.legs.req,Int32Array),len:dec(D.legs.len,Float32Array)};
+const EV={t:dec(D.events.t_event,Float32Array),ta:dec(D.events.t_av,Float32Array),type:dec(D.events.type,Int8Array),drv:dec(D.events.drv,Int32Array),req:dec(D.events.req,Int32Array),zone:dec(D.events.zone,Int16Array),val:dec(D.events.value,Float32Array)};
+const SL={drv:dec(D.status.drv,Int32Array),t:dec(D.status.t,Float32Array),s:dec(D.status.s,Int8Array)};
+const RQ={};for(const k of ["id","origin","dest"])RQ[k]=dec(D.requests[k],Int32Array);RQ.ext=dec(D.requests.ext,Int16Array);RQ.mode=dec(D.requests.mode,Int8Array);
+for(const k of ["quote","created","accept","arrive","pickup","cancel"])RQ[k]=dec(D.requests[k],Float32Array);
+const OF={req:dec(D.offers.req,Int32Array),drv:dec(D.offers.drv,Int32Array),t:dec(D.offers.t,Float32Array),tr:dec(D.offers.tr,Float32Array),resp:dec(D.offers.resp,Int8Array)};
+const T=D.types,TI=Object.fromEntries(T.map((t,i)=>[t,i]));
+const STN=["offline","idle","offered","heading to pickup","with rider","repositioning","outside the city","on break"];
+const COUNTERS={trips:["dropoff"],offers:["offer_sent"],offers_rejected:["offer_rejected"],offers_timeout:["offer_timeout"],orders:["dispatch_sent"],orders_declined:["dispatch_declined"],breaks:["driver_break"]};
+// per-driver event and status lists
+const evBy=Array.from({length:nd},()=>[]);for(let i=0;i<EV.t.length;i++)evBy[EV.drv[i]].push(i);
+const stBy=Array.from({length:nd},()=>[]);for(let i=0;i<SL.t.length;i++)stBy[SL.drv[i]].push(i);
+const reqIx=new Map();for(let i=0;i<RQ.id.length;i++)reqIx.set(RQ.id[i],i);
+const offBy=new Map();for(let i=0;i<OF.req.length;i++){if(!offBy.has(OF.req[i]))offBy.set(OF.req[i],[]);offBy.get(OF.req[i]).push(i)}
+const hhmm=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`};
+const fmt=(v,d=1)=>v==null||!isFinite(v)?"–":Number(v).toFixed(d);
+document.getElementById("title").textContent=`${D.city}, ${D.date}: the world at the level of each driver, rider and road`;
+
+// ------------------------------------------------------------------ records (same definitions as world/wm3/state.py)
+function driverRecord(d,e){
+  const tau=D.w0+e*D.dt,k=d*NE+e,s=ST[k];let since=null,on=null;
+  for(const i of stBy[d]){if(SL.t[i]<=tau)since=SL.t[i];else break}
+  const cnt={};for(const c in COUNTERS)cnt[c]=0;let inc=0;const tset={};for(const c in COUNTERS)for(const t of COUNTERS[c])tset[TI[t]]=c;
+  for(const i of evBy[d]){const ty=EV.type[i];if(EV.t[i]<=tau&&ty===TI.driver_online)on=EV.t[i];
+    if(EV.ta[i]<=tau){if(ty in tset)cnt[tset[ty]]++;if(ty===TI.settlement)inc+=EV.val[i]}}
+  const lg=LG[k];
+  return {status:s,left_m:LEFT[k]*2,in_status_s:since==null?null:tau-since,online_s:on==null?null:tau-on,income:inc,...cnt,leg:lg,tau};
+}
+function reqStatus(j,tau){if(!(RQ.created[j]<=tau)||Math.min(RQ.pickup[j],RQ.cancel[j])<=tau)return -1;
+  if(RQ.arrive[j]<=tau)return 3;if(RQ.accept[j]<=tau)return 2;for(const i of offBy.get(RQ.id[j])||[])if(OF.t[i]<=tau&&!(OF.tr[i]<=tau))return 1;return 0}
+const RS=["pending","offered (waiting for the driver's answer)","accepted, driver on the way","driver waiting at the pickup"];
+
+// ------------------------------------------------------------------ self-check
+(function(){let ok=0,bad=[];for(const c of D.checks){const r=driverRecord(c.d,c.e);let good=true;
+  for(const f of ["status","left_m","in_status_s","online_s","income",...Object.keys(COUNTERS)]){const a=r[f],b=c[f];
+    if(b==null&&a==null)continue;if(a==null||b==null||Math.abs(a-b)>(f==="left_m"?2.01:f==="income"?0.02:0.2)){good=false;bad.push(`${f}: page ${a} vs state.py ${b}`)}}
+  ok+=good}document.getElementById("check").textContent=`Inspector self-check: ${ok} of ${D.checks.length} driver records computed on this page are identical to world/wm3/state.py`+(bad.length?` (first difference: ${bad[0]})`:".")})();
+
+// ------------------------------------------------------------------ view
+const cv=document.getElementById("map"),ctx=cv.getContext("2d"),roads=document.createElement("canvas"),rctx=roads.getContext("2d");
+let W=0,H=0,dpr=1,view={s:1,ox:0,oy:0};let xmin=1e9,xmax=0,ymin=1e9,ymax=0;
+for(let i=0;i<N.x.length;i++){xmin=Math.min(xmin,N.x[i]);xmax=Math.max(xmax,N.x[i]);ymin=Math.min(ymin,N.y[i]);ymax=Math.max(ymax,N.y[i])}
+const sx=x=>(x-view.ox)*view.s,sy=y=>H-(y-view.oy)*view.s;
+function fit(){view.s=Math.min(W/(xmax-xmin),H/(ymax-ymin))*0.96;view.ox=xmin-(W/view.s-(xmax-xmin))/2;view.oy=ymin-(H/view.s-(ymax-ymin))/2;roadsDirty=true}
+function resize(){dpr=window.devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;for(const c of [cv,roads]){c.width=W*dpr;c.height=H*dpr}ctx.setTransform(dpr,0,0,dpr,0,0);rctx.setTransform(dpr,0,0,dpr,0,0);roadsDirty=true}
+let roadsDirty=true,slot=-1,filt={1:1,2:1,3:1,4:1,5:1,6:1,7:1,req:1,roads:1};
+function lerpC(a,b,f){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(a),B=p(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*f)).join(",")})`}
+function drawRoads(sl){rctx.clearRect(0,0,W,H);const zoom=view.s*D.unit;// px per metre*unit
+  const base=css("--road"),major=css("--road2");const vis=(x,y)=>x>-50&&x<W+50&&y>-50&&y<H+50;
+  for(const pass of [0,1]){rctx.beginPath();rctx.strokeStyle=pass?major:base;rctx.lineWidth=pass?Math.max(.6,Math.min(3,zoom*14)):Math.max(.35,Math.min(2,zoom*8));
+    for(let i=0;i<E.u.length;i++){if((E.cls[i]>=2)!==!!pass)continue;const a=E.u[i],b=E.v[i],x1=sx(N.x[a]),y1=sy(N.y[a]),x2=sx(N.x[b]),y2=sy(N.y[b]);
+      if(!vis(x1,y1)&&!vis(x2,y2))continue;rctx.moveTo(x1,y1);rctx.lineTo(x2,y2)}rctx.stroke()}
+  if(filt.roads){const c=CG[Math.min(sl,CG.length-1)],c0=css("--c0"),c1=css("--c1"),c2=css("--c2");rctx.lineWidth=Math.max(1.4,Math.min(5,zoom*22));rctx.lineCap="round";
+    const buckets=[[],[],[],[],[],[]];for(let i=0;i<c.e.length;i++){const r=1+c.r[i]/50;buckets[Math.min(5,Math.floor((r-1.15)/0.37))].push(c.e[i])}
+    buckets.forEach((bk,j)=>{const f=j/5;rctx.strokeStyle=f<.5?lerpC(c0,c1,f*2):lerpC(c1,c2,(f-.5)*2);rctx.beginPath();
+      for(const i of bk){const a=E.u[i],b=E.v[i];rctx.moveTo(sx(N.x[a]),sy(N.y[a]));rctx.lineTo(sx(N.x[b]),sy(N.y[b]))}rctx.stroke()})}
+  roadsDirty=false;slot=sl}
+let t=0,playing=false,sel=null,selReq=null,last=performance.now();
+const slider=document.getElementById("slider");slider.max=(NE-1)*10;
+function pos(d,tt){const e=Math.min(NE-1,Math.floor(tt/D.dt)),f=tt/D.dt-e,k=d*NE+e;if(PX[k]===65535)return null;
+  let x=PX[k],y=PY[k];if(e+1<NE&&PX[k+1]!==65535&&f>0){x+=(PX[k+1]-x)*f;y+=(PY[k+1]-y)*f}return [x,y]}
+let screenPts=[];
+function draw(){const e=Math.min(NE-1,Math.floor(t/D.dt)),sl=Math.floor(e/10);if(roadsDirty||sl!==slot)drawRoads(sl);
+  ctx.clearRect(0,0,W,H);ctx.drawImage(roads,0,0,W,H);const tau=D.w0+t;
+  const col={1:css("--idle"),2:css("--blue"),3:css("--blue"),4:css("--orange"),5:css("--aqua"),6:css("--orange"),7:css("--idle")},hollow={2:1,6:1,7:1};
+  const r=Math.max(2,Math.min(6,view.s*D.unit*22));
+  // requests
+  const open=[];if(filt.req)for(let j=0;j<RQ.id.length;j++){const s=reqStatus(j,tau);if(s>=0)open.push([j,s])}
+  // driver -> rider lines
+  ctx.lineWidth=1.2;ctx.strokeStyle=col[3];ctx.globalAlpha=.75;ctx.beginPath();
+  for(let d=0;d<nd;d++){const k=d*NE+e;if(ST[k]!==3||LG[k]<0)continue;const q=reqIx.get(LEGS.req[LG[k]]);if(q==null)continue;const p=pos(d,t);if(!p)continue;
+    ctx.moveTo(sx(p[0]),sy(p[1]));ctx.lineTo(sx(N.x[RQ.origin[q]]),sy(N.y[RQ.origin[q]]))}ctx.stroke();ctx.globalAlpha=1;
+  screenPts=[];
+  for(const s of [1,7,5,6,4,2,3]){if(!filt[s])continue;ctx.fillStyle=col[s];ctx.strokeStyle=col[s];ctx.lineWidth=1.3;
+    for(let d=0;d<nd;d++){if(ST[d*NE+e]!==s)continue;const p=pos(d,t);if(!p)continue;const X=sx(p[0]),Y=sy(p[1]);if(X<-10||X>W+10||Y<-10||Y>H+10)continue;
+      ctx.beginPath();ctx.arc(X,Y,r,0,6.2832);hollow[s]?ctx.stroke():ctx.fill();screenPts.push([X,Y,"d",d])}}
+  const ink=css("--ink");ctx.strokeStyle=ink;ctx.lineWidth=1.4;const a=r*1.1;
+  for(const [j,s] of open){const X=sx(N.x[RQ.origin[j]]),Y=sy(N.y[RQ.origin[j]]);if(X<-10||X>W+10||Y<-10||Y>H+10)continue;screenPts.push([X,Y,"r",j]);
+    if(s<=1){ctx.beginPath();ctx.moveTo(X-a,Y-a);ctx.lineTo(X+a,Y+a);ctx.moveTo(X+a,Y-a);ctx.lineTo(X-a,Y+a);ctx.stroke()}}
+  // selection
+  if(sel!=null){const p=pos(sel,t);if(p){const k=sel*NE+e;ctx.strokeStyle=css("--sel");ctx.lineWidth=2;ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),r+5,0,6.2832);ctx.stroke();
+    if(LG[k]>=0){const dn=LEGS.dest[LG[k]];ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(sx(p[0]),sy(p[1]));ctx.lineTo(sx(N.x[dn]),sy(N.y[dn]));ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.rect(sx(N.x[dn])-4,sy(N.y[dn])-4,8,8);ctx.stroke()}}}
+  if(selReq!=null){const X=sx(N.x[RQ.origin[selReq]]),Y=sy(N.y[RQ.origin[selReq]]);ctx.strokeStyle=css("--sel");ctx.lineWidth=2;ctx.beginPath();ctx.arc(X,Y,r+6,0,6.2832);ctx.stroke();
+    if(RQ.dest[selReq]>=0){ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(X,Y);ctx.lineTo(sx(N.x[RQ.dest[selReq]]),sy(N.y[RQ.dest[selReq]]));ctx.stroke();ctx.setLineDash([])}}
+  kpis(e,open);document.getElementById("tlabel").textContent=hhmm(tau);slider.value=Math.round(t/3);
+}
+function kpis(e,open){const c=[0,0,0,0,0,0,0,0];for(let d=0;d<nd;d++)c[ST[d*NE+e]]++;const tau=D.w0+e*D.dt;let nx=0;for(let i=0;i<EV.t.length;i++)if(EV.t[i]>tau&&EV.t[i]<=tau+D.dt)nx++;
+  let nr=0;for(let j=0;j<RQ.id.length;j++)if(RQ.created[j]>tau&&RQ.created[j]<=tau+D.dt)nr++;
+  const items=[[nd-c[0],"drivers online"],[c[1],"idle"],[c[2]+c[3],"offered / to pickup"],[c[4]+c[6],"with a rider"],[c[5],"repositioning"],[c[7],"on break"],[open.filter(o=>o[1]<=1).length,"riders waiting for a driver"],[nx+nr,"events in the next 30 s"]];
+  document.getElementById("kpis").innerHTML=items.map(([v,l])=>`<div class="kpi"><b>${v.toLocaleString()}</b><span>${l}</span></div>`).join("")}
+// ------------------------------------------------------------------ inspector
+const row=(k,v)=>`<tr><td>${k}</td><td>${v}</td></tr>`;
+function showDriver(d){const e=Math.min(NE-1,Math.floor(t/D.dt)),r=driverRecord(d,e),k=d*NE+e,tau=r.tau,p=pos(d,e*D.dt);
+  let h=`<h3>Driver ${ids[d]} at ${hhmm(tau)} — what the model reads</h3><table>`;
+  h+=row("status",STN[r.status])+row("time in this status",fmt(r.in_status_s/60)+" min")+row("online for",fmt(r.online_s/60)+" min");
+  if(p)h+=row("position",`${fmt(p[0]*D.unit,0)} m E, ${fmt(p[1]*D.unit,0)} m N (zone ${N.zone[nearestNode(p)]})`);
+  if(r.leg>=0){h+=row("current leg",D.legKinds[LEGS.kind[r.leg]]+(LEGS.req[r.leg]>=0?` for request ${LEGS.req[r.leg]}`:""))+row("leg destination",`node ${LEGS.dest[r.leg]} (zone ${N.zone[LEGS.dest[r.leg]]}), ${fmt(r.left_m/1000,2)} km left of ${fmt(LEGS.len[r.leg]/1000,2)} km`)}
+  else h+=row("current leg","standing still");
+  h+=row("today: trips",r.trips)+row("today: income",`${fmt(r.income,2)} ${D.currency}`)+row("today: offers",`${r.offers} (${r.offers_rejected} rejected, ${r.offers_timeout} unanswered)`)+row("today: repositioning orders",`${r.orders} (${r.orders_declined} declined)`)+row("today: breaks",r.breaks);
+  h+=row("profile",`${D.modes[P.mode[d]]}, ${fmt(P.cost[d],3)} ${D.currency}/km, ${P.tenure[d]} days on the platform`)+row("rating",`${fmt(P.rsum[d]/Math.max(P.rn[d],1),2)} from ${P.rn[d]} ratings`)+row("usual shift start",fmt(P.shift[d],1)+" h")+"</table>";
+  // actions at tau
+  const acts=[];for(const i of evBy[d]){if(EV.t[i]===tau&&EV.type[i]===TI.offer_sent)acts.push(`offer of request ${EV.req[i]}`);if(EV.t[i]===tau&&EV.type[i]===TI.dispatch_sent)acts.push(`repositioning order to zone ${EV.zone[i]}`)}
+  h+=`<h3>Platform action to this driver at ${hhmm(tau)}</h3>`+(acts.length?acts.join("<br>"):'<span class="muted">none</span>');
+  const nx=evBy[d].filter(i=>EV.t[i]>tau&&EV.t[i]<=tau+D.dt);
+  h+=`<h3>What happens in the next 30 s — the model's targets</h3>`+(nx.length?"<table>"+nx.map(i=>row("+"+fmt(EV.t[i]-tau,1)+" s",T[EV.type[i]].replaceAll("_"," ")+(EV.req[i]>=0?` (request ${EV.req[i]})`:"")+(EV.zone[i]>=0&&T[EV.type[i]].startsWith("dispatch")?` zone ${EV.zone[i]}`:""))).join("")+"</table>":'<span class="muted">no events</span>');
+  const s2=e+1<NE?ST[k+1]:null;h+=`<p class="muted">status at ${hhmm(tau+D.dt)}: ${s2==null?"–":STN[s2]}${p&&e+1<NE&&PX[k+1]!==65535?`, moved ${fmt(Math.hypot(PX[k+1]-PX[k],PY[k+1]-PY[k])*D.unit,0)} m`:""}</p>`;
+  document.getElementById("panel").innerHTML=h}
+function nearestNode(p){let b=0,bd=1e18;for(let i=0;i<N.x.length;i+=1){const dx=N.x[i]-p[0],dy=N.y[i]-p[1],q=dx*dx+dy*dy;if(q<bd){bd=q;b=i}}return b}
+function showReq(j){const e=Math.min(NE-1,Math.floor(t/D.dt)),tau=D.w0+e*D.dt,s=reqStatus(j,tau);const offs=(offBy.get(RQ.id[j])||[]).filter(i=>OF.t[i]<=tau);
+  let h=`<h3>Request ${RQ.id[j]} at ${hhmm(tau)} — what the model reads</h3><table>`+row("status",s<0?"not open":RS[s])+row("waited",fmt((tau-RQ.created[j])/60)+" min")+row("mode",D.modes[RQ.mode[j]])+row("origin",`node ${RQ.origin[j]} (zone ${N.zone[RQ.origin[j]]})`)+row("destination",RQ.dest[j]>=0?`node ${RQ.dest[j]} (zone ${N.zone[RQ.dest[j]]})`:"outside the city")+row("quote",`${fmt(RQ.quote[j],2)} ${D.currency}`)+row("offers so far",offs.length)+"</table>";
+  const fut=[];if(RQ.pickup[j]<1e8)fut.push(`picked up at ${hhmm(RQ.pickup[j])}`);if(RQ.cancel[j]<1e8)fut.push(`rider cancels at ${hhmm(RQ.cancel[j])}`);
+  const nx=(offBy.get(RQ.id[j])||[]).filter(i=>OF.t[i]>tau&&OF.t[i]<=tau+D.dt).map(i=>`offered to driver ${OF.drv[i]}`);
+  h+=`<h3>Next 30 s</h3>`+(nx.length?nx.join("<br>"):'<span class="muted">no offer</span>')+`<h3>Later (the outcome the rollout must get right)</h3>`+(fut.join("<br>")||'<span class="muted">still open at the end of the window</span>');
+  document.getElementById("panel").innerHTML=h}
+// ------------------------------------------------------------------ interaction
+const STAT=[[1,"idle","--idle",0],[2,"offered","--blue",1],[3,"to pickup","--blue",0],[4,"with rider","--orange",0],[6,"outside city","--orange",1],[5,"repositioning","--aqua",0],[7,"break","--idle",1]];
+document.getElementById("legend").innerHTML=STAT.map(([s,l,c,h])=>`<label><input type="checkbox" data-f="${s}" checked><span class="sw" style="${h?`border:2px solid var(${c})`:`background:var(${c})`}"></span>${l}</label>`).join("")+
+ `<label><input type="checkbox" data-f="req" checked><b style="font-size:14px">x</b> waiting rider</label><label><input type="checkbox" data-f="roads" checked><span class="ramp"></span> slow roads (1.15x to 3x free-flow)</label>`;
+document.querySelectorAll("[data-f]").forEach(el=>el.onchange=()=>{filt[el.dataset.f]=el.checked?1:0;if(el.dataset.f==="roads")roadsDirty=true;draw()});
+let drag=null;cv.onpointerdown=ev=>{drag={x:ev.clientX,y:ev.clientY,ox:view.ox,oy:view.oy,moved:0};cv.setPointerCapture(ev.pointerId);cv.style.cursor="grabbing"};
+cv.onpointermove=ev=>{const rc=cv.getBoundingClientRect(),mx=ev.clientX-rc.left,my=ev.clientY-rc.top;
+  if(drag){const dx=ev.clientX-drag.x,dy=ev.clientY-drag.y;drag.moved=Math.max(drag.moved,Math.abs(dx)+Math.abs(dy));view.ox=drag.ox-dx/view.s;view.oy=drag.oy+dy/view.s;roadsDirty=true;draw();return}
+  const h=hit(mx,my),tip=document.getElementById("tip");if(h){tip.style.display="block";tip.style.left=ev.clientX+12+"px";tip.style.top=ev.clientY+12+"px";
+    const e=Math.min(NE-1,Math.floor(t/D.dt));tip.textContent=h[2]==="d"?`driver ${ids[h[3]]}: ${STN[ST[h[3]*NE+e]]}`:`request ${RQ.id[h[3]]}: waiting ${fmt((D.w0+t-RQ.created[h[3]])/60)} min`}else tip.style.display="none"};
+cv.onpointerup=ev=>{cv.style.cursor="grab";const m=drag&&drag.moved;drag=null;if(m>4)return;const rc=cv.getBoundingClientRect(),h=hit(ev.clientX-rc.left,ev.clientY-rc.top);
+  if(!h){sel=selReq=null;draw();return}if(h[2]==="d"){sel=h[3];selReq=null;showDriver(sel)}else{selReq=h[3];sel=null;showReq(selReq)}draw()};
+cv.onpointerleave=()=>document.getElementById("tip").style.display="none";
+function hit(mx,my){let b=null,bd=100;for(const p of screenPts){const q=(p[0]-mx)**2+(p[1]-my)**2;if(q<bd){bd=q;b=p}}return b}
+cv.addEventListener("wheel",ev=>{ev.preventDefault();const rc=cv.getBoundingClientRect(),mx=ev.clientX-rc.left,my=ev.clientY-rc.top;const wx=mx/view.s+view.ox,wy=(H-my)/view.s+view.oy;
+  view.s*=Math.exp(-ev.deltaY*0.0015);view.ox=wx-mx/view.s;view.oy=wy-(H-my)/view.s;roadsDirty=true;draw()},{passive:false});
+document.getElementById("fit").onclick=()=>{fit();draw()};
+slider.oninput=()=>{t=+slider.value*3;draw();if(sel!=null)showDriver(sel);if(selReq!=null)showReq(selReq)};
+document.getElementById("play").onclick=ev=>{playing=!playing;ev.target.textContent=playing?"Pause":"Play";last=performance.now();if(playing)requestAnimationFrame(loop)};
+let lastE=-1;function loop(now){if(!playing)return;const sp=+document.getElementById("speed").value;t=Math.min((NE-1)*D.dt,t+(now-last)/1000*sp);last=now;draw();
+  const e=Math.floor(t/D.dt);if(e!==lastE){lastE=e;if(sel!=null)showDriver(sel);if(selReq!=null)showReq(selReq)}
+  if(t>=(NE-1)*D.dt){playing=false;document.getElementById("play").textContent="Play"}else requestAnimationFrame(loop)}
+window.addEventListener("resize",()=>{resize();fit();draw()});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{roadsDirty=true;draw()});
+t=3600;resize();fit();draw();
+// "#selftest": select a driver heading to a pickup (for automated checks of the inspector)
+if(location.hash==="#selftest"){const e=Math.floor(t/D.dt);for(let d=0;d<nd;d++)if(ST[d*NE+e]===3){sel=d;showDriver(d);draw();break}}
+</script></body></html>

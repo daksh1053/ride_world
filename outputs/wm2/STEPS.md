@@ -129,3 +129,12 @@ Counterfactual (move 40 drivers): drivers leave the source but never arrive in t
     Prediction pages now store 16-bit values (8-bit rounded every rate below 0.025 per cell to zero,
     so the model's city totals looked too low) and say "rebalancing every N min" correctly
     (reposition_every counts 30 s epochs). Regenerated: outputs/<city>_hd/12_wm2_predictions_{st_ro,st4_skip_ros}.html
+
+## Step 6 (stopped 2026-10-18): twin-run training for the grid model
+    Started: scripts/15_pairs.py (twin mornings with one random extra order, training dates only),
+    world/wm2/pairs.py and the --pairs difference loss in scripts/11_wm2_train.py. Stopped after
+    13 SF and 6 Pune seeds (data/<city>/wm2_pairs/, kept), before any training, because the
+    grid model itself was set aside: the user wants the world model to work on the actual
+    drivers, riders and roads, as formulations/01 specifies, not on counts per 64 x 64 cell at
+    any resolution. Work continues as world model 3: outputs/wm3/STEPS.md. The grid models
+    stay as a baseline.

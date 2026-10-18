@@ -61,7 +61,7 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     world/wm3/model.py (WorldModel3), scripts/17_wm3_dataset.py, scripts/18_wm3_train.py,
     scripts/19_wm3_eval.py, scripts/21_wm3_pred_page.py
     One token per online driver, open request and zone, plus a global token (time, weekday,
-    rain, congestion); a 4-layer transformer whose attention is biased by road distance between
+    rain, congestion); a 4-layer transformer whose attention is biased by straight-line distance between
     tokens (heads from city-wide to ~300 m). Heads, each a likelihood of the next 30 s:
       online driver   own decision (none / offline / break / head home / self-reposition /
                       break end / re-enter / abandon reposition); answer to an offer (accept /

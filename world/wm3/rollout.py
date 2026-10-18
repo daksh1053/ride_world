@@ -116,6 +116,44 @@ def policy_for(L: S.DayLog, seed=0):
     return HDDispatch(seed=seed, **p)
 
 
+_M1, _M2, _G = np.uint64(0xBF58476D1CE4E5B9), np.uint64(0x94D049BB133111EB), np.uint64(0x9E3779B97F4A7C15)
+KIND = {k: i + 1 for i, k in enumerate(["offer", "offer_t", "order", "order_t", "ev", "ev_t", "repo", "online", "online_t",
+                                         "board", "cancel", "rq_t", "n_new", "origin", "dest", "dnode", "decline", "req_t"])}
+
+
+def _mix(x):
+    """splitmix64 finaliser on a uint64 array."""
+    with np.errstate(over="ignore"):
+        x = x + _G
+        x = (x ^ (x >> np.uint64(30))) * _M1
+        x = (x ^ (x >> np.uint64(27))) * _M2
+        return x ^ (x >> np.uint64(31))
+
+
+def keyed_uniform(seed, e, kind, ids):
+    """Uniform numbers fixed by (seed, step, kind, entity): two imagined worlds that differ only in
+    an action draw the same luck for the same driver or rider (common random numbers)."""
+    ids = np.atleast_1d(np.asarray(ids, dtype=np.int64)).astype(np.uint64)
+    x = _mix(np.full(ids.shape, seed, np.uint64))
+    x = _mix(x ^ np.uint64(e))
+    x = _mix(x ^ np.uint64(KIND[kind]))
+    x = _mix(x ^ ids)
+    return (x >> np.uint64(11)).astype(np.float64) * 2.0 ** -53
+
+
+def pick(p, u):
+    """Inverse-CDF choice: rows of probabilities p, one uniform per row."""
+    p = np.atleast_2d(p)
+    c = p.cumsum(1)
+    return np.minimum((c < np.atleast_1d(u)[:, None] * c[:, -1:]).sum(1), p.shape[1] - 1)
+
+
+def poisson_inv(lam, u):
+    """Poisson draws by inversion (same u and nearly the same rate -> the same count)."""
+    from scipy.stats import poisson
+    return poisson.ppf(u, lam).astype(np.int64)
+
+
 class ImaginedWorld:
     def __init__(self, model, rules: CityRules, L: S.DayLog, prior: FT.Prior, e0: int, policy, seed=0,
                  traffic="typical"):
@@ -124,6 +162,8 @@ class ImaginedWorld:
         self.city_id = WD.CITY_KEYS.index(self.key)
         self.rng = np.random.default_rng(seed)
         self.torch_gen = torch.Generator(device="cpu").manual_seed(seed)
+        self.seed = seed
+        self.order_p = {}
         self.policy = policy
         self.t = e0 * S.DT
         self.e = e0
@@ -483,6 +523,7 @@ class ImaginedWorld:
             out = self.model(b)
         P = {k: out[k][0].float().cpu() for k in ("ev", "offer", "order", "repo", "online", "cancel", "board", "rate")}
         hZ = out["h"][2][0].float()
+        self.hZd = out.get("hZd", out["h"][2])[0].float()                # demand heads' zone states
         self._sample_and_apply(f, P, hZ)
         return f
 
@@ -493,43 +534,48 @@ class ImaginedWorld:
         ev = []                                               # (time, seq, kind, args)
 
         def push(t, kind, *a):
-            heapq.heappush(ev, (t, len(ev) + rng.random(), kind, a))
+            heapq.heappush(ev, (t, len(ev), kind, a))
 
+        ku = lambda kind, ids: keyed_uniform(self.seed, self.e, kind, ids)    # noqa: E731
         pos_on = {d: j for j, d in enumerate(on)}
         for i, k, eta in self.offers_now:
             p = P["offer"][pos_on[i]].softmax(-1).numpy()
-            a = rng.choice(3, p=p / p.sum())
-            push(t0 + (15.0 if a == 2 else rng.uniform(4, 15)), "offer_answer", i, k, int(a))
+            a = int(pick(p, ku("offer", [i]))[0])
+            push(t0 + (15.0 if a == 2 else 4 + 11 * ku("offer_t", [i])[0]), "offer_answer", i, k, a)
         for i, z in self.orders_now:
             p = P["order"][pos_on[i]].softmax(-1).numpy()
-            a = rng.choice(2, p=p / p.sum())
-            push(t0 + rng.uniform(2, 10), "order_answer", i, z, int(a))
+            self.order_p.setdefault(i, float(p[0]))                       # chance to follow the first order, for the record
+            a = int(pick(p, ku("order", [i]))[0])
+            push(t0 + 2 + 8 * ku("order_t", [i])[0], "order_answer", i, z, a)
         pe = P["ev"].softmax(-1).numpy()
-        u = rng.random(len(on))
-        cls = (pe.cumsum(1) < u[:, None]).sum(1)
+        cls = pick(pe, ku("ev", on)) if len(on) else np.zeros(0, int)
+        ut = ku("ev_t", on)
         for j in np.flatnonzero(cls > 0):
             d = int(on[j])
             c = int(min(cls[j], len(FT.EV) - 1))
             z = -1
             if c == 4:
                 pz = P["repo"][j].softmax(-1).numpy()
-                z = int(rng.choice(len(pz), p=pz / pz.sum()))
-            push(t0 + rng.uniform(0, S.DT), "driver_event", d, c, z)
+                z = int(pick(pz, ku("repo", [d]))[0])
+            push(t0 + S.DT * ut[j], "driver_event", d, c, z)
         po = torch.sigmoid(P["online"]).numpy()
-        for j in np.flatnonzero(rng.random(len(off)) < po):
-            push(t0 + rng.uniform(0, S.DT), "online", int(off[j]))
+        uo, uot = ku("online", off), ku("online_t", off)
+        for j in np.flatnonzero(uo < po):
+            push(t0 + S.DT * uot[j], "online", int(off[j]))
         ks = f["R_id"]
         pc = torch.sigmoid(P["cancel"]).numpy()
         pb = torch.sigmoid(P["board"]).numpy()
+        if len(ks):
+            ub, uc, urt = ku("board", ks), ku("cancel", ks), ku("rq_t", ks)
         for j, k in enumerate(ks):
             q = self.req[int(k)]
-            if q["status"] == "waiting" and rng.random() < pb[j]:
-                push(t0 + rng.uniform(0, S.DT), "board", int(k))
-            elif rng.random() < pc[j]:
-                push(t0 + rng.uniform(0, S.DT), "cancel", int(k))
-        # new requests
+            if q["status"] == "waiting" and ub[j] < pb[j]:
+                push(t0 + S.DT * urt[j], "board", int(k))
+            elif uc[j] < pc[j]:
+                push(t0 + S.DT * urt[j], "cancel", int(k))
+        # new requests: counts per (zone, mode) by inversion
         lam = P["rate"].clamp(-12, 6).exp().numpy()                    # (Z, 3)
-        n_new = rng.poisson(lam)
+        n_new = poisson_inv(lam, ku("n_new", np.arange(lam.size)).reshape(lam.shape))
         for m in range(3):
             if R.mode_list[m] is None:
                 n_new[:, m] = 0
@@ -565,28 +611,36 @@ class ImaginedWorld:
         return q["driver"] if q else -1
 
     def _new_requests(self, zone, mode, hZ, push):
-        g, R, rng = self.g, self.R, self.rng
+        g, R = self.g, self.R
+        idx = np.zeros(len(zone), np.int64)
+        for i in range(1, len(zone)):
+            idx[i] = idx[i - 1] + 1 if (zone[i], mode[i]) == (zone[i - 1], mode[i - 1]) else 0
+        kid = 10 ** 9 + self.e * 10 ** 6 + (zone * 3 + mode) * 1000 + idx        # same request, same id in every arm
+        ku = lambda kind: keyed_uniform(self.seed, self.e, kind, kid)           # noqa: E731
         zt = torch.tensor(zone, device=hZ.device)
         mt = torch.tensor(mode, device=hZ.device)
         with torch.no_grad():
-            ol, cand, dl, _, _ = self.model.new_request_logits(self.key, hZ, zt, mt)
+            hZd = self.hZd
+            ol, cand, dl, _, _ = self.model.new_request_logits(self.key, hZd, zt, mt)
             po = ol.float().softmax(-1).cpu().numpy()
-            o_idx = np.array([rng.choice(po.shape[1], p=p / p.sum()) for p in po])
+            o_idx = pick(po, ku("origin"))
             origin = cand.cpu().numpy()[np.arange(len(zone)), o_idx]
-            ol, cand, dl, dnl, dn = self.model.new_request_logits(self.key, hZ, zt, mt, torch.tensor(origin, device=hZ.device),
+            ol, cand, dl, dnl, dn = self.model.new_request_logits(self.key, hZd, zt, mt, torch.tensor(origin, device=hZ.device),
                                                                   None)
             pd_ = dl.float().softmax(-1).cpu().numpy()
-            dsel = np.array([rng.choice(pd_.shape[1], p=p / p.sum()) for p in pd_])
+            dsel = pick(pd_, ku("dest"))
             ext = np.where(dsel >= R.Z, dsel - R.Z, -1)
             dz = np.where(dsel < R.Z, dsel, -1)
-            _, _, _, dnl, dn = self.model.new_request_logits(self.key, hZ, zt, mt, torch.tensor(origin, device=hZ.device),
+            _, _, _, dnl, dn = self.model.new_request_logits(self.key, hZd, zt, mt, torch.tensor(origin, device=hZ.device),
                                                              torch.tensor(np.maximum(dz, 0), device=hZ.device))
             pn = dnl.float().softmax(-1).cpu().numpy()
-            dnode = np.array([dn[i, rng.choice(pn.shape[1], p=pn[i] / pn[i].sum())].item() for i in range(len(zone))])
+            dnode = dn.cpu().numpy()[np.arange(len(zone)), pick(pn, ku("dnode"))]
         dnode = np.where(ext >= 0, -1, dnode)
         h = int(self.t // 3600) % 24
+        ut = ku("req_t")
         for i in range(len(zone)):
-            push(self.t + rng.uniform(0, S.DT), "request", int(zone[i]), int(mode[i]), int(origin[i]), int(dz[i]), int(dnode[i]), int(ext[i]), hZ)
+            push(self.t + S.DT * ut[i], "request", int(zone[i]), int(mode[i]), int(origin[i]), int(dz[i]), int(dnode[i]), int(ext[i]),
+                 hZ, int(kid[i]))
 
     # ------------------------------------------------------------------ event handlers
     def _on_offer_answer(self, t, i, k, a, push, t1):
@@ -762,8 +816,8 @@ class ImaginedWorld:
         self.log.append((t, "dropoff", d, k, -1, fare))
         self.log.append((t, "settlement", d, k, -1, net))
 
-    def _on_request(self, t, z, m, origin, dz, dnode, ext, hZ, push, t1):
-        g, R, rng = self.g, self.R, self.rng
+    def _on_request(self, t, z, m, origin, dz, dnode, ext, hZ, k, push, t1):
+        g, R = self.g, self.R
         h = int(t // 3600) % 24
         dzone = int(g.zone[dnode]) if dnode >= 0 else int(g.zone[R.gw_pos[ext]])
         base = R.quote(m, z, dzone, ext, h, self.daytype)
@@ -776,9 +830,7 @@ class ImaginedWorld:
         with torch.no_grad():
             pdcl = torch.sigmoid(self.model.decline_logit(hZ, torch.tensor([z], device=hZ.device),
                                                           torch.tensor([m], device=hZ.device), feats)).item()
-        k = self.next_req
-        self.next_req += 1
-        declined = rng.random() < pdcl
+        declined = keyed_uniform(self.seed, self.e, "decline", [k])[0] < pdcl
         self.hist.append((t, z, m, not declined))
         if declined:
             self.log.append((t, "quote_declined", -1, k, z, base * s))

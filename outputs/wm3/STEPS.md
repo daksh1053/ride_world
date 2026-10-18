@@ -105,6 +105,7 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     Hidden traits: correlation of the model's per-driver acceptance / order-follow
     probability with the hidden trait, vs the driver's observed share so far:
       SF offer .31 vs .23, order .41 vs .37; Pune offer .19 vs .20, order .35 vs .30.
+    (Numbers above are wm3_v2; the final model wm3_exo is at the end of this file.)
     Outputs (outputs/wm3/stage2/): 19_heads.png, 19_calibration.png, 19_hidden.png,
       19_eval.json, train_wm3_v2.csv, sf_hd_predictions.html, pune_hd_predictions.html;
       stage2/wm3_base/ the same for the leaky first model.
@@ -146,3 +147,73 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
       20_drivers.png, 20_fairness.png, 20_rollout.json, 20_drivers.csv, 24_hourly.png,
       24_hourly.json, sf_hd_imagined_vs_real.html, pune_hd_imagined_vs_real.html;
       stage3/wm3_base/ the first model's run.
+
+## Stage 4: actions — does the model respond to a platform order as the world does? (2026-10-18)
+    Code: scripts/22_wm3_twins.py (simulator twins), scripts/23_wm3_counterfactual.py,
+    world/wm3/rollout.py (common random numbers), world/wm3/model.py (exogenous demand path)
+    Twins: 13 SF and 12 Pune fresh seasons (new drivers and riders, never in training), 3
+    warm-up days so the platform can read each driver's history, then one test-split day run 3
+    times from the same copied state: the usual dispatch, and the same plus one extra order of
+    30 / 60 (SF) or 100 / 200 (Pune) idle drivers near a busy zone to a zone 10-25 min away,
+    at a random time 11:00-13:00. The arms are identical until the order (checked: first
+    differing step = the order's step). Data: data/<city>/wm3_twins/.
+    Test: from the base run's state just before the order the model imagines the next 90 min
+    with and without the same order (4 draws, same seed per pair); effect = difference.
+    Compared with the simulator's effect (twin minus base) step by step.
+    Three problems found and fixed on the way:
+      shared random stream  one random stream for the whole world: as soon as the order changed
+                 how many things were sampled, the two imagined arms drew unrelated luck and
+                 city-wide counts differed by +-45 pickups from noise alone. Now every driver,
+                 rider and zone gets its own uniform number per step from (seed, step, kind,
+                 entity) (rollout.keyed_uniform; new requests keyed by step, zone, mode, index):
+                 two identical arms are now identical, noise per draw 45 -> 3 pickups.
+      demand saw supply  the request-rate and origin/destination heads read zone tokens that
+                 include idle and busy drivers. Watching the world, "few idle drivers here" does
+                 precede more requests (drivers were used up by demand), so moving drivers away
+                 made the model invent demand: +10-17% requests in the source zones, while the
+                 simulator's requests are identical in both arms (838 = 838). Fix: a separate
+                 zone encoder from exogenous inputs only (place, POIs, time, weather, congestion,
+                 recent requests; not idle / busy / pending / repositioning / surge) feeds the
+                 demand heads; the quote-decline head keeps the full state (riders do react to
+                 ETA and price). Fine-tuned 10k steps from wm3_v2 -> wm3_exo, the final model.
+                 Request-count NLL .102 -> .104 SF, .231 -> .231 Pune.
+      (wm3_tf, time bumps into the driver heads, was rejected; see stage 3.)
+    Results, wm3_exo, 26 SF and 24 Pune pairs; r between model and simulator effects, mean abs.
+    error of the model vs of "no effect":
+                                              SF                    Pune
+      idle drivers in target zone, +30 min    r .93, 4.4 vs 18.5    r .97, 5.2 vs 85
+      idle drivers in source zones, +30 min   r .57, 5.6 vs 6.7     r .97, 6.1 vs 83
+      drivers still repositioning, +30 min    r .40 (all ~0)        r .87, 3.7 vs 7.8
+      ordered drivers who follow              r .96, 2.9 vs 33      r .99, 4.5 vs 111
+      ordered drivers' trips in 90 min        r .79, 10 vs 37       r .81, 9 vs 35
+      ordered drivers' net income in 90 min   r .73, 85 vs 282      r .84, 872 vs 3529
+      all pickups, +60 min                    r .49, 8.3 vs 8.3     r .05, 17 vs 17
+      cancellations, +60 min                  r .32, 4.8 vs 4.9     r -.07, 10 vs 10
+    Pooled over both cities: target idle r .99, source idle r .99, movers' income r .94.
+    City-wide pickups and cancellations hardly change in the simulator either (within its own
+    twin noise); the model now also predicts ~0 there (before the demand fix: +9 vs +5 SF).
+    Before the fixes (wm3_v2 with one random stream): pickups +60 min MAE 30 vs 8 for "no
+    effect", draw s.d. 45 (stage4/wm3_v2/).
+    Followers per pair: model 3.7 drivers mean abs. error, population rate 3.4: with 30-200
+    orders the count is mostly binomial noise. Per driver (who follows), AUC: model .56 SF /
+    .50 Pune, the driver's observed follow rate .58 / .54, the hidden trait .72 / .71 — with
+    only 3 days of history the model knows about as much as the observed rate (on the
+    long-history test days of stage 2 the order head beats the observed rate, r .41 vs .37).
+    Outputs (outputs/wm3/stage4/):
+      23_effects.png    effect over 90 min for the largest order per seed, model draws + mean
+                        vs simulator twins
+      23_scatter.png    every pair, model vs true effect, 8 quantities
+      23_followers.png  followers per pair: model vs population-average compliance
+      23_counterfactual.json, 23_pairs.csv, 23_drivers.csv
+      wm3_v2/           the same before the two fixes
+
+## Final model: wm3_exo (data/wm3_models/wm3_exo.pt)
+    Stage 2 and 3 outputs in outputs/wm3/stage2/ and stage3/ are wm3_exo's; wm3_v2's are in
+    the wm3_v2/ subfolders. Test NLL vs historical rates: better on every head except the
+    origin node within a zone in SF (3.73 vs 3.71). Rollout error after 60 min (SF / Pune):
+    online drivers .023 / .026, idle .14 / .07, pickups .065 / .083, completed trips .060 / .051,
+    cancellations .33 / .13, new requests .074 / .106 (persistence .09/.07, .49/.29, .10/.08,
+    .11/.12, .35/.24, .10/.08). Fairness: income Gini mean abs. error .023 / .013,
+    share of drivers with no income .034 / .020; per-driver income r .74 / .86.
+    Hourly sums of rare events (24_hourly.png): log-ons per day 1315 vs 1274 SF, 3075 vs 3060
+    Pune; rider cancellations 608 vs 628, 2090 vs 2090.

@@ -61,6 +61,12 @@ def time_feats_F(F):
                       bumps(F[..., FI["hours_since_off"]] * 24, 0, 16, 0.5)], -1)
 
 
+# zone columns that do not depend on where drivers are (demand in the simulator is exogenous;
+# a demand head that sees supply learns "few idle drivers -> more requests", which is true when
+# watching but wrong when the platform moves drivers)
+SUPPLY_Z = {"pending", "idle_bike", "idle_auto", "idle_cab", "busy", "repo_to", "surge_bike", "surge_auto", "surge_cab"}
+EXO_Z = [i for i, c in enumerate(FT.Z_COLS) if c not in SUPPLY_Z]
+
 N_TF_D = 41 + 29 + 13
 N_TF_F = 61 + 29 + 33
 
@@ -90,9 +96,14 @@ class Block(nn.Module):
 
 
 class WorldModel3(nn.Module):
-    def __init__(self, tables: dict, d=128, layers=4, heads=4, node_dim=16, tf=False):
+    def __init__(self, tables: dict, d=128, layers=4, heads=4, node_dim=16, tf=False, exo=False):
         super().__init__()
-        self.d, self.heads, self.tf = d, heads, tf                       # tf: time bumps into the driver heads
+        self.d, self.heads, self.tf, self.exo = d, heads, tf, exo       # tf: time bumps into the driver heads
+        if exo:                                                           # exo: demand heads see no supply
+            self.emb_Zx = mlp(len(EXO_Z) + 48 + len(FT.G_COLS), 2 * d, d)
+            self.blocks_x = nn.ModuleList([Block(d, heads) for _ in range(2)])
+            self.dist_wx = nn.Parameter(torch.log(torch.expm1(torch.tensor([0.02, 0.3, 1.0, 3.0]).repeat(heads // 4 + 1)[:heads])).repeat(2, 1))
+            self.out_nx = nn.LayerNorm(d)
         nf = 48                                                         # fourier features of (x, y)
         self.emb_D = mlp(len(FT.D_COLS) + nf, 2 * d, d)
         self.emb_R = mlp(len(FT.R_COLS) + nf, 2 * d, d)
@@ -150,13 +161,29 @@ class WorldModel3(nn.Module):
         nD, nR, nZ = D.shape[1], R.shape[1], Z.shape[1]
         return x[:, :nD], x[:, nD:nD + nR], x[:, nD + nR:nD + nR + nZ], x[:, -1]
 
+    def encode_demand(self, b):
+        """Zone states for the demand heads from exogenous inputs only (place, time, weather,
+        congestion, recent requests), zones attending to zones."""
+        Z, G = b["Z"], b["G"]
+        zxy = Z[..., [0, 1]]
+        x = self.emb_Zx(torch.cat([Z[..., EXO_Z], fourier(zxy), G[:, None].expand(-1, Z.shape[1], -1)], -1))
+        dist = torch.cdist(zxy, zxy) * 10.0
+        pad = torch.zeros_like(dist).masked_fill(~b["Z_mask"][:, None, :], float("-inf"))
+        for li, blk in enumerate(self.blocks_x):
+            w = Fn.softplus(self.dist_wx[li])
+            x = blk(x, pad[:, None] - w[None, :, None, None] * dist[:, None])
+        return self.out_nx(x)
+
     # ------------------------------------------------------------------ heads
     def forward(self, b):
         hD, hR, hZ, hG = self.encode(b)
         out = {"ev": self.h_ev(torch.cat([hD, time_feats_D(b["D"]).to(hD.dtype)], -1) if self.tf else hD), "offer": self.h_offer(hD), "order": self.h_order(hD),
                "repo": torch.einsum("bnd,bzd->bnz", self.q_repo(hD), self.k_repo(hZ)) / math.sqrt(self.d),
                "cancel": self.h_cancel(hR)[..., 0], "board": self.h_board(hR)[..., 0],
-               "rate": self.h_rate(hZ)}
+               "rate": None}
+        hZd = self.encode_demand(b) if self.exo else hZ
+        out["rate"] = self.h_rate(hZd)
+        out["hZd"] = hZd
         out["repo"] = out["repo"].masked_fill(~b["Z_mask"][:, None, :], float("-inf"))
         F = b["F"]
         fxy = F[..., [5, 6]]
@@ -222,6 +249,7 @@ def losses(model, b, out):
     L["new_requests"] = ((lr.exp() - y * lr + torch.lgamma(y + 1))[m]).sum(-1).mean()
     # each new request: origin node, destination, destination node, quote declined
     hZ = out["h"][2]
+    hZd = out.get("hZd", hZ)                                           # demand states (exogenous if exo)
     lo, ld, ldn, ldc, n = 0.0, 0.0, 0.0, 0.0, 0
     for bi, key in enumerate(b["city"]):
         nw = b["NEW"][bi][b["NEW_mask"][bi]]
@@ -233,7 +261,7 @@ def losses(model, b, out):
         dz = nw[:, NEW["dest_zone"]].long()
         dnode = nw[:, NEW["dest_node"]].long()
         Zb = int(b["Z_mask"][bi].sum())
-        ol, cand, dl, dnl, dn = model.new_request_logits(key, hZ[bi, :Zb], zone, mode, origin, dz)
+        ol, cand, dl, dnl, dn = model.new_request_logits(key, hZd[bi, :Zb], zone, mode, origin, dz)
         lo = lo + Fn.cross_entropy(ol, (cand == origin[:, None]).float().argmax(1), reduction="sum")
         dtarget = torch.where(ext >= 0, Zb + ext.clamp(min=0), dz.clamp(min=0))
         ld = ld + Fn.cross_entropy(dl, dtarget, reduction="sum")

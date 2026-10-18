@@ -92,7 +92,8 @@ def predictions(model, key, L, g, prior, ids, rq, e0, e1):
             if lam[:, m].sum() < 1e-4:
                 continue
             zt = torch.arange(tab.Z, device=hZ.device)
-            ol, cand, *_ = model.new_request_logits(key, hZ[:tab.Z], zt, torch.full_like(zt, m))
+            hZd = out.get("hZd", out["h"][2])[0].float()
+            ol, cand, *_ = model.new_request_logits(key, hZd[:tab.Z], zt, torch.full_like(zt, m))
             p = ol.float().softmax(-1) * lam[:tab.Z, m:m + 1] * 20
             node_val.index_add_(0, cand.clamp(min=0).flatten(), (p * (cand >= 0)).flatten())
         v = node_val.cpu().numpy()

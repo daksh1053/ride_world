@@ -103,9 +103,8 @@ class Tracked(RO.ImaginedWorld):
         super().__init__(*a, **kw)
         self.req_origin = {k: q["origin"] for k, q in self.req.items()}
 
-    def _on_request(self, t, z, m, origin, dz, dnode, ext, hZ, push, t1):
-        k = self.next_req
-        super()._on_request(t, z, m, origin, dz, dnode, ext, hZ, push, t1)
+    def _on_request(self, t, z, m, origin, dz, dnode, ext, hZ, k, push, t1):
+        super()._on_request(t, z, m, origin, dz, dnode, ext, hZ, k, push, t1)
         self.req_origin[k] = origin
 
 
@@ -126,7 +125,10 @@ def imagine(model, rules, L, prior, e0, order, tgt, src, movers, seed):
         rows.append(model_row(W, log0, tgt, src))
     lg = pd.DataFrame(W.log[log0:], columns=["t", "type", "d", "k", "z", "v"])
     mv = np.asarray(movers, int)
-    fol = int(((lg.type == "dispatch_accepted") & lg.d.isin(mv) & (lg.z == tgt)).sum())
+    fset = set(lg[(lg.type == "dispatch_accepted") & lg.d.isin(mv) & (lg.z == tgt)].d.astype(int))
+    imagine.followed = fset
+    imagine.order_p = dict(W.order_p)
+    fol = len(fset)
     return pd.DataFrame(rows), fol, float((W.count["trips"][mv] - trips0[mv]).sum()), float((W.income[mv] - inc0[mv]).sum())
 
 
@@ -151,7 +153,7 @@ def run(args):
     model, ck = TR.load(args.tag)
     model.eval()
     OUT.mkdir(parents=True, exist_ok=True)
-    rows, curves = [], []
+    rows, curves, drivers = [], [], []
     for key in args.cities:
         city = cities.get(key)
         rules = None
@@ -178,11 +180,21 @@ def run(args):
                 t_inc = [float((L.income[movers, e1] - L.income[movers, e0]).sum()) for L in (Lb, Lc)]
                 comp = Lb.latent.set_index("driver_id").reposition_compliance.reindex(movers).to_numpy()
                 diffs, fols, mtr, minc = [], [], [], []
+                f_cnt = {d: 0 for d in movers}
                 for m in range(args.draws):
                     kb, _, trb, inb = imagine(model, rules, Lb, prior, e0, False, tgt, src, movers, 100 + m)
                     kc, fol, trc, inc = imagine(model, rules, Lb, prior, e0, True, tgt, src, movers, 100 + m)
+                    for d in imagine.followed:
+                        f_cnt[d] += 1
+                    p_follow = imagine.order_p
                     diffs.append(kc - kb); fols.append(fol); mtr.append(trc - trb); minc.append(inc - inb)
                 md = sum(diffs) / len(diffs)
+                t_set = set(evc[(evc.type == "dispatch_accepted") & evc.driver_id.isin(movers)].driver_id.astype(int))
+                hist = Lb.count["orders"][movers, e0].astype(float)
+                obs = (Lb.count["orders"][movers, e0] - Lb.count["orders_declined"][movers, e0] + prior_follow(prior, movers)) / (hist + 1.0)
+                for j, d in enumerate(movers):
+                    drivers.append({"key": key, "seed": rec["seed"], "arm": arm["arm"], "driver": int(d), "followed": int(d in t_set),
+                                    "p_model": p_follow.get(int(d), np.nan), "model_follow_share": f_cnt[d] / args.draws, "trait": float(comp[j]), "observed_rate": float(obs[j])})
                 td = tc - tb
                 curves.append({"key": key, "seed": rec["seed"], "arm": arm["arm"], "n": len(movers), "truth": td, "model": md,
                                "draws": diffs})
@@ -204,10 +216,31 @@ def run(args):
                       f"({time.time() - t0:.0f}s)", flush=True)
     df = pd.DataFrame(rows)
     df.to_csv(OUT / "23_pairs.csv", index=False)
-    return df, curves
+    dr = pd.DataFrame(drivers)
+    dr.to_csv(OUT / "23_drivers.csv", index=False)
+    return df, curves, dr
 
 
-def summarise(df):
+def prior_follow(prior, ids):
+    """Follow share from earlier days (the Prior), as a pseudo-count for today's rate."""
+    try:
+        a = prior.a
+        o, f = a["orders"][ids], a["followed"][ids]
+        return np.where(o > 0, f / np.maximum(o, 1), 0.735)
+    except Exception:
+        return np.full(len(ids), 0.735)
+
+
+def auc(y, x):
+    y, x = np.asarray(y), np.asarray(x, float)
+    if y.min() == y.max():
+        return None
+    r = pd.Series(x).rank().to_numpy()
+    n1 = y.sum()
+    return float((r[y == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * (len(y) - n1)))
+
+
+def summarise(df, dr=None):
     res = {}
     for key, d in df.groupby("key"):
         r = {"pairs": len(d)}
@@ -221,6 +254,11 @@ def summarise(df):
                           "mean_model": float(x.mean())}
         r["followers_trait_mae"] = float(np.abs(d.followers_trait - d.followers_true).mean())
         r["followers_avg_rate_mae"] = float(np.abs(d.followers_avg_rate - d.followers_true).mean())
+        if dr is not None and len(dr):
+            q = dr[dr.key == key]
+            q = q[q.p_model.notna()]
+            r["per_driver_follow_auc"] = {"model": auc(q.followed, q.p_model), "hidden_trait": auc(q.followed, q.trait),
+                                          "observed_rate": auc(q.followed, q.observed_rate), "drivers": len(q)}
         res[key] = r
     return res
 
@@ -317,15 +355,16 @@ def main():
     ap.add_argument("--draws", type=int, default=4)
     ap.add_argument("--cities", nargs="+", default=["sf_hd", "pune_hd"])
     args = ap.parse_args()
-    df, curves = run(args)
-    res = summarise(df)
+    df, curves, dr = run(args)
+    res = summarise(df, dr)
     (OUT / "23_counterfactual.json").write_text(json.dumps(res, indent=1))
     plot_effects(curves, OUT / "23_effects.png")
     plot_scatter(df, OUT / "23_scatter.png")
     plot_followers(df, OUT / "23_followers.png")
     for key, r in res.items():
         print(key, {k: (round(v["r"], 2) if v["r"] is not None else None, round(v["mae_model"], 1), round(v["mae_zero"], 1))
-                    for k, v in r.items() if isinstance(v, dict) and ("@30" in k or "@60" in k or "@" not in k)})
+                    for k, v in r.items() if isinstance(v, dict) and "r" in v and ("@30" in k or "@60" in k or "@" not in k)})
+        print(key, "per-driver follow AUC", r.get("per_driver_follow_auc"))
     print(f"  wrote {OUT}")
 
 

@@ -89,12 +89,13 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--init", default="", help="start from this checkpoint tag (fine-tuning)")
     ap.add_argument("--tf", action="store_true", help="time bumps into the driver heads (world/wm3/model.py)")
+    ap.add_argument("--exo", action="store_true", help="demand heads see no supply (world/wm3/model.py)")
     args = ap.parse_args()
     torch.manual_seed(args.seed)
     tabs = tables()
     if args.init:
         ck0 = torch.load(MODELS / f"{args.init}.pt", map_location=DEV)
-        arch = {**ck0["arch"], **({"tf": True} if args.tf else {})}
+        arch = {**ck0["arch"], **({"tf": True} if args.tf else {}), **({"exo": True} if args.exo else {})}
         model = make_model(tabs, **arch)
         own = model.state_dict()
         keep = {k: v for k, v in ck0["state"].items() if k in own and own[k].shape == v.shape}
@@ -102,7 +103,8 @@ def main():
         print(f"  from {args.init}: {len(keep)}/{len(own)} tensors copied, new: "
               f"{sorted({k.rsplit('.', 2)[0] for k in own if k not in keep})}", flush=True)
     else:
-        arch = {"d": args.d, "layers": args.layers, "heads": args.heads, **({"tf": True} if args.tf else {})}
+        arch = {"d": args.d, "layers": args.layers, "heads": args.heads, **({"tf": True} if args.tf else {}),
+                **({"exo": True} if args.exo else {})}
         model = make_model(tabs, **arch)
     n_par = sum(p.numel() for p in model.parameters())
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)

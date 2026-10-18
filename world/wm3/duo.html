@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imagined vs Real</title>
+<style>
+:root{color-scheme:light;--bg:#f6f5f2;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#898781;--line:#e4e3df;--road:#d4d2cb;--road2:#b4b2aa;
+--idle:#898781;--blue:#2a78d6;--orange:#eb6834;--aqua:#1baf7a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121211;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8e86;--line:#2e2e2b;--road:#393936;--road2:#55544f;--idle:#a3a29b;--blue:#3987e5;--orange:#d95926;--aqua:#199e70}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121211;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8e86;--line:#2e2e2b;--road:#393936;--road2:#55544f;--idle:#a3a29b;--blue:#3987e5;--orange:#d95926;--aqua:#199e70}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1600px;margin:0 auto;padding:18px 16px 40px}h1{font-size:20px;margin:0 0 2px}.sub{color:var(--ink2);margin:0 0 12px;max-width:1150px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}button,select{font:inherit;padding:4px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
+input[type=range]{flex:1;min-width:200px}#tl{font-weight:600;font-variant-numeric:tabular-nums;min-width:150px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:900px){.two{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px}.card h3{margin:0 0 4px;font-size:14px}
+canvas{width:100%;height:62vh;min-height:360px;display:block;cursor:grab;touch-action:none}
+.k{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--ink2);margin-top:6px;font-variant-numeric:tabular-nums}.k b{color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink2);margin-bottom:8px}.sw{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
+</style></head><body><main>
+<h1 id="title"></h1>
+<p class="sub">Left: what the simulator did in this hour. Right: the same hour imagined by world model 3, started from the identical state at the first frame and then run only on its own predictions (drivers' decisions, riders' requests and cancellations sampled from the learned model; routes, driving and fares by the fixed rules). Individual drivers will not match exactly — the model draws one possible future — but the city should behave the same way. Scroll to zoom, drag to pan (both maps move together).</p>
+<div class="bar"><button id="play">Play</button><select id="sp"><option value="30">30x</option><option value="60" selected>60x</option><option value="180">180x</option></select><input type="range" id="sl" min="0"><span id="tl"></span><button id="fit">Reset view</button></div>
+<div class="legend"><span><span class="sw" style="background:var(--idle)"></span>idle</span><span><span class="sw" style="background:var(--blue)"></span>to pickup / offered</span><span><span class="sw" style="background:var(--orange)"></span>with rider</span><span><span class="sw" style="background:var(--aqua)"></span>repositioning</span><span><span class="sw" style="border:2px solid var(--idle)"></span>break</span><span><b>x</b> rider waiting for a driver</span></div>
+<div class="two"><div class="card"><h3>Simulator (truth)</h3><canvas id="c0"></canvas><div class="k" id="k0"></div></div>
+<div class="card"><h3>Imagined by world model 3</h3><canvas id="c1"></canvas><div class="k" id="k1"></div></div></div>
+</main><script>
+const D=/*DATA*/null;
+const dec=(s,T)=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new T(u.buffer)};
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NX=dec(D.nodes.x,Uint16Array),NY=dec(D.nodes.y,Uint16Array),EU=dec(D.edges.u,Uint32Array),EV=dec(D.edges.v,Uint32Array),EC=dec(D.edges.cls,Uint8Array);
+const S=[D.truth,D.model].map(s=>({x:dec(s.x,Uint16Array),y:dec(s.y,Uint16Array),st:dec(s.st,Int8Array),ro:dec(s.riders.off,Int32Array),rn:dec(s.riders.node,Int32Array)}));
+const n=D.n,NE=D.ne;document.getElementById("title").textContent=`${D.city}, ${D.date}: one hour, simulator vs imagined`;
+const cvs=[0,1].map(i=>document.getElementById("c"+i)),ctx=cvs.map(c=>c.getContext("2d")),rc=cvs.map(()=>document.createElement("canvas"));
+let W=0,H=0,view={s:1,ox:0,oy:0},xmin=1e9,xmax=0,ymin=1e9,ymax=0,dirty=true;
+for(let i=0;i<NX.length;i++){xmin=Math.min(xmin,NX[i]);xmax=Math.max(xmax,NX[i]);ymin=Math.min(ymin,NY[i]);ymax=Math.max(ymax,NY[i])}
+const sx=x=>(x-view.ox)*view.s,sy=y=>H-(y-view.oy)*view.s;
+function resize(){const d=devicePixelRatio||1;W=cvs[0].clientWidth;H=cvs[0].clientHeight;cvs.forEach((c,i)=>{c.width=W*d;c.height=H*d;rc[i].width=W*d;rc[i].height=H*d;ctx[i].setTransform(d,0,0,d,0,0);rc[i].getContext("2d").setTransform(d,0,0,d,0,0)});dirty=true}
+function fit(){view.s=Math.min(W/(xmax-xmin),H/(ymax-ymin))*.96;view.ox=xmin-(W/view.s-(xmax-xmin))/2;view.oy=ymin-(H/view.s-(ymax-ymin))/2;dirty=true}
+function roads(){const r=rc[0].getContext("2d");r.clearRect(0,0,W,H);for(const p of [0,1]){r.beginPath();r.strokeStyle=css(p?"--road2":"--road");r.lineWidth=p?1:.5;
+  for(let i=0;i<EU.length;i++){if((EC[i]>=2)!==!!p)continue;const a=EU[i],b=EV[i],x1=sx(NX[a]),y1=sy(NY[a]),x2=sx(NX[b]),y2=sy(NY[b]);if((x1<0&&x2<0)||(x1>W&&x2>W)||(y1<0&&y2<0)||(y1>H&&y2>H))continue;r.moveTo(x1,y1);r.lineTo(x2,y2)}r.stroke()}
+  const r2=rc[1].getContext("2d");r2.clearRect(0,0,W,H);r2.drawImage(rc[0],0,0,W,H);dirty=false}
+let t=0,playing=false,last=0;const sl=document.getElementById("sl");sl.max=(NE-1)*10;
+function draw(){if(dirty)roads();const e=Math.min(NE-1,Math.floor(t/D.dt)),f=t/D.dt-e;
+  const col={1:css("--idle"),2:css("--blue"),3:css("--blue"),4:css("--orange"),5:css("--aqua"),6:css("--orange"),7:css("--idle")};
+  const r=Math.max(1.8,Math.min(5,view.s*D.unit*22));
+  S.forEach((s,i)=>{const c=ctx[i];c.clearRect(0,0,W,H);c.drawImage(rc[i],0,0,W,H);const cnt=[0,0,0,0,0,0,0,0];
+    for(let d=0;d<n;d++){const k=d*NE+e,st=s.st[k];cnt[st]++;if(!st||s.x[k]===65535)continue;let x=s.x[k],y=s.y[k];
+      if(e+1<NE&&s.x[k+1]!==65535){x+=(s.x[k+1]-x)*f;y+=(s.y[k+1]-y)*f}const X=sx(x),Y=sy(y);if(X<-5||X>W+5||Y<-5||Y>H+5)continue;
+      c.beginPath();c.arc(X,Y,r,0,6.2832);if(st===7||st===6){c.strokeStyle=col[st];c.lineWidth=1.2;c.stroke()}else{c.fillStyle=col[st];c.fill()}}
+    c.strokeStyle=css("--ink");c.lineWidth=1.4;const a=r*1.1;let nr=0;for(let j=s.ro[e];j<s.ro[e+1];j++){nr++;const X=sx(NX[s.rn[j]]),Y=sy(NY[s.rn[j]]);c.beginPath();c.moveTo(X-a,Y-a);c.lineTo(X+a,Y+a);c.moveTo(X+a,Y-a);c.lineTo(X-a,Y+a);c.stroke()}
+    document.getElementById("k"+i).innerHTML=`online <b>${n-cnt[0]}</b> · idle <b>${cnt[1]}</b> · to pickup <b>${cnt[2]+cnt[3]}</b> · with rider <b>${cnt[4]+cnt[6]}</b> · repositioning <b>${cnt[5]}</b> · break <b>${cnt[7]}</b> · riders waiting <b>${nr}</b>`});
+  const tau=D.w0+t,h=Math.floor(tau/3600),m=Math.floor(tau%3600/60);document.getElementById("tl").textContent=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} (+${Math.floor(t/60)} min)`;sl.value=Math.round(t/3)}
+let drag=null;cvs.forEach(cv=>{cv.onpointerdown=ev=>{drag={x:ev.clientX,y:ev.clientY,ox:view.ox,oy:view.oy};cv.setPointerCapture(ev.pointerId)};
+  cv.onpointermove=ev=>{if(!drag)return;view.ox=drag.ox-(ev.clientX-drag.x)/view.s;view.oy=drag.oy+(ev.clientY-drag.y)/view.s;dirty=true;draw()};cv.onpointerup=()=>drag=null;
+  cv.addEventListener("wheel",ev=>{ev.preventDefault();const b=cv.getBoundingClientRect(),mx=ev.clientX-b.left,my=ev.clientY-b.top,wx=mx/view.s+view.ox,wy=(H-my)/view.s+view.oy;
+    view.s*=Math.exp(-ev.deltaY*.0015);view.ox=wx-mx/view.s;view.oy=wy-(H-my)/view.s;dirty=true;draw()},{passive:false})});
+sl.oninput=()=>{t=+sl.value*3;draw()};document.getElementById("fit").onclick=()=>{fit();draw()};
+document.getElementById("play").onclick=ev=>{playing=!playing;ev.target.textContent=playing?"Pause":"Play";last=performance.now();if(playing)requestAnimationFrame(loop)};
+function loop(now){if(!playing)return;t=Math.min((NE-1)*D.dt,t+(now-last)/1000*+document.getElementById("sp").value);last=now;draw();if(t>=(NE-1)*D.dt){playing=false;document.getElementById("play").textContent="Play"}else requestAnimationFrame(loop)}
+addEventListener("resize",()=>{resize();fit();draw()});resize();fit();draw();
+</script></body></html>

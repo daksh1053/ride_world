@@ -1,0 +1,150 @@
+{
+ "sf_hd": {
+  "driver_event": {
+   "model": 0.028623032395645318,
+   "baseline": 0.033288324976863036,
+   "n": 128330
+  },
+  "offer_answer": {
+   "model": 0.5330559121394866,
+   "baseline": 0.5522934945040316,
+   "n": 2088
+  },
+  "order_answer": {
+   "model": 0.585103241039773,
+   "baseline": 0.5906944192862517,
+   "n": 526
+  },
+  "own_reposition_zone": {
+   "model": 0.21651396869001063,
+   "baseline": 3.2883508395155223,
+   "n": 85
+  },
+  "comes_online": {
+   "model": 0.0020652282495010523,
+   "baseline": 0.002580749413485102,
+   "n": 518750
+  },
+  "rider_cancels": {
+   "model": 0.03320263995714248,
+   "baseline": 0.036036833903262774,
+   "n": 11451
+  },
+  "rider_boards": {
+   "model": 0.5458672459419941,
+   "baseline": 0.5680711534001028,
+   "n": 3006
+  },
+  "new_requests": {
+   "model": 0.10480762417253572,
+   "baseline": 0.10865221692179403,
+   "n": 62400
+  },
+  "request_origin_node": {
+   "model": 3.694706932975356,
+   "baseline": 3.7129103474793843,
+   "n": 1755
+  },
+  "request_destination": {
+   "model": 4.218733858450865,
+   "baseline": 4.396009479903841,
+   "n": 1755
+  },
+  "request_dest_node": {
+   "model": 3.346821723908101,
+   "baseline": 3.4001598841046374,
+   "n": 1755
+  },
+  "quote_declined": {
+   "model": 0.2115213406922301,
+   "baseline": 0.21211429031919457,
+   "n": 1755
+  },
+  "hidden": {
+   "offer": {
+    "drivers": 1575,
+    "r_model_vs_trait": 0.31179624955567625,
+    "r_observed_vs_trait": 0.22715055419840077
+   },
+   "order": {
+    "drivers": 534,
+    "r_model_vs_trait": 0.405824612447163,
+    "r_observed_vs_trait": 0.3747179843478782
+   }
+  }
+ },
+ "pune_hd": {
+  "driver_event": {
+   "model": 0.02231964228483292,
+   "baseline": 0.02509075025485001,
+   "n": 504753
+  },
+  "offer_answer": {
+   "model": 0.6155620163808034,
+   "baseline": 0.6515962418584087,
+   "n": 3514
+  },
+  "order_answer": {
+   "model": 0.569798985419409,
+   "baseline": 0.5816155582023375,
+   "n": 1723
+  },
+  "own_reposition_zone": {
+   "model": 0.8284515550111109,
+   "baseline": 3.808779450398697,
+   "n": 20
+  },
+  "comes_online": {
+   "model": 0.0024484526428343797,
+   "baseline": 0.00297644669475256,
+   "n": 1117686
+  },
+  "rider_cancels": {
+   "model": 0.03647921488233853,
+   "baseline": 0.04740581254438058,
+   "n": 27702
+  },
+  "rider_boards": {
+   "model": 0.5396708041388119,
+   "baseline": 0.5650860994110334,
+   "n": 4364
+  },
+  "new_requests": {
+   "model": 0.23085965803358705,
+   "baseline": 0.23885933095997908,
+   "n": 54800
+  },
+  "request_origin_node": {
+   "model": 4.782020636472756,
+   "baseline": 4.913126724930915,
+   "n": 2824
+  },
+  "request_destination": {
+   "model": 4.24085084211725,
+   "baseline": 4.334612717036595,
+   "n": 2824
+  },
+  "request_dest_node": {
+   "model": 4.693921217499644,
+   "baseline": 4.812331532903973,
+   "n": 2824
+  },
+  "quote_declined": {
+   "model": 0.21086691250818815,
+   "baseline": 0.22107650921021077,
+   "n": 2824
+  },
+  "hidden": {
+   "offer": {
+    "drivers": 3633,
+    "r_model_vs_trait": 0.18601500525987136,
+    "r_observed_vs_trait": 0.2006609353210358
+   },
+   "order": {
+    "drivers": 2287,
+    "r_model_vs_trait": 0.34709790449895983,
+    "r_observed_vs_trait": 0.29698450309071034
+   }
+  }
+ }
+}

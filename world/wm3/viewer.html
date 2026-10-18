@@ -28,7 +28,9 @@ td:first-child{color:var(--ink2);white-space:nowrap}td:last-child{font-variant-n
 <p class="sub">The world as world model 3 sees it, rebuilt every 30 seconds from the simulator's logs: every driver at its exact place on the road graph, every open request, every road's travel time. Click a driver or a waiting rider to see its full record (what the model reads at this step) and what happens to it in the next 30 seconds (what the model must predict). Scroll to zoom, drag to pan.</p>
 <div class="kpis" id="kpis"></div>
 <div class="bar"><button id="play">Play</button><select id="speed"><option value="10">10x</option><option value="30" selected>30x</option><option value="120">120x</option><option value="300">300x</option></select>
-<input type="range" id="slider" min="0" step="1"><span id="tlabel"></span><button id="fit">Reset view</button></div>
+<input type="range" id="slider" min="0" step="1"><span id="tlabel"></span><button id="fit">Reset view</button>
+<span id="predctl" style="display:none">Colour drivers by <select id="colorby"><option value="status">status</option><option value="off">model: chance of going offline in the next 10 min</option><option value="brk">model: chance of a break in the next 10 min</option><option value="own">model: chance of any own decision in the next 10 min</option></select>
+<label style="margin-left:8px"><input type="checkbox" id="demand"> predicted new requests (next 10 min)</label></span></div>
 <div class="legend" id="legend"></div>
 <div class="wrap"><canvas id="map"></canvas><div class="panel" id="panel"><p class="muted">Click a driver (dot) or a waiting rider (x) on the map.</p></div></div>
 <p class="note">Colours: grey idle; blue filled heading to a pickup, blue ring an offer is out; orange with a rider (ring: outside the city on an intercity trip); aqua repositioning; grey ring on a break. Black x: a rider waiting with no driver yet; blue line: driver to the rider it is driving to. Roads are violet where travel time is at least 1.15 x free-flow, darker = slower. Hidden driver traits (accept bias, compliance) are never shown: they are what the model has to infer from each driver's history.</p>
@@ -52,6 +54,13 @@ const RQ={};for(const k of ["id","origin","dest"])RQ[k]=dec(D.requests[k],Int32A
 for(const k of ["quote","created","accept","arrive","pickup","cancel"])RQ[k]=dec(D.requests[k],Float32Array);
 const OF={req:dec(D.offers.req,Int32Array),drv:dec(D.offers.drv,Int32Array),t:dec(D.offers.t,Float32Array),tr:dec(D.offers.tr,Float32Array),resp:dec(D.offers.resp,Int8Array)};
 const T=D.types,TI=Object.fromEntries(T.map((t,i)=>[t,i]));
+const PR=D.pred?{ev:dec(D.pred.ev,Uint16Array),offer:dec(D.pred.offer,Uint16Array),order:dec(D.pred.order,Uint16Array),
+  re:dec(D.pred.req_e,Int16Array),rj:dec(D.pred.req_j,Int32Array),rc:dec(D.pred.req_cancel,Uint16Array),rb:dec(D.pred.req_board,Uint16Array),
+  doff:dec(D.pred.dem_off,Int32Array),dn:dec(D.pred.dem_node,Uint32Array),dv:dec(D.pred.dem_val,Float32Array),lab:dec(D.pred.labels_ev,Int8Array),EVN:D.pred.ev_names}:null;
+const NEV=PR?PR.EVN.length:0;
+function pEv(d,e,c){return PR.ev[(d*NE+e)*NEV+c]/65535}
+function pSoon(d,e,cs){let q=0;for(const c of cs)q+=pEv(d,e,c);return 1-Math.pow(1-Math.min(q,.999),20)}   // 20 steps of 30 s
+const reqPred=new Map();if(PR)for(let i=0;i<PR.re.length;i++)reqPred.set(PR.rj[i]*NE+PR.re[i],i);
 const STN=["offline","idle","offered","heading to pickup","with rider","repositioning","outside the city","on break"];
 const COUNTERS={trips:["dropoff"],offers:["offer_sent"],offers_rejected:["offer_rejected"],offers_timeout:["offer_timeout"],orders:["dispatch_sent"],orders_declined:["dispatch_declined"],breaks:["driver_break"]};
 // per-driver event and status lists
@@ -117,8 +126,16 @@ function draw(){const e=Math.min(NE-1,Math.floor(t/D.dt)),sl=Math.floor(e/10);if
   ctx.lineWidth=1.2;ctx.strokeStyle=col[3];ctx.globalAlpha=.75;ctx.beginPath();
   for(let d=0;d<nd;d++){const k=d*NE+e;if(ST[k]!==3||LG[k]<0)continue;const q=reqIx.get(LEGS.req[LG[k]]);if(q==null)continue;const p=pos(d,t);if(!p)continue;
     ctx.moveTo(sx(p[0]),sy(p[1]));ctx.lineTo(sx(N.x[RQ.origin[q]]),sy(N.y[RQ.origin[q]]))}ctx.stroke();ctx.globalAlpha=1;
+  if(PR&&document.getElementById("demand").checked){const c1=css("--orange");ctx.fillStyle=c1;
+    for(let i=PR.doff[e];i<PR.doff[e+1];i++){const v=PR.dv[i],nn=PR.dn[i];const X=sx(N.x[nn]),Y=sy(N.y[nn]);if(X<-5||X>W+5||Y<-5||Y>H+5)continue;
+      ctx.globalAlpha=Math.min(.9,.15+v*1.5);ctx.beginPath();ctx.arc(X,Y,Math.max(1.5,Math.min(9,2+Math.sqrt(v)*7)),0,6.2832);ctx.fill()}ctx.globalAlpha=1;
+    ctx.strokeStyle=css("--ink");ctx.lineWidth=1.2;for(let j=0;j<RQ.id.length;j++){if(RQ.created[j]>tau&&RQ.created[j]<=tau+600){const X=sx(N.x[RQ.origin[j]]),Y=sy(N.y[RQ.origin[j]]);ctx.strokeRect(X-3,Y-3,6,6)}}}
   screenPts=[];
-  for(const s of [1,7,5,6,4,2,3]){if(!filt[s])continue;ctx.fillStyle=col[s];ctx.strokeStyle=col[s];ctx.lineWidth=1.3;
+  const cmode=PR?document.getElementById("colorby").value:"status";
+  if(cmode!=="status"){const cs={off:[1],brk:[2],own:[1,2,3,4,5,6,7]}[cmode];const lo=css("--c0"),hi=css("--c2");
+    for(let d=0;d<nd;d++){const s=ST[d*NE+e];if(!s||!filt[s])continue;const p=pos(d,t);if(!p)continue;const X=sx(p[0]),Y=sy(p[1]);if(X<-10||X>W+10||Y<-10||Y>H+10)continue;
+      const v=Math.min(1,pSoon(d,e,cs)*2);ctx.fillStyle=lerpC(lo,hi,v);ctx.beginPath();ctx.arc(X,Y,r,0,6.2832);ctx.fill();screenPts.push([X,Y,"d",d])}}
+  else for(const s of [1,7,5,6,4,2,3]){if(!filt[s])continue;ctx.fillStyle=col[s];ctx.strokeStyle=col[s];ctx.lineWidth=1.3;
     for(let d=0;d<nd;d++){if(ST[d*NE+e]!==s)continue;const p=pos(d,t);if(!p)continue;const X=sx(p[0]),Y=sy(p[1]);if(X<-10||X>W+10||Y<-10||Y>H+10)continue;
       ctx.beginPath();ctx.arc(X,Y,r,0,6.2832);hollow[s]?ctx.stroke():ctx.fill();screenPts.push([X,Y,"d",d])}}
   const ink=css("--ink");ctx.strokeStyle=ink;ctx.lineWidth=1.4;const a=r*1.1;
@@ -151,6 +168,9 @@ function showDriver(d){const e=Math.min(NE-1,Math.floor(t/D.dt)),r=driverRecord(
   h+=`<h3>Platform action to this driver at ${hhmm(tau)}</h3>`+(acts.length?acts.join("<br>"):'<span class="muted">none</span>');
   const nx=evBy[d].filter(i=>EV.t[i]>tau&&EV.t[i]<=tau+D.dt);
   h+=`<h3>What happens in the next 30 s — the model's targets</h3>`+(nx.length?"<table>"+nx.map(i=>row("+"+fmt(EV.t[i]-tau,1)+" s",T[EV.type[i]].replaceAll("_"," ")+(EV.req[i]>=0?` (request ${EV.req[i]})`:"")+(EV.zone[i]>=0&&T[EV.type[i]].startsWith("dispatch")?` zone ${EV.zone[i]}`:""))).join("")+"</table>":'<span class="muted">no events</span>');
+  if(PR){const lab=PR.lab[d*NE+e];h+=`<h3>World model 3's prediction for the next 30 s</h3><table>`;
+    for(let c=0;c<NEV;c++){const v=pEv(d,e,c);if(v<0.0005&&c!==lab)continue;h+=row(PR.EVN[c].replaceAll("_"," ")+(c===lab?" ← happened":""),(100*v).toFixed(c?2:1)+"%")}
+    const po=PR.offer[k],pr=PR.order[k];if(po!==65535)h+=row("accepts the offer",(100*po/65535).toFixed(0)+"%");if(pr!==65535)h+=row("follows the order",(100*pr/65535).toFixed(0)+"%");h+="</table>"}
   const s2=e+1<NE?ST[k+1]:null;h+=`<p class="muted">status at ${hhmm(tau+D.dt)}: ${s2==null?"–":STN[s2]}${p&&e+1<NE&&PX[k+1]!==65535?`, moved ${fmt(Math.hypot(PX[k+1]-PX[k],PY[k+1]-PY[k])*D.unit,0)} m`:""}</p>`;
   document.getElementById("panel").innerHTML=h}
 function nearestNode(p){let b=0,bd=1e18;for(let i=0;i<N.x.length;i+=1){const dx=N.x[i]-p[0],dy=N.y[i]-p[1],q=dx*dx+dy*dy;if(q<bd){bd=q;b=i}}return b}
@@ -158,6 +178,7 @@ function showReq(j){const e=Math.min(NE-1,Math.floor(t/D.dt)),tau=D.w0+e*D.dt,s=
   let h=`<h3>Request ${RQ.id[j]} at ${hhmm(tau)} — what the model reads</h3><table>`+row("status",s<0?"not open":RS[s])+row("waited",fmt((tau-RQ.created[j])/60)+" min")+row("mode",D.modes[RQ.mode[j]])+row("origin",`node ${RQ.origin[j]} (zone ${N.zone[RQ.origin[j]]})`)+row("destination",RQ.dest[j]>=0?`node ${RQ.dest[j]} (zone ${N.zone[RQ.dest[j]]})`:"outside the city")+row("quote",`${fmt(RQ.quote[j],2)} ${D.currency}`)+row("offers so far",offs.length)+"</table>";
   const fut=[];if(RQ.pickup[j]<1e8)fut.push(`picked up at ${hhmm(RQ.pickup[j])}`);if(RQ.cancel[j]<1e8)fut.push(`rider cancels at ${hhmm(RQ.cancel[j])}`);
   const nx=(offBy.get(RQ.id[j])||[]).filter(i=>OF.t[i]>tau&&OF.t[i]<=tau+D.dt).map(i=>`offered to driver ${OF.drv[i]}`);
+  if(PR){const i=reqPred.get(j*NE+e);if(i!=null)h+=`<h3>World model 3's prediction for the next 30 s</h3><table>`+row("rider cancels",(100*PR.rc[i]/65535).toFixed(2)+"%")+(s===3?row("rider boards",(100*PR.rb[i]/65535).toFixed(1)+"%"):"")+"</table>"}
   h+=`<h3>Next 30 s</h3>`+(nx.length?nx.join("<br>"):'<span class="muted">no offer</span>')+`<h3>Later (the outcome the rollout must get right)</h3>`+(fut.join("<br>")||'<span class="muted">still open at the end of the window</span>');
   document.getElementById("panel").innerHTML=h}
 // ------------------------------------------------------------------ interaction
@@ -177,6 +198,7 @@ function hit(mx,my){let b=null,bd=100;for(const p of screenPts){const q=(p[0]-mx
 cv.addEventListener("wheel",ev=>{ev.preventDefault();const rc=cv.getBoundingClientRect(),mx=ev.clientX-rc.left,my=ev.clientY-rc.top;const wx=mx/view.s+view.ox,wy=(H-my)/view.s+view.oy;
   view.s*=Math.exp(-ev.deltaY*0.0015);view.ox=wx-mx/view.s;view.oy=wy-(H-my)/view.s;roadsDirty=true;draw()},{passive:false});
 document.getElementById("fit").onclick=()=>{fit();draw()};
+if(PR){document.getElementById("predctl").style.display="";document.getElementById("colorby").onchange=draw;document.getElementById("demand").onchange=draw}
 slider.oninput=()=>{t=+slider.value*3;draw();if(sel!=null)showDriver(sel);if(selReq!=null)showReq(selReq)};
 document.getElementById("play").onclick=ev=>{playing=!playing;ev.target.textContent=playing?"Pause":"Play";last=performance.now();if(playing)requestAnimationFrame(loop)};
 let lastE=-1;function loop(now){if(!playing)return;const sp=+document.getElementById("speed").value;t=Math.min((NE-1)*D.dt,t+(now-last)/1000*sp);last=now;draw();

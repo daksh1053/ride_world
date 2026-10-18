@@ -107,11 +107,82 @@ class DayLog:
         # the day's traffic, exactly as the simulator drew it (world/hd/run.py)
         seed = _season_seed(self.dir) * 1000 + self.date.dayofyear
         self.day = graph.traffic.sample_day(self.date, np.random.default_rng(seed + 7))
+        self._untruncate()
         self._tracks()
         self._counters()
         self._requests()
 
     # ------------------------------------------------------------------ drivers
+    def _untruncate(self):
+        """Restore legs the simulator cut short.
+
+        When a rider cancels during the pickup or a shift ends mid-reposition, world/sim.py stores
+        only the part driven, ending at the last node reached, up to one edge before the cut. Read
+        naively, the driver then looks parked (and its leg ends early) before the event happens: the
+        future leaks into the state. The planned leg is rebuilt with the simulator's own router on
+        the day's traffic (exact: re-routing reproduces stored legs), and the cut time is kept in
+        t_cut; positions follow the plan until t_cut, then the driver stands at the stored last node.
+        """
+        from ..hd.demand import MODES as HD_MODES
+        from ..routing import LiveRouter
+        lg = self.legs.copy()
+        lg["t_cut"] = np.nan
+        lg["last_node"] = [int(n[-1]) for n in lg.nodes]
+        ev = self.ev
+        nodes_tab = pd.read_parquet(self.g.city.data_dir / "nodes.parquet")
+        zones = pd.read_parquet(self.g.city.data_dir / "zones.parquet")
+        zc = pd.Series(np.arange(len(nodes_tab)), index=nodes_tab.node_id).loc[zones.centre_node].to_numpy()
+        origin = self.req.set_index("request_id").origin_node
+        home = self.drivers.home_node.to_numpy()
+        modes = HD_MODES[self.g.city.key]
+        speed = self.drivers["mode"].map(lambda m: modes[m].speed_factor if m in modes else 1.0).to_numpy()
+        jobs = []                                                    # (row, target, t_cut)
+        # pickups cut by the rider's cancel
+        cc = ev[(ev.type == "customer_cancelled") & (ev.request_id >= 0)].groupby("request_id").t_event.min()
+        pk = lg[(lg.kind == "pickup") & lg.request_id.isin(cc.index)]
+        for r, x in pk.iterrows():
+            tgt = int(origin.at[x.request_id])
+            if x.last_node != tgt:
+                jobs.append((r, tgt, float(cc.at[x.request_id])))
+        # repositioning / heading home cut at the end of the shift
+        ab = ev[ev.type == "reposition_abandoned"]
+        targets = {k: ev[ev.type == k].sort_values("t_event") for k in ("dispatch_sent", "driver_self_reposition")}
+        by_drv = lg[lg.kind.isin(["reposition", "self_reposition", "go_home"])].sort_values("t_start").groupby("driver_id")
+        for d, t_ab in zip(ab.driver_id.to_numpy(), ab.t_event.to_numpy()):
+            if d not in by_drv.groups:
+                continue
+            c = by_drv.get_group(d)
+            c = c[c.t_start <= t_ab + 1e-6]
+            if not len(c):
+                continue
+            r, x = c.index[-1], c.iloc[-1]
+            if x.kind == "go_home":
+                tgt = int(home[d])
+            else:
+                e = targets["dispatch_sent" if x.kind == "reposition" else "driver_self_reposition"]
+                e = e[(e.driver_id == d) & (e.t_event <= x.t_start + 1e-6)]
+                if not len(e) or not np.isfinite(e.value.iat[-1]):
+                    continue
+                tgt = int(zc[int(e.value.iat[-1])])
+            if x.last_node != tgt:
+                jobs.append((r, tgt, float(t_ab)))
+        if jobs:
+            router = LiveRouter(self.g.net, self.g.traffic)
+            router.set_day(self.day)
+            nodes, times = lg.nodes.to_numpy().copy(), lg.times.to_numpy().copy()
+            t_end, t_cut = lg.t_end.to_numpy().copy(), lg.t_cut.to_numpy().copy()
+            pos = {r: i for i, r in enumerate(lg.index)}
+            for r, tgt, tc in sorted(jobs, key=lambda j: lg.at[j[0], "t_start"]):
+                i = pos[r]
+                x = lg.loc[r]
+                leg = router.route(int(x.nodes[0]), tgt, float(x.t_start))
+                f = speed[x.driver_id]
+                tm = leg.times[0] + (leg.times - leg.times[0]) * f
+                nodes[i], times[i], t_end[i], t_cut[i] = leg.nodes, tm, float(tm[-1]), tc
+            lg["nodes"], lg["times"], lg["t_end"], lg["t_cut"] = nodes, times, t_end, t_cut
+        self.n_untruncated = len(jobs)
+        self.legs = lg
+
     def _tracks(self):
         g, nD, nE = self.g, self.nD, N_EPOCH + 1
         tau = np.arange(nE) * DT
@@ -125,7 +196,9 @@ class DayLog:
         self.left_m = np.zeros((nD, nE), np.float32)      # metres left on the leg
         st = self.status_log.sort_values(["driver_id", "t"], kind="stable")
         lg = self.legs.sort_values(["driver_id", "t_start"], kind="stable")
-        ends = pd.DataFrame({"driver_id": lg.driver_id, "t": lg.t_end, "node": [n[-1] for n in lg.nodes]})
+        cut = lg.t_cut.notna().to_numpy()
+        ends = pd.DataFrame({"driver_id": lg.driver_id, "t": np.where(cut, lg.t_cut, lg.t_end),
+                             "node": np.where(cut, lg.last_node, [n[-1] for n in lg.nodes])})
         keys = pd.concat([st[["driver_id", "t", "node"]], ends]).sort_values(["driver_id", "t"], kind="stable")
         for d, s in st.groupby("driver_id"):
             i = np.searchsorted(s.t.to_numpy(), tau, "right") - 1
@@ -142,9 +215,9 @@ class DayLog:
             {k: i for i, k in enumerate(LEG_KINDS)}).fillna(-1).astype(int).to_numpy()
         self.leg_dest = np.array([n[-1] for n in self.legs.sort_values("leg_id").nodes], np.int64)
         self.leg_req = self.legs.sort_values("leg_id").request_id.to_numpy()
-        for lid, d, nodes, times in zip(lg.leg_id.to_numpy(), lg.driver_id.to_numpy(), lg.nodes, lg.times):
+        for lid, d, nodes, times, tc in zip(lg.leg_id.to_numpy(), lg.driver_id.to_numpy(), lg.nodes, lg.times, lg.t_cut.to_numpy()):
             times = times.astype(np.float64)
-            e0, e1 = int(np.ceil(times[0] / DT)), int(np.ceil(times[-1] / DT))
+            e0, e1 = int(np.ceil(times[0] / DT)), int(np.ceil(min(times[-1], tc if np.isfinite(tc) else np.inf) / DT))
             if e1 <= e0 or len(nodes) < 2:
                 continue
             ee = np.arange(e0, min(e1, nE))

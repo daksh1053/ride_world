@@ -34,3 +34,7 @@ outputs/wm_trial/
 !data/*/wm2/split.json
 !data/*/wm2_cf/
 !data/*/wm2_cf/pairs.json
+
+# world model v3: trained checkpoints
+!data/wm3_models/
+!data/wm3_models/**

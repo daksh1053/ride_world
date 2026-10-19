@@ -127,20 +127,23 @@ Its `scripts/prepare_data.py` files download the NYC taxi data they use.
 
 ## Running everything
 
+The commands below rebuild every city, run the dispatch comparison and build the start page.
+Fleet sizes are already in `data/<city>/fleet.json`, so `02b_size_fleet.py` is only needed for a new city.
+
 ```bash
-.venv/bin/python scripts/01_import_maps.py --city sf pune
-.venv/bin/python scripts/02_traffic.py --city sf pune
-.venv/bin/python scripts/03_simulate.py --city sf pune
-.venv/bin/python scripts/04_papers.py --city sf pune
+.venv/bin/python scripts/01_import_maps.py --city sf pune navimumbai thane arlington nagpur coimbatore chandigarh pittsburgh portland panaji udaipur puducherry boulder annarbor sf_hd pune_hd
+.venv/bin/python -c "from world import cities; from world.hd import landuse; [landuse.build(cities.get(k)) for k in ('sf_hd', 'pune_hd')]"
+.venv/bin/python scripts/02_traffic.py --city sf pune navimumbai thane arlington nagpur coimbatore chandigarh pittsburgh portland panaji udaipur puducherry boulder annarbor sf_hd pune_hd
+.venv/bin/python scripts/03_simulate.py --city sf pune navimumbai thane arlington nagpur coimbatore chandigarh pittsburgh portland panaji udaipur puducherry boulder annarbor
+.venv/bin/python scripts/04_papers.py --city sf pune navimumbai thane arlington nagpur coimbatore chandigarh pittsburgh portland panaji udaipur puducherry boulder annarbor
 .venv/bin/python scripts/04b_compare.py
-.venv/bin/python scripts/05_wm_generate.py --city all
-.venv/bin/python scripts/06_wm_experiments.py
-.venv/bin/python scripts/06c_wm_figures.py
-.venv/bin/python scripts/06b_wm_viewer.py
+.venv/bin/python scripts/09_hd_season.py --city sf_hd --days 14
+.venv/bin/python scripts/09_hd_season.py --city pune_hd --days 14 --start 2025-07-07
 .venv/bin/python scripts/07_city_summary.py
 .venv/bin/python scripts/08_index.py
 ```
 
+`sf_hd` and `pune_hd` are the high-detail versions of San Francisco and Pune (land use, people carried across days, surge, breaks and shifts); world models 2 and 3 use them.
 For a new city, run `01_import_maps.py` and then `scripts/run_city_pipeline.sh <city>`.
 
 ## World models
@@ -165,6 +168,8 @@ The training data is not in the repository (tens of GB); the data steps below re
 Training times are for a 4 GB RTX 3050.
 
 ### World model 1: zone counts
+
+Run [Running everything](#running-everything) first: world model 1 uses all 15 standard cities.
 
 Each simulated day becomes, every 5 minutes and for each zone, the counts of new requests, pickups, cancellations, idle drivers, busy drivers and pending riders.
 The platform's offers and repositioning orders per zone are the action inputs.
@@ -210,9 +215,10 @@ One transformer is trained on both cities, then fine-tuned on its own rollouts.
    .venv/bin/python scripts/11_wm2_train.py --finetune st_small --rollout 4 --steps 2500 --lr 1e-4 --eval-every 500 --tag st_ro
    ```
 
-   The best grid model, `st4_skip_ros`, is built in three fine-tuning steps (from `st4_blocks`; see `outputs/wm2/STEPS.md` step 4 for its first training):
+   The best grid model, `st4_skip_ros`, starts from `st4_blocks` (the same transformer with the dispatch-direction channels) and is then fine-tuned three times:
 
    ```bash
+   .venv/bin/python scripts/11_wm2_train.py --model st --dirs --steps 20000 --tag st4_blocks --outdir step4
    .venv/bin/python scripts/11_wm2_train.py --finetune st4_blocks --dirs --act-focus 0.3 --steps 5000 --lr 2e-4 --tag st4_focus_ft --outdir step4
    .venv/bin/python scripts/11_wm2_train.py --finetune st4_focus_ft --skip --dirs --act-focus 0.3 --steps 5000 --lr 2e-4 --tag st4_skip_ft --outdir step4
    .venv/bin/python scripts/11_wm2_train.py --finetune st4_skip_ft --dirs --act-focus 0.5 --rollout 6 --roll-feed sample --steps 2500 --lr 1e-4 --eval-every 500 --tag st4_skip_ros --outdir step4d
@@ -224,9 +230,11 @@ One transformer is trained on both cities, then fine-tuned on its own rollouts.
    .venv/bin/python scripts/11_wm2_train.py --eval st_small st_ro cnn             # test scores vs baselines
    .venv/bin/python scripts/12_wm2_analysis.py --tag st_ro                        # rollouts, probes, prediction pages
    .venv/bin/python scripts/13_cf_truth.py --city sf_hd --pairs 8 --t-order 28950 --out wm2_cf2   # simulator twins with and without an order
+   .venv/bin/python scripts/13_cf_truth.py --city pune_hd --pairs 8 --t-order 28950 --out wm2_cf2
    .venv/bin/python scripts/13b_cf_eval.py --tags st4_skip_ros --cf wm2_cf2 --outdir step4d_cf2   # model's effect vs the true effect
    .venv/bin/python scripts/14_wm_plan.py --city sf_hd --seeds 12                 # simulate candidate orders
-   .venv/bin/python scripts/14_wm_plan.py --score st4_skip_ro st4_skip_ros        # let the models choose
+   .venv/bin/python scripts/14_wm_plan.py --city pune_hd --seeds 12
+   .venv/bin/python scripts/14_wm_plan.py --score st_ro st4_skip_ros              # let the models choose
    ```
 
 Results: `outputs/wm2/step3/` to `outputs/wm2/step5/`, and `outputs/<city>_hd/12_wm2_predictions_<tag>.html`.

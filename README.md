@@ -40,7 +40,10 @@ This folder holds the library code that every script uses.
 | `setup.py` | It loads a city and builds a ready-to-run simulated day. |
 | `metrics.py` | It computes service, earnings and fairness measures from the logged tables. |
 | `wm_data.py` | It turns a simulated day into the zone-level tensors used to train the world models. |
-| `wm_models.py` | It defines, trains and rolls out the learned world models and their baselines. |
+| `wm_models.py` | It defines, trains and rolls out world model 1 and its baselines. |
+| `hd/` | The high-detail simulator for `sf_hd` and `pune_hd`: people carried across days, land use, surge, breaks and shifts, and the 64 x 64 raster of world model 2. |
+| `wm2/` | World model 2: data loading, the grid models and the twin-run pairs. |
+| `wm3/` | World model 3: the entity-level world rebuilt from logs (`state.py`), its features (`features.py`), the model (`model.py`), the imagined world (`rollout.py`) and the map viewers. |
 | `explorer.py` | It builds the interactive map and traffic explorers. |
 | `replay.py` | It builds the animated cab replay pages. |
 | `viz.py` | It holds the shared plotting style. |
@@ -61,6 +64,8 @@ This folder holds one script per stage. Run them in order from inside the `ride_
 | `06_wm_experiments.py` | It trains the world models and runs the six experiments on accuracy, rollouts, actions, transfer, plausibility and fairness. |
 | `06b_wm_viewer.py` | It builds the page that compares the world model's imagined future with what really happened. |
 | `06c_wm_figures.py` | It draws the world model result figures and writes the results summary. |
+| `09_hd_season.py` to `15_pairs.py` | High-detail cities and world model 2 (see [World models](#world-models)). |
+| `16_wm3_world.py` to `24_wm3_hourly.py` | World model 3 (see [World models](#world-models)). |
 | `07_city_summary.py` | It writes one summary row per city and draws the gallery of all road maps. |
 | `08_index.py` | It builds the start page that shows the cabs in every city. |
 | `run_city_pipeline.sh` | It runs the traffic, fleet, simulation and data generation stages for a list of cities. |
@@ -90,7 +95,7 @@ This folder holds every figure and interactive page.
 This folder holds the small result files that are kept in the repository.
 Each city folder has `meta.json` with network facts and `fleet.json` with the chosen fleet size.
 The `traffic/` subfolder of each city has the calibration table and its settings.
-The `wm_models/` folder holds the trained world models.
+The `wm_models/`, `wm2_models/` and `wm3_models/` folders hold the trained world models 1, 2 and 3.
 The large files such as road graphs, traffic arrays and simulated days are not in the repository.
 Running the scripts recreates them.
 
@@ -137,3 +142,150 @@ Its `scripts/prepare_data.py` files download the NYC taxi data they use.
 ```
 
 For a new city, run `01_import_maps.py` and then `scripts/run_city_pipeline.sh <city>`.
+
+## World models
+
+Three generations of learned world models were built on this simulator.
+Each one learns to predict how the ride company's world evolves and how it responds to platform actions.
+The final model is world model 3; the earlier two stay as baselines.
+
+| | World model 1 | World model 2 | World model 3 (final) |
+|---|---|---|---|
+| What it models | Counts per hexagonal zone (about 100 zones) | Counts per cell of a 64 x 64 grid | Every driver, open request, zone and road |
+| Time step | 5 min | 5 min | 30 s (the platform's decision step) |
+| Cities | All 15 (standard detail) | `sf_hd`, `pune_hd` (high detail) | `sf_hd`, `pune_hd` |
+| Network | GRU and baselines, Poisson outputs | Spatio-temporal transformer, Poisson outputs | Transformer over entity tokens, one probability head per event |
+| Code | `world/wm_data.py`, `world/wm_models.py` | `world/hd/`, `world/wm2/` | `world/wm3/` |
+| Step log | `NOTES.md` (stage 5-6) | `outputs/wm2/STEPS.md` | `outputs/wm3/STEPS.md` |
+| Checkpoints | `data/wm_models/` | `data/wm2_models/` | `data/wm3_models/` (final: `wm3_exo.pt`) |
+
+All commands run from inside the `ride_world` folder with the virtual environment of [Setup](#setup).
+Trained checkpoints are in the repository, so the evaluation steps can run without retraining.
+The training data is not in the repository (tens of GB); the data steps below recreate it.
+Training times are for a 4 GB RTX 3050.
+
+### World model 1: zone counts
+
+Each simulated day becomes, every 5 minutes and for each zone, the counts of new requests, pickups, cancellations, idle drivers, busy drivers and pending riders.
+The platform's offers and repositioning orders per zone are the action inputs.
+Models: persistence, time-of-day average, Poisson GLM, MLP, GRU, GRU with multi-step training, a fleet-conserving GRU, and a fleet-conserving GRU with multi-step training (the main one, `gru_cons_os`).
+Data: 3 training days under 5 dispatchers and 2 test days under 6 dispatchers per city; the 6th dispatcher (P2 ILP) is never seen in training.
+
+```bash
+.venv/bin/python scripts/05_wm_generate.py --city all --workers 12   # simulate 405 days, ~40 min
+.venv/bin/python scripts/06_wm_experiments.py                         # train all models + experiments E1-E6, ~50 min
+.venv/bin/python scripts/06c_wm_figures.py                            # figures and results table
+.venv/bin/python scripts/06b_wm_viewer.py                             # interactive imagined-vs-real page
+```
+
+Results: `outputs/wm/results.md`, `outputs/wm/fig_*.png`, `outputs/wm/06_wm_viewer.html`.
+The experiments cover one-step accuracy, 1-hour rollouts, response to actions and to an unseen dispatcher, transfer to unseen cities, impossible predictions and per-zone fairness.
+
+### World model 2: 64 x 64 grid
+
+The high-detail cities (`world/hd/`: people carried across days, land use, surge, breaks, shifts) are run for long seasons.
+The platform's dispatcher settings are drawn afresh every day, and some seasons add random concentrated repositioning orders, so the data shows the effect of different actions.
+Each day becomes a raster: 288 frames of 5 min, 22 channels per grid cell.
+One transformer is trained on both cities, then fine-tuned on its own rollouts.
+
+1. Simulate the seasons (SF 180 days, Pune 160 days; seasons with different seeds can run in parallel):
+
+   ```bash
+   .venv/bin/python scripts/10_hd_dataset.py --city sf_hd   --days 120 --start 2025-01-06 --seed 1
+   .venv/bin/python scripts/10_hd_dataset.py --city sf_hd   --days 60  --start 2024-11-06 --seed 3 --blocks
+   .venv/bin/python scripts/10_hd_dataset.py --city pune_hd --days 50  --start 2025-05-05 --seed 1
+   .venv/bin/python scripts/10_hd_dataset.py --city pune_hd --days 50  --start 2025-06-24 --seed 2
+   .venv/bin/python scripts/10_hd_dataset.py --city pune_hd --days 30  --start 2025-03-06 --seed 3 --blocks
+   .venv/bin/python scripts/10_hd_dataset.py --city pune_hd --days 30  --start 2025-04-05 --seed 4 --blocks
+   .venv/bin/python scripts/10b_wm2_viewer.py --city sf_hd            # optional: browse the rasters
+   ```
+
+2. Pack the data and train:
+
+   ```bash
+   .venv/bin/python scripts/11_wm2_train.py --build
+   .venv/bin/python scripts/11_wm2_train.py --build-dirs
+   .venv/bin/python scripts/11_wm2_train.py --model st --steps 20000 --tag st_small
+   .venv/bin/python scripts/11_wm2_train.py --model cnn --steps 6000 --tag cnn
+   .venv/bin/python scripts/11_wm2_train.py --finetune st_small --rollout 4 --steps 2500 --lr 1e-4 --eval-every 500 --tag st_ro
+   ```
+
+   The best grid model, `st4_skip_ros`, is built in three fine-tuning steps (from `st4_blocks`; see `outputs/wm2/STEPS.md` step 4 for its first training):
+
+   ```bash
+   .venv/bin/python scripts/11_wm2_train.py --finetune st4_blocks --dirs --act-focus 0.3 --steps 5000 --lr 2e-4 --tag st4_focus_ft --outdir step4
+   .venv/bin/python scripts/11_wm2_train.py --finetune st4_focus_ft --skip --dirs --act-focus 0.3 --steps 5000 --lr 2e-4 --tag st4_skip_ft --outdir step4
+   .venv/bin/python scripts/11_wm2_train.py --finetune st4_skip_ft --dirs --act-focus 0.5 --rollout 6 --roll-feed sample --steps 2500 --lr 1e-4 --eval-every 500 --tag st4_skip_ros --outdir step4d
+   ```
+
+3. Evaluate:
+
+   ```bash
+   .venv/bin/python scripts/11_wm2_train.py --eval st_small st_ro cnn             # test scores vs baselines
+   .venv/bin/python scripts/12_wm2_analysis.py --tag st_ro                        # rollouts, probes, prediction pages
+   .venv/bin/python scripts/13_cf_truth.py --city sf_hd --pairs 8 --t-order 28950 --out wm2_cf2   # simulator twins with and without an order
+   .venv/bin/python scripts/13b_cf_eval.py --tags st4_skip_ros --cf wm2_cf2 --outdir step4d_cf2   # model's effect vs the true effect
+   .venv/bin/python scripts/14_wm_plan.py --city sf_hd --seeds 12                 # simulate candidate orders
+   .venv/bin/python scripts/14_wm_plan.py --score st4_skip_ro st4_skip_ros        # let the models choose
+   ```
+
+Results: `outputs/wm2/step3/` to `outputs/wm2/step5/`, and `outputs/<city>_hd/12_wm2_predictions_<tag>.html`.
+The grid models predict 5-20 minutes well, but their response to repositioning orders is too small, because a count per cell cannot show which drivers will comply.
+
+### World model 3: every driver, request and road (final)
+
+The model follows `01_all_inputs_formulation.md`.
+Every 30 s it reads the full state: each online driver (position on the road, status, current drive, today's history, long-run history, profile, the offer or order it just got), each offline driver, each open request, each zone, and the time, weather and congestion.
+For every entity it predicts the probability of each event in the next 30 s: drivers' own decisions, answers to offers and orders, coming online, rider cancellations and boardings, and new requests with their exact pickup and drop-off road junctions.
+Driving along roads, routes, fares, surge and the request lifecycle are fixed rules.
+To imagine the future, `world/wm3/rollout.py` samples the events, applies the rules and repeats, with the platform's own dispatcher acting on the imagined state.
+The model has 3.9 M parameters; 2.1 M of them are per-junction tables for request locations.
+
+It reuses world model 2's simulated seasons (`data/<city>/hd_runs/`), so run step 1 of world model 2 first.
+
+1. Rebuild the entity-level world and check it against the simulator:
+
+   ```bash
+   .venv/bin/python scripts/16_wm3_world.py                   # outputs/wm3/stage1/
+   ```
+
+2. Build the training data (every 3rd minute of every day, `data/<city>/wm3v2/`, about 32 GB):
+
+   ```bash
+   .venv/bin/python scripts/17_wm3_dataset.py
+   ```
+
+3. Train. The final model is the base training followed by a fine-tune that gives demand its own encoder, which sees no driver supply:
+
+   ```bash
+   .venv/bin/python scripts/18_wm3_train.py --steps 30000 --eval-every 1500 --tag wm3_v2              # ~80 min
+   .venv/bin/python scripts/18_wm3_train.py --init wm3_v2 --exo --steps 10000 --lr 2e-4 --tag wm3_exo   # ~30 min
+   ```
+
+4. Evaluate:
+
+   ```bash
+   .venv/bin/python scripts/19_wm3_eval.py --tag wm3_exo         # test scores per event type, calibration, hidden traits
+   .venv/bin/python scripts/21_wm3_pred_page.py --tag wm3_exo    # interactive prediction maps
+   .venv/bin/python scripts/20_wm3_rollout.py --tag wm3_exo      # imagined hours vs the simulator, fairness
+   .venv/bin/python scripts/24_wm3_hourly.py --tags wm3_exo      # rare events per hour of the day
+   ```
+
+5. Test the response to platform orders. The simulator runs fresh seasons twice from the same state, with and without an extra repositioning order; the model imagines both versions from the state before the order, and the two effects are compared:
+
+   ```bash
+   .venv/bin/python scripts/22_wm3_twins.py --city sf_hd   --seed0 500 --n-seeds 13
+   .venv/bin/python scripts/22_wm3_twins.py --city pune_hd --seed0 500 --n-seeds 12
+   .venv/bin/python scripts/23_wm3_counterfactual.py --tag wm3_exo
+   ```
+
+Outputs, all in `outputs/wm3/`:
+
+| Stage | Main files |
+|---|---|
+| 1. World state | `16_verify.png`, `16_snapshot_<city>.png`, `16_driver_day.png`, `16_hidden.png`, `<city>_world.html` (interactive map: every driver, rider and road) |
+| 2. Model | `19_heads.png`, `19_calibration.png`, `19_hidden.png`, `<city>_predictions.html` (each entity's predicted probabilities on the map) |
+| 3. Rollouts | `20_kpis_<city>.png`, `20_errors.png`, `20_drivers.png`, `20_fairness.png`, `24_hourly.png`, `<city>_imagined_vs_real.html` (imagined and real side by side) |
+| 4. Orders | `23_effects.png`, `23_scatter.png`, `23_followers.png` |
+
+`outputs/wm3/STEPS.md` has every number, the problems found and the fixes.

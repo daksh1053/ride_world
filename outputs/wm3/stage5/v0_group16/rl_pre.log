@@ -1,0 +1,154 @@
+== rl_pre: init wm3_exo, env wm3_exo; 240 training starts, G 8 K 16 H 60; workers {'sf_hd': 2, 'pune_hd': 2}
+  eval it 0: sf_hd: reward agent-none -1.10 rule-none +8.33 (pickups +2.3/+8.2, welfare -3.43/+0.16, moved 102/100); pune_hd: reward agent-none -14.59 rule-none -1.51 (pickups +0.5/+1.0, welfare -15.09/-2.51, moved 436/85); world-model val NLL 14.894
+/home/daksh/Desktop/btp/ride_world/scripts/26_wm3_grpo.py:299: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  stats["surr"] += float(surr.detach()); stats["kl"] += float(kl.detach()); stats["aux"] += float(aux)
+  it    1 5.3 min  groups 12.000  surr -0.001  kl 0.001  aux 13.643  sf_hd/reward 371.700  sf_hd/spread 1.391  sf_hd/moved 44.469  sf_hd/pickups 314.250  sf_hd/welfare 57.450  sf_hd/p_move 0.101  pune_hd/reward 612.177  pune_hd/spread 0.657  pune_hd/moved 326.094  pune_hd/pickups 521.406  pune_hd/welfare 90.770  pune_hd/p_move 0.093
+  it    2 7.9 min  groups 12.000  surr -0.002  kl 0.001  aux 12.948  sf_hd/reward 307.337  sf_hd/spread 1.409  sf_hd/moved 43.797  sf_hd/pickups 257.812  sf_hd/welfare 49.524  sf_hd/p_move 0.087  pune_hd/reward 543.590  pune_hd/spread 1.000  pune_hd/moved 211.812  pune_hd/pickups 456.969  pune_hd/welfare 86.621  pune_hd/p_move 0.087
+  it    3 10.6 min  groups 12.000  surr -0.001  kl 0.002  aux 13.063  sf_hd/reward 364.990  sf_hd/spread 1.069  sf_hd/moved 69.578  sf_hd/pickups 304.797  sf_hd/welfare 60.193  sf_hd/p_move 0.104  pune_hd/reward 558.631  pune_hd/spread 0.698  pune_hd/moved 342.125  pune_hd/pickups 475.219  pune_hd/welfare 83.412  pune_hd/p_move 0.096
+  it    4 13.3 min  groups 12.000  surr -0.001  kl 0.005  aux 14.371  sf_hd/reward 491.852  sf_hd/spread 1.652  sf_hd/moved 21.125  sf_hd/pickups 431.547  sf_hd/welfare 60.305  sf_hd/p_move 0.095  pune_hd/reward 535.011  pune_hd/spread 0.451  pune_hd/moved 225.250  pune_hd/pickups 454.812  pune_hd/welfare 80.198  pune_hd/p_move 0.095
+  it    5 15.8 min  groups 12.000  surr -0.001  kl 0.011  aux 14.612  sf_hd/reward 261.394  sf_hd/spread 0.870  sf_hd/moved 48.844  sf_hd/pickups 216.562  sf_hd/welfare 44.831  sf_hd/p_move 0.097  pune_hd/reward 519.773  pune_hd/spread 0.531  pune_hd/moved 295.156  pune_hd/pickups 441.906  pune_hd/welfare 77.867  pune_hd/p_move 0.104
+  it    6 18.5 min  groups 12.000  surr -0.001  kl 0.016  aux 13.939  sf_hd/reward 230.334  sf_hd/spread 1.051  sf_hd/moved 66.141  sf_hd/pickups 178.094  sf_hd/welfare 52.240  sf_hd/p_move 0.102  pune_hd/reward 530.468  pune_hd/spread 0.640  pune_hd/moved 365.031  pune_hd/pickups 459.812  pune_hd/welfare 70.656  pune_hd/p_move 0.113
+  it    7 20.9 min  groups 12.000  surr -0.002  kl 0.022  aux 13.892  sf_hd/reward 250.437  sf_hd/spread 1.003  sf_hd/moved 45.766  sf_hd/pickups 205.453  sf_hd/welfare 44.983  sf_hd/p_move 0.103  pune_hd/reward 461.064  pune_hd/spread 0.255  pune_hd/moved 299.719  pune_hd/pickups 393.969  pune_hd/welfare 67.095  pune_hd/p_move 0.104
+  it    8 23.3 min  groups 12.000  surr -0.001  kl 0.028  aux 12.837  sf_hd/reward 344.748  sf_hd/spread 1.079  sf_hd/moved 30.172  sf_hd/pickups 288.688  sf_hd/welfare 56.061  sf_hd/p_move 0.096  pune_hd/reward 463.128  pune_hd/spread 0.618  pune_hd/moved 304.688  pune_hd/pickups 409.719  pune_hd/welfare 53.409  pune_hd/p_move 0.115
+  it    9 25.8 min  groups 12.000  surr -0.000  kl 0.031  aux 14.010  sf_hd/reward 290.291  sf_hd/spread 0.530  sf_hd/moved 71.828  sf_hd/pickups 229.625  sf_hd/welfare 60.666  sf_hd/p_move 0.091  pune_hd/reward 512.194  pune_hd/spread 1.374  pune_hd/moved 162.562  pune_hd/pickups 431.875  pune_hd/welfare 80.319  pune_hd/p_move 0.094
+  it   10 28.0 min  groups 12.000  surr -0.001  kl 0.047  aux 14.383  sf_hd/reward 369.749  sf_hd/spread 1.346  sf_hd/moved 34.984  sf_hd/pickups 323.234  sf_hd/welfare 46.514  sf_hd/p_move 0.100  pune_hd/reward 442.646  pune_hd/spread 1.241  pune_hd/moved 185.625  pune_hd/pickups 370.969  pune_hd/welfare 71.677  pune_hd/p_move 0.116
+  eval it 10: sf_hd: reward agent-none +4.54 rule-none +8.63 (pickups +6.0/+8.3, welfare -1.46/+0.29, moved 98/100); pune_hd: reward agent-none -18.19 rule-none -1.51 (pickups -1.5/+1.0, welfare -16.69/-2.51, moved 484/85); world-model val NLL 15.202
+Process SpawnPoolWorker-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 131, in worker
+    put((job, i, result))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 420, in _send_bytes
+    self._send(header)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 136, in worker
+    put((job, i, (False, wrapped)))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 420, in _send_bytes
+    self._send(header)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+Process SpawnPoolWorker-1:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 131, in worker
+    put((job, i, result))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 420, in _send_bytes
+    self._send(header)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 136, in worker
+    put((job, i, (False, wrapped)))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 427, in _send_bytes
+    self._send(header + buf)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+Process SpawnPoolWorker-4:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 131, in worker
+    put((job, i, result))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 420, in _send_bytes
+    self._send(header)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 136, in worker
+    put((job, i, (False, wrapped)))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 427, in _send_bytes
+    self._send(header + buf)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+Process SpawnPoolWorker-3:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 131, in worker
+    put((job, i, result))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 420, in _send_bytes
+    self._send(header)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 136, in worker
+    put((job, i, (False, wrapped)))
+  File "/usr/lib/python3.12/multiprocessing/queues.py", line 399, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 427, in _send_bytes
+    self._send(header + buf)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 12 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

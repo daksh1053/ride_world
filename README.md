@@ -65,7 +65,7 @@ This folder holds one script per stage. Run them in order from inside the `ride_
 | `06b_wm_viewer.py` | It builds the page that compares the world model's imagined future with what really happened. |
 | `06c_wm_figures.py` | It draws the world model result figures and writes the results summary. |
 | `09_hd_season.py` to `15_pairs.py` | High-detail cities and world model 2 (see [World models](#world-models)). |
-| `16_wm3_world.py` to `24_wm3_hourly.py` | World model 3 (see [World models](#world-models)). |
+| `16_wm3_world.py` to `30_wm3_rl_bc.py` | World model 3 (see [World models](#world-models)). |
 | `07_city_summary.py` | It writes one summary row per city and draws the gallery of all road maps. |
 | `08_index.py` | It builds the start page that shows the cabs in every city. |
 | `run_city_pipeline.sh` | It runs the traffic, fleet, simulation and data generation stages for a list of cities. |
@@ -287,6 +287,23 @@ It reuses world model 2's simulated seasons (`data/<city>/hd_runs/`), so run ste
    .venv/bin/python scripts/23_wm3_counterfactual.py --tag wm3_exo
    ```
 
+6. Let the world model choose (RL). The agent head on the world model orders idle drivers every 5 minutes; it is trained inside the frozen world model, and its choices are then carried out in the simulator. Each step is about 4 hours on one 4 GB GPU, except the imitation steps (about 15 min):
+
+   ```bash
+   .venv/bin/python scripts/25_wm3_rl_starts.py                                   # start states from real days
+   .venv/bin/python scripts/26_wm3_grpo.py --init wm3_exo --tag rl_pre            # RL only, pretrained world model
+   .venv/bin/python scripts/26_wm3_grpo.py --init none    --tag rl_scratch        # RL only, random weights
+   .venv/bin/python scripts/30_wm3_rl_bc.py --collect                             # the platform rule's choices, imagined
+   .venv/bin/python scripts/30_wm3_rl_bc.py --init wm3_exo --tag bc_pre           # imitation (fine-tuning on the rule)
+   .venv/bin/python scripts/30_wm3_rl_bc.py --init none    --tag bc_scratch
+   .venv/bin/python scripts/26_wm3_grpo.py --init-agent bc_pre --tag rl_bc_pre --iters 40 --beta 0.1 --lr-scalar 1e-3
+   .venv/bin/python scripts/26_wm3_grpo.py --init none --init-agent bc_scratch --tag rl_bc_scratch --iters 40 --beta 0.1 --lr-scalar 1e-3
+   .venv/bin/python scripts/27_wm3_rl_execute.py --city sf_hd   --seed0 700 --n-seeds 20 --agents rl_pre rl_scratch bc_pre bc_scratch rl_bc_pre rl_bc_scratch
+   .venv/bin/python scripts/27_wm3_rl_execute.py --city pune_hd --seed0 700 --n-seeds 12 --agents rl_pre rl_scratch bc_pre bc_scratch rl_bc_pre rl_bc_scratch
+   .venv/bin/python scripts/28_wm3_rl_report.py --tags rl_pre rl_scratch rl_bc_pre rl_bc_scratch
+   .venv/bin/python scripts/29_wm3_rl_probe.py sf_hd 4 15                         # optional: noise of one driver's effect
+   ```
+
 Outputs, all in `outputs/wm3/`:
 
 | Stage | Main files |
@@ -295,5 +312,6 @@ Outputs, all in `outputs/wm3/`:
 | 2. Model | `19_heads.png`, `19_calibration.png`, `19_hidden.png`, `<city>_predictions.html` (each entity's predicted probabilities on the map) |
 | 3. Rollouts | `20_kpis_<city>.png`, `20_errors.png`, `20_drivers.png`, `20_fairness.png`, `24_hourly.png`, `<city>_imagined_vs_real.html` (imagined and real side by side) |
 | 4. Orders | `23_effects.png`, `23_scatter.png`, `23_followers.png` |
+| 5. Choices (RL) | `stage5/28_execute.png` (every agent carried out in the simulator), `stage5/28_training.png`, `stage5/28_versions.png`, `stage5/28_scatter.png`, `stage5/28_paired.txt` |
 
 `outputs/wm3/STEPS.md` has every number, the problems found and the fixes.

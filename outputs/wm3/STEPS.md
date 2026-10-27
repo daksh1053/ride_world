@@ -217,3 +217,78 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     share of drivers with no income .034 / .020; per-driver income r .74 / .86.
     Hourly sums of rare events (24_hourly.png): log-ons per day 1315 vs 1274 SF, 3075 vs 3060
     Pune; rider cancellations 608 vs 628, 2090 vs 2090.
+
+## Stage 5: the world model chooses — RL (GRPO) on repositioning, executed in the simulator (2026-10-27)
+    Goal: turn the world model from a predictor into a decision maker: it orders idle drivers
+    where to go, the orders are carried out in the real simulator, and two starting points are
+    compared: RL on the pretrained world model (wm3_exo) vs the same network from random weights.
+
+    The agent (world/wm3/agent.py): a head on WorldModel3's token states. Every 5 min each
+    deciding driver (idle >= 5 min, not just offered a ride) gets a choice over
+    [stay, zone_1..zone_Z]: move logits = query(driver state) . key(zone state) + travel-time
+    term, only zones within 15 min; stay logit = MLP(driver state) + bias + logsumexp(moves).
+    Matching stays the platform's rule (HDDispatch). Reward = riders picked up + drivers'
+    proportional-fairness welfare (sum over drivers of log(1 + net earnings / median fare), net
+    of km driven). AgentWorld imagines the city with the frozen wm3_exo and the agent's orders;
+    step_many batches many imagined worlds on the GPU (identical to single-world stepping).
+    Start states: 120 train + 24 val per city from real days (scripts/25_wm3_rl_starts.py).
+
+    Execution (scripts/27_wm3_rl_execute.py): fresh seasons on test days, 2-h windows at
+    8/12/17 h, 20 SF + 12 Pune seeds. LiveAgentPolicy rebuilds the entity state from the
+    simulator's own logs every 5 min (stage-1 DayLog, leak-checked) and the agent decides; the
+    simulator carries the orders out. Every arm is also imagined by the world model from the
+    same start (3 draws).
+
+    How the method was arrived at (28_versions.png, stage5/v*/):
+      v0  GRPO, 16 drivers varied per copy, 30 min      Pune worse every eval (-14.6 -> -18.2)
+      v1  one driver varied per copy, 30 min             no signal: 28 comparisons/iter, noise >> effect
+      probe (scripts/29_wm3_rl_probe.py): one driver's move changes the imagined reward by
+          ~-0.03 (its driving cost) with s.d. 0.07-0.7 up to 20 min, but 3.0 at 30 min and 7.2
+          at 60 min (SF): one changed match ripples through later matches. Riders and quotes are
+          identical across the copies (demand is exogenous); it is who-gets-whom.
+      v2  GRPO group = ONE driver's choices (stay + 7 destinations drawn from the agent), same
+          world otherwise, reward after 20 min; probability-weighted advantages -> Pune learns,
+          slowly (stay bias moved ~lr per Adam step)
+      v3  + fast learning rate for the stay bias: both cities collapse to "never move"
+          (Pune right, SF loses the rule's gain); destination learning was scaled by P(move)
+      v4  + destination credit not scaled by P(move): still converges to (almost) never moving.
+          Final held-out imagined reward minus none (60 min): pretrained +0.7 SF / +0.4 Pune,
+          scratch +0.1 / +0.8; rule +8.2-8.9 / -2.6.
+    Why: the rule's gain is ~+0.1 pickup per move and appears after ~1 h; a single choice
+    cannot be credited over 1 h (noise 3-7), and over 20 min the average move is a small loss.
+    So, as language models are fine-tuned on demonstrations before RL:
+      imitation (scripts/30_wm3_rl_bc.py): the rule's choices in imagination (72k SF, 473k Pune
+          decisions; all its orders are expressible as agent actions) -> cross-entropy + the
+          world model's own loss (aux). Held-out accuracy .87 SF / .99 Pune.
+      then GRPO (v4 credit) from the imitation agent, KL to it with beta 0.1, 40 iterations.
+
+    Results in the simulator, 2-h window, minus no repositioning (mean +- s.e. over seeds):
+                                        SF reward      moved   Pune reward    moved
+      platform rule                     +25.0 +- 6.8    196     +7.7 +- 7.0     230
+      RL only, pretrained (v4)           +0.5 +- 3.9      5     +0.9 +- 6.0       8
+      RL only, scratch (v4)              -1.7 +- 1.0      0     -1.7 +- 3.0       1
+      imitation, pretrained             +19.4 +- 4.7    199     -3.4 +- 7.1     189
+      imitation, scratch                +16.0 +- 5.2    173    +11.6 +- 7.4     254
+      imitation + RL, pretrained        +23.8 +- 5.7    113     -1.0 +- 6.2      13
+      imitation + RL, scratch           +13.6 +- 5.1     65     -1.0 +- 5.2      33
+    Paired over seeds (28_paired.txt): SF imitation+RL pretrained vs rule -1.2 +- 4.6 (the
+    rule's gain with 42% fewer moves and positive drivers' welfare, +0.5 vs -0.3); RL added
+    +4.4 +- 3.6 to the pretrained imitation agent and -2.4 +- 2.7 to the scratch one;
+    pretrained vs scratch after imitation + RL +10.2 +- 3.5 (15 of 20 seeds). Pune: no arm
+    differs from no repositioning beyond the noise (rule +7.7 +- 7.0); RL again learns to move
+    little there (13 vs 230), because over 20 min a Pune move costs and brings no rider.
+    The world model's imagined effects track the real ones: r .61 reward, .64 pickups over
+    seeds and arms (28_scatter.png); imagined rule effect +28.8 SF / +7.5 Pune vs real
+    +25.0 / +7.7. The pretrained world model also stays a world model under RL (validation
+    NLL 14.89 -> 15.12), the scratch network ends at 17.6.
+    Outputs (outputs/wm3/stage5/):
+      28_training.png   held-out imagined reward, pickups, welfare, moves and world-model NLL
+                        during GRPO, for RL-only and imitation + RL, pretrained and scratch
+      28_versions.png   every method version, and the noise-vs-horizon probe
+      28_execute.png    all arms executed in the simulator (bars) and imagined (diamonds)
+      28_scatter.png    imagined vs real effect per seed and arm
+      28_execute.csv, 28_summary.json, 28_paired.txt, 30_bc_*.csv (imitation curves),
+      train_*.csv / eval_*.csv (GRPO logs), v0_group16/ v1_pairwise/ v2_driver_lr3e-4/
+      v3_collapse/ (earlier versions), probe/
+    Models (data/wm3_models/): rl_pre, rl_scratch (RL only, v4), bc_pre, bc_scratch
+    (imitation), rl_bc_pre, rl_bc_scratch (imitation + RL).

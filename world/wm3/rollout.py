@@ -511,6 +511,11 @@ class ImaginedWorld:
         if act is None:
             act = self.policy.act(self.observe())
         self.apply_action(act)
+        return self.advance()
+
+    @torch.no_grad()
+    def advance(self):
+        """Predict and apply the events of the next 30 s, with this step's actions already applied."""
         f = self.features()
         dev = next(self.model.parameters()).device
         snap = {"key": self.key, **{k: f[k] for k in ("G", "D", "F", "R", "Z")},

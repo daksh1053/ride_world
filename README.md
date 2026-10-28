@@ -65,7 +65,7 @@ This folder holds one script per stage. Run them in order from inside the `ride_
 | `06b_wm_viewer.py` | It builds the page that compares the world model's imagined future with what really happened. |
 | `06c_wm_figures.py` | It draws the world model result figures and writes the results summary. |
 | `09_hd_season.py` to `15_pairs.py` | High-detail cities and world model 2 (see [World models](#world-models)). |
-| `16_wm3_world.py` to `34_wm3_match_report.py` | World model 3 (see [World models](#world-models)). |
+| `16_wm3_world.py` to `37_wm3_scorecard.py` | World model 3 (see [World models](#world-models)). |
 | `07_city_summary.py` | It writes one summary row per city and draws the gallery of all road maps. |
 | `08_index.py` | It builds the start page that shows the cabs in every city. |
 | `run_city_pipeline.sh` | It runs the traffic, fleet, simulation and data generation stages for a list of cities. |
@@ -327,6 +327,19 @@ It reuses world model 2's simulated seasons (`data/<city>/hd_runs/`), so run ste
    .venv/bin/python scripts/34_wm3_match_report.py --platform mbc_pre --drivers drv_pre
    ```
 
+9. Is it a world model? (stage 8). Eight imagined hours against the real day, shocks the model never saw (30% / 60% of idle drivers leave, prices x1.5 for 2 h), and a scorecard of ten criteria (about 4 h SF, 6 h Pune):
+
+   ```bash
+   .venv/bin/python scripts/35_wm3_long_rollout.py --city sf_hd   --seeds 13
+   .venv/bin/python scripts/35_wm3_long_rollout.py --city pune_hd --seeds 8
+   .venv/bin/python scripts/35_wm3_long_rollout.py --report
+   .venv/bin/python scripts/36_wm3_shock.py --city sf_hd   --seed0 700 --n-seeds 20
+   .venv/bin/python scripts/36_wm3_shock.py --city pune_hd --seed0 700 --n-seeds 8
+   .venv/bin/python scripts/36_wm3_shock.py --report
+   .venv/bin/python scripts/27_wm3_rl_execute.py --city sf_hd --seed0 700 --n-seeds 20 --agents mbc_pre+m mbc_scratch+m mbc_pre+m@start mbc_pre+m@drv_pre   # imagine the stage 6-7 policies
+   .venv/bin/python scripts/37_wm3_scorecard.py
+   ```
+
 Outputs, all in `outputs/wm3/`:
 
 | Stage | Main files |
@@ -338,5 +351,6 @@ Outputs, all in `outputs/wm3/`:
 | 5. Choices (RL) | `stage5/28_execute.png` (every agent carried out in the simulator), `stage5/28_training.png`, `stage5/28_versions.png`, `stage5/28_scatter.png`, `stage5/28_paired.txt` |
 | 6. Matching | `stage6/34_execute.png` (the agent's matching carried out in the simulator), `stage6/34_imitation.png`, `stage6/34_training.png`, `stage6/34_execute_paired.txt` |
 | 7. Driver agents | `stage7/34_execute.png` (menus and earning-maximising drivers in the simulator), `stage7/34_drivers_training.png`, `stage7/34_execute_paired.txt` |
+| 8. World-model test | `stage8/37_scorecard.png` (ten criteria), `stage8/35_long_errors.png`, `stage8/35_long_fan.png`, `stage8/35_long_rank.png`, `stage8/36_shock_effects.png`, `stage8/36_shock_scatter.png`, `stage8/37_ranking.png` |
 
 `outputs/wm3/STEPS.md` has every number, the problems found and the fixes.

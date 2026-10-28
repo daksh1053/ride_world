@@ -1,0 +1,234 @@
+{
+ "ranking": {
+  "pune_hd": {
+   "arms": {
+    "bc_pre": {
+     "real": -3.408403566775102,
+     "real_se": 7.072784019607532,
+     "imag": -1.0746452540025377,
+     "imag_se": 2.169434082163218,
+     "n": 12
+    },
+    "bc_scratch": {
+     "real": 11.615309360001978,
+     "real_se": 7.434998400831307,
+     "imag": 1.5629876622892311,
+     "imag_se": 2.012826015692279,
+     "n": 12
+    },
+    "rl_bc_pre": {
+     "real": -0.9809236652025675,
+     "real_se": 6.210809655289157,
+     "imag": -0.2735484061881455,
+     "imag_se": 1.698943744875114,
+     "n": 12
+    },
+    "rl_bc_scratch": {
+     "real": -0.973651548940552,
+     "real_se": 5.213725382140395,
+     "imag": -1.289075636270714,
+     "imag_se": 1.188620486244451,
+     "n": 12
+    },
+    "rl_pre": {
+     "real": 0.9243300986297905,
+     "real_se": 5.991428721225891,
+     "imag": -1.5814403241481994,
+     "imag_se": 0.5524882948275239,
+     "n": 12
+    },
+    "rl_scratch": {
+     "real": -1.701409625638026,
+     "real_se": 2.9981086819938847,
+     "imag": -0.3058252087375119,
+     "imag_se": 0.3974507702786666,
+     "n": 12
+    },
+    "rule": {
+     "real": 7.6684273507135385,
+     "real_se": 6.949765254808004,
+     "imag": 7.533438276888982,
+     "imag_se": 3.208162915505727,
+     "n": 12
+    }
+   },
+   "spearman_arms": 0.39285714285714296,
+   "r_arm_means": 0.6676762504071574,
+   "r_seed_arm": 0.11752051055051872,
+   "clear_pairs": 2,
+   "clear_pairs_same_order": 2,
+   "best_real": "bc_scratch",
+   "best_imag": "rule"
+  },
+  "sf_hd": {
+   "arms": {
+    "bc_pre": {
+     "real": 19.444847152967082,
+     "real_se": 4.7033778132725725,
+     "imag": 27.709616901104653,
+     "imag_se": 4.88908569889951,
+     "n": 20
+    },
+    "bc_scratch": {
+     "real": 16.04283900233157,
+     "real_se": 5.166202196598881,
+     "imag": 27.350569653172982,
+     "imag_se": 4.792197682711844,
+     "n": 20
+    },
+    "mbc_pre+m": {
+     "real": 22.71924512768762,
+     "real_se": 5.989965921667329,
+     "imag": 20.470120978917162,
+     "imag_se": 3.951878128271234,
+     "n": 20
+    },
+    "mbc_pre+m@drv_pre": {
+     "real": 20.72850116738593,
+     "real_se": 4.7440096355260835,
+     "imag": 33.72347940281891,
+     "imag_se": 5.84587609318904,
+     "n": 20
+    },
+    "mbc_pre+m@start": {
+     "real": 20.140532395054514,
+     "real_se": 5.895626166753097,
+     "imag": 33.00314321499655,
+     "imag_se": 5.161922792781289,
+     "n": 20
+    },
+    "mbc_scratch+m": {
+     "real": 11.451246562566762,
+     "real_se": 4.48314606264994,
+     "imag": 14.354880086839302,
+     "imag_se": 3.5865739827769016,
+     "n": 20
+    },
+    "rl_bc_pre": {
+     "real": 23.83871208364608,
+     "real_se": 5.74077266377889,
+     "imag": 24.465549853347596,
+     "imag_se": 4.455081254474806,
+     "n": 20
+    },
+    "rl_bc_scratch": {
+     "real": 13.62967688012273,
+     "real_se": 5.105544554445336,
+     "imag": 19.90649872730782,
+     "imag_se": 3.5267090937939405,
+     "n": 20
+    },
+    "rl_pre": {
+     "real": 0.47311683382437764,
+     "real_se": 3.9188439484066766,
+     "imag": 1.4890685717149381,
+     "imag_se": 1.0103518218697367,
+     "n": 20
+    },
+    "rl_scratch": {
+     "real": -1.744661834001846,
+     "real_se": 1.013360765477817,
+     "imag": 0.21135093729813548,
+     "imag_se": 0.21182248747399887,
+     "n": 20
+    },
+    "rule": {
+     "real": 25.011126067175866,
+     "real_se": 6.757553495437189,
+     "imag": 28.80675774025921,
+     "imag_se": 5.064850681953429,
+     "n": 20
+    }
+   },
+   "spearman_arms": 0.7181818181818183,
+   "r_arm_means": 0.8950607066691797,
+   "r_seed_arm": 0.6840456490306301,
+   "clear_pairs": 27,
+   "clear_pairs_same_order": 26,
+   "best_real": "rule",
+   "best_imag": "mbc_pre+m@drv_pre"
+  }
+ },
+ "criteria": [
+  {
+   "criterion": "1 State",
+   "question": "Does it represent the whole world state?",
+   "verdict": "met",
+   "sf_hd": "every driver, rider, road; zone counts match the simulator 99.99%",
+   "pune_hd": "99.99%",
+   "note": "hidden traits are not given; the model infers them from history"
+  },
+  {
+   "criterion": "2 Next step",
+   "question": "Does it predict the next 30 s as a calibrated distribution?",
+   "verdict": "met",
+   "sf_hd": "beats historical rates on 11/12 event heads",
+   "pune_hd": "12/12",
+   "note": "calibration close to the diagonal on every binary head (stage 2)"
+  },
+  {
+   "criterion": "3 Long rollouts",
+   "question": "Does it stay on track over hours of its own predictions?",
+   "verdict": "partly",
+   "sf_hd": "8 h error: pickups 10%, online 11%; beats persistence 9/10, historical average 6/10",
+   "pune_hd": "8 h error: pickups 7%, online 4%; beats persistence 10/10, historical average 6/10",
+   "note": "stage 8a; drifts high after ~3 h (requests +10%, cancellations +26-52%)"
+  },
+  {
+   "criterion": "4 Uncertainty",
+   "question": "Do its imagined futures spread as much as reality?",
+   "verdict": "not met",
+   "sf_hd": "truth inside the draws' range 51% (ideal 78%)",
+   "pune_hd": "truth inside the draws' range 33% (ideal 78%)",
+   "note": "draws too narrow: no day-level demand factor, and the drift above"
+  },
+  {
+   "criterion": "5 Actions",
+   "question": "Does it respond to the platform's actions as the world does?",
+   "verdict": "met",
+   "sf_hd": "repositioning orders: idle drivers at the target r 0.93",
+   "pune_hd": "r 0.97",
+   "note": "stage 4, fresh seasons; city-wide effects ~0 in both"
+  },
+  {
+   "criterion": "6 What-if",
+   "question": "Does it predict shocks it never saw?",
+   "verdict": "partly",
+   "sf_hd": "supply60: pickups -102 real vs -80 model; price15: pickups -84 real vs -28 model",
+   "pune_hd": "supply60: pickups -203 real vs -219 model; price15: pickups -492 real vs -124 model",
+   "note": "stage 8b; supply cuts right in size, price rise right in sign but ~1/3 the size"
+  },
+  {
+   "criterion": "7 Decisions",
+   "question": "Do policies built in imagination work, and rank, the same in the world?",
+   "verdict": "met",
+   "sf_hd": "rank corr. 0.72 over 11 policies; clear pairs same order 26/27",
+   "pune_hd": "rank corr. 0.39 over 7 policies; clear pairs same order 2/2",
+   "note": "agents trained in imagination match the rule in the simulator; imagination overrates the stage-7 menus"
+  },
+  {
+   "criterion": "8 Knowledge",
+   "question": "Does its representation help learn new tasks?",
+   "verdict": "met",
+   "sf_hd": "pretrained vs scratch agent +10 to +11 reward",
+   "pune_hd": "within noise",
+   "note": "stages 5-6; it also stays a predictor under RL (NLL 14.89 -> 15.12)"
+  },
+  {
+   "criterion": "9 Generalise",
+   "question": "Does it work on new days and new people?",
+   "verdict": "partly",
+   "sf_hd": "test days, fresh seasons: yes",
+   "pune_hd": "yes",
+   "note": "one model for both cities; not tried: a new city, new road network, a different fleet size from the start"
+  },
+  {
+   "criterion": "10 Learned",
+   "question": "How much of the dynamics is learned?",
+   "verdict": "partly",
+   "sf_hd": "learned: every human decision and all demand",
+   "pune_hd": "same",
+   "note": "coded rules: driving on the road graph, routes, fares, surge, request lifecycle; traffic is the typical profile"
+  }
+ ]
+}

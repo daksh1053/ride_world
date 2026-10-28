@@ -378,3 +378,87 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     Outputs: stage6/ 34_imitation.png, 34_training.png, 34_execute.png (+ .csv, _paired.txt),
     31_*.csv, train_/eval_mrl_pre.csv; stage7/ 34_drivers_training.png, 34_execute.png (+ .csv,
     _paired.txt), train_/eval_drv_pre.csv. Models: data/wm3_models/drv_pre.pt (driver policy).
+
+## Stage 8: is it a world model? (2026-10-29)
+    Question: how close is wm3_exo (with its agents) to what the literature calls a world model
+    (Ha & Schmidhuber 2018, Dreamer, MuZero, LeCun's JEPA/world-model view)? Ten criteria, each
+    tested against the simulator on held-out days. Scripts 35-37; outputs in stage8/.
+
+    8a. Long imagination (scripts/35_wm3_long_rollout.py). Start from the real state at 06:30 on
+    the stage-4 twin days (fresh seasons the model never saw: SF 13 days, Pune 8), imagine 8 h
+    (960 steps) with 8 draws, the platform's rule in charge, typical-day traffic, no future info.
+    Compare every 5 min to the real day; baselines: persistence (counts stay as at 06:30, events at
+    the last 30 min's rate) and historical average (other seasons, same clock time).
+      relative error at 1 h / 4 h / 8 h    model              persistence        historical avg
+      SF pickups (cumulative)              .087 .077 .096     .286 .502 .497     .247 .194 .115
+      SF drivers online                    .044 .066 .109     .193 .421 .266     .115 .121 .134
+      SF cancellations                     .296 .710 .531     .356 .564 .481     .405 .347 .210
+      Pune pickups                         .037 .062 .073     .178 .342 .338     .085 .088 .049
+      Pune drivers online                  .060 .053 .038     .309 .509 .514     .143 .133 .122
+      Pune cancellations                   .161 .277 .297     .226 .519 .469     .263 .278 .167
+    8 h: beats persistence on 9/10 (SF) and 10/10 (Pune) quantities, the historical average on
+    6/10 in both. It stays on track (no blow-up after 960 steps of its own predictions), but
+    drifts high from ~3 h: signed bias of the draws' mean at 1 h / 4 h / 8 h
+      SF   requests -4% +11% +11%, pickups -3% +6% +9%, online -1% +4% +12%, cancels -10% +69% +53%
+      Pune requests  0%  +9%  +8%, pickups  0% +5% +5%, online -1% -3% +2%, cancels  -5% +24% +21%
+    Not a demand shift (fresh-season demand matches training: SF 3947 vs 3983 requests, Pune 8058
+    vs 7505 over the window). Likely cause (untested): the demand encoder's "recent requests"
+    input is fed by the model's own requests in imagination, a small self-reinforcing loop.
+    Uncertainty: truth inside the 8 draws' range 51% SF / 33% Pune (ideal 7/9 = 78%); the rank
+    histogram piles at 0 (truth below every draw) -- the draws share one day-level demand level,
+    the model has no day-level latent, so the spread is too narrow.
+    Per driver over 8 h: online at the end AUC .55 SF / .68 Pune, income r .39 / .68, trips
+    r .30 / .52; driver-income Gini error .024 / .021.
+    Outputs: 35_long.json, 35_long_errors.png, 35_long_fan.png, 35_long_rank.png.
+
+    8b. Shocks it never saw (scripts/36_wm3_shock.py). Stage-5 execution days (SF 20 seeds,
+    Pune 8), real warm state, a 2 h window at 08/12/17 h. Arms: 30% or 60% of idle/break drivers
+    log off and stay off; or the surge floor is held at x1.5. Same shock in the simulator and in
+    imagination (4 draws, common random numbers); every real arm is identical to the base day
+    before the shock (checked: 28/28). Effect = arm minus no shock, over the 2 h.
+                         pickups real vs model   declined        wait min       online mean     net/online h
+      SF  -30% drivers    -40 vs  -33 (r .80)   +21 vs +14     +.48 vs +.50   -41 vs -41 (.99)  +.24 vs +.23
+      SF  -60% drivers   -102 vs  -80 (r .76)   +48 vs +34    +1.24 vs +1.22  -82 vs -81        +.52 vs +.52
+      SF  price x1.5      -84 vs  -28 (r .27)  +113 vs +50     -.43 vs -.06    -2 vs  -3        +.17 vs +.62
+      Pune -30% drivers   -78 vs  -78 (r .84)   +36 vs +33     +.47 vs +.51  -261 vs -261       +.10 vs +.09
+      Pune -60% drivers  -203 vs -219 (r .83)   +88 vs +93    +1.33 vs +1.35 -525 vs -527       +.24 vs +.23
+      Pune price x1.5    -492 vs -124 (r .64)  +666 vs +259    -.67 vs -.08    -3 vs -11        +.04 vs +.15
+    Supply shocks: right in size in both cities (Pune almost exact), including the knock-on
+    effects (more cancellations, longer waits, higher earnings per driver). Price shock: right in
+    sign everywhere but only 1/4-1/3 of the size; riders decline far more at x1.5 than the model
+    learned (surge in the logs is mostly 1.0-1.3, the model extrapolates), and the shorter waits
+    under surge (drivers accept more) are missed. Fix: training days with randomised prices.
+    Outputs: 36_shock.json, 36_shock_pairs.csv, 36_shock_effects.png, 36_shock_scatter.png,
+    36_shock_traj.png.
+
+    8c. Do decisions made in imagination hold in the world? (scripts/37_wm3_scorecard.py, and
+    script 27 run once more to imagine the stage 6-7 policies.) Each policy's effect vs no
+    repositioning, imagined vs in the simulator, same seeds:
+      SF   (11 policies, 20 seeds): rank corr. .72, arm means r .90, seed x arm r .68; of the 27
+           pairs whose real difference is clear (|t| > 2), 26 have the same order in imagination.
+           Best real: the rule (+25.0); imagination overrates the stage-7 menus (+33 vs +20) and
+           the imitation agents (+28 vs +19), and puts the menus first.
+      Pune (7 policies, 12 seeds): rank corr. .39, clear pairs 2/2 (real effects mostly noise).
+    Outputs: 37_ranking.png, 37_ranking.csv.
+
+    Scorecard (37_scorecard.png, 37_scorecard.json):
+      1 State             met      every driver, rider, road; zone counts match the sim 99.99%
+      2 Next step         met      beats historical rates on 11/12 (SF), 12/12 (Pune) heads, calibrated
+      3 Long rollouts     partly   8 h stable, beats persistence; +6-12% drift, cancellations +20-50%
+      4 Uncertainty       not met  draws too narrow (51% / 33% inside, ideal 78%)
+      5 Actions           met      repositioning orders r .93 / .97 (stage 4)
+      6 What-if           partly   supply shocks right; price shock 1/4-1/3 of the size
+      7 Decisions         met      policies trained in imagination work in the sim; clear pairs 26/27
+      8 Knowledge         met      pretrained beats scratch +10-11 reward (SF)
+      9 Generalise        partly   new days and seasons yes; new city / network / fleet not tried
+      10 Learned          partly   human behaviour and demand learned; roads, fares, surge, lifecycle coded
+    Verdict: close. wm3 is a hybrid (structured) world model -- a learned model of every person's
+    decisions and of demand, inside coded rules of the platform and the road network. It does what
+    a world model is for: simulate the city from any state, respond to actions and to supply shocks
+    it never saw, and train policies in imagination that work in the real world. What keeps it
+    from the full definition: (a) slow drift over hours, (b) too little spread (no day-level
+    uncertainty), (c) weak extrapolation to prices it never saw, (d) the mechanics are coded not
+    learned, (e) not tested on a new city.
+    Next fixes, in order of value: a day-level latent inferred from the first hour (spread + drift);
+    stop the demand encoder from feeding on its own imagined requests (drift); collect days with
+    randomised surge (price); then learn travel times instead of the road graph's rule.

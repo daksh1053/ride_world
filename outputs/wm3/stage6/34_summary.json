@@ -1,0 +1,404 @@
+{
+ "imitation": {
+  "sf_hd/mbc_pre/nll": 0.4686756359597863,
+  "sf_hd/mbc_scratch/nll": 0.4007023137664309,
+  "sf_hd/mbc_pre/acc": 0.8505711648779984,
+  "sf_hd/mbc_scratch/acc": 0.8675517141174924,
+  "sf_hd/mbc_pre/eta": 1.993225347520982,
+  "sf_hd/mbc_scratch/eta": 1.9784697724846123,
+  "sf_hd/mbc_pre/repo_kl": 0.0095637071412056,
+  "sf_hd/mbc_scratch/repo_kl": 0.0067389290546998,
+  "pune_hd/mbc_pre/nll": 0.4933497053158537,
+  "pune_hd/mbc_scratch/nll": 0.4546190312413459,
+  "pune_hd/mbc_pre/acc": 0.8910619986400011,
+  "pune_hd/mbc_scratch/acc": 0.8963426559749658,
+  "pune_hd/mbc_pre/eta": 3.807296900466629,
+  "pune_hd/mbc_scratch/eta": 3.790025518618053,
+  "pune_hd/mbc_pre/repo_kl": 0.0004564289625704,
+  "pune_hd/mbc_scratch/repo_kl": 0.0006218969559995
+ },
+ "training": {
+  "sf_hd/mrl_pre/reward/first": 4.19566291026175,
+  "sf_hd/mrl_pre/reward/last": 4.253537956288436,
+  "sf_hd/mrl_pre/pickups/first": 4.666666666666667,
+  "sf_hd/mrl_pre/pickups/last": 4.666666666666667,
+  "sf_hd/mrl_pre/welfare/first": -0.4710037564049034,
+  "sf_hd/mrl_pre/welfare/last": -0.4131287103782313,
+  "pune_hd/mrl_pre/reward/first": 0.42358314720728646,
+  "pune_hd/mrl_pre/reward/last": -2.3383240739160933,
+  "pune_hd/mrl_pre/pickups/first": 0.0,
+  "pune_hd/mrl_pre/pickups/last": -2.75,
+  "pune_hd/mrl_pre/welfare/first": 0.4235831472073149,
+  "pune_hd/mrl_pre/welfare/last": 0.4116759260839847
+ },
+ "execute": {
+  "sf_hd/rule/real/reward": {
+   "mean": 25.011126067175866,
+   "se": 6.757553495437188,
+   "n": 20,
+   "abs": 1413.8966487472924
+  },
+  "sf_hd/rule/imag/reward": {
+   "mean": 28.80675774025921,
+   "se": 5.064850681953428,
+   "n": 20
+  },
+  "sf_hd/rl_bc_pre/real/reward": {
+   "mean": 23.83871208364608,
+   "se": 5.74077266377889,
+   "n": 20,
+   "abs": 1412.7242347637628
+  },
+  "sf_hd/rl_bc_pre/imag/reward": {
+   "mean": 24.465549853347596,
+   "se": 4.455081254474806,
+   "n": 20
+  },
+  "sf_hd/mbc_pre+m/real/reward": {
+   "mean": 22.71924512768762,
+   "se": 5.989965921667328,
+   "n": 20,
+   "abs": 1411.6047678078044
+  },
+  "sf_hd/mbc_scratch+m/real/reward": {
+   "mean": 11.451246562566762,
+   "se": 4.483146062649939,
+   "n": 20,
+   "abs": 1400.3367692426834
+  },
+  "sf_hd/rule/real/pickups": {
+   "mean": 25.35,
+   "se": 6.010199663904685,
+   "n": 20,
+   "abs": 1212.4
+  },
+  "sf_hd/rule/imag/pickups": {
+   "mean": 28.433333333333337,
+   "se": 4.51884294045144,
+   "n": 20
+  },
+  "sf_hd/rl_bc_pre/real/pickups": {
+   "mean": 23.3,
+   "se": 5.115559340719356,
+   "n": 20,
+   "abs": 1210.35
+  },
+  "sf_hd/rl_bc_pre/imag/pickups": {
+   "mean": 23.166666666666686,
+   "se": 3.952014809262687,
+   "n": 20
+  },
+  "sf_hd/mbc_pre+m/real/pickups": {
+   "mean": 22.4,
+   "se": 5.387314534602267,
+   "n": 20,
+   "abs": 1209.45
+  },
+  "sf_hd/mbc_scratch+m/real/pickups": {
+   "mean": 11.35,
+   "se": 3.8246258846970558,
+   "n": 20,
+   "abs": 1198.4
+  },
+  "sf_hd/rule/real/welfare": {
+   "mean": -0.3388739328241144,
+   "se": 0.9387141235976838,
+   "n": 20,
+   "abs": 201.49664874729262
+  },
+  "sf_hd/rule/imag/welfare": {
+   "mean": 0.3734244069258395,
+   "se": 0.8270565890889843,
+   "n": 20
+  },
+  "sf_hd/rl_bc_pre/real/welfare": {
+   "mean": 0.5387120836460866,
+   "se": 0.7957929279778846,
+   "n": 20,
+   "abs": 202.37423476376284
+  },
+  "sf_hd/rl_bc_pre/imag/welfare": {
+   "mean": 1.298883186680912,
+   "se": 0.6822767372854155,
+   "n": 20
+  },
+  "sf_hd/mbc_pre+m/real/welfare": {
+   "mean": 0.31924512768762836,
+   "se": 0.8676756971422599,
+   "n": 20,
+   "abs": 202.15476780780438
+  },
+  "sf_hd/mbc_scratch+m/real/welfare": {
+   "mean": 0.10124656256676304,
+   "se": 0.7820229172147269,
+   "n": 20,
+   "abs": 201.9367692426835
+  },
+  "sf_hd/rule/real/rejected": {
+   "mean": -8.35,
+   "se": 8.432791571253883,
+   "n": 20,
+   "abs": 283.1
+  },
+  "sf_hd/rl_bc_pre/real/rejected": {
+   "mean": -4.75,
+   "se": 6.2327129346951144,
+   "n": 20,
+   "abs": 286.7
+  },
+  "sf_hd/mbc_pre+m/real/rejected": {
+   "mean": -15.45,
+   "se": 7.37473460717847,
+   "n": 20,
+   "abs": 276.0
+  },
+  "sf_hd/mbc_scratch+m/real/rejected": {
+   "mean": -1.0,
+   "se": 7.157623833882891,
+   "n": 20,
+   "abs": 290.45
+  },
+  "sf_hd/rule/real/offer_eta_min": {
+   "mean": -0.225491339101707,
+   "se": 0.044011038056312415,
+   "n": 20,
+   "abs": 2.533985011016467
+  },
+  "sf_hd/rl_bc_pre/real/offer_eta_min": {
+   "mean": -0.16582130412669788,
+   "se": 0.02978199402314651,
+   "n": 20,
+   "abs": 2.593655045991476
+  },
+  "sf_hd/mbc_pre+m/real/offer_eta_min": {
+   "mean": -0.10213990773828958,
+   "se": 0.029502679219810746,
+   "n": 20,
+   "abs": 2.6573364423798838
+  },
+  "sf_hd/mbc_scratch+m/real/offer_eta_min": {
+   "mean": -0.06169372468576256,
+   "se": 0.02836436533122276,
+   "n": 20,
+   "abs": 2.697782625432411
+  },
+  "sf_hd/rule/real/wait_min": {
+   "mean": -0.2374877305837148,
+   "se": 0.038146318500115385,
+   "n": 20,
+   "abs": 4.005312336432819
+  },
+  "sf_hd/rule/imag/wait_min": {
+   "mean": -0.38009233531519476,
+   "se": 0.050536674071752094,
+   "n": 20
+  },
+  "sf_hd/rl_bc_pre/real/wait_min": {
+   "mean": -0.17725336524485052,
+   "se": 0.0275917927199344,
+   "n": 20,
+   "abs": 4.065546701771684
+  },
+  "sf_hd/rl_bc_pre/imag/wait_min": {
+   "mean": -0.25956453212304387,
+   "se": 0.031100430229849815,
+   "n": 20
+  },
+  "sf_hd/mbc_pre+m/real/wait_min": {
+   "mean": -0.06810849744601455,
+   "se": 0.02643770497510407,
+   "n": 20,
+   "abs": 4.174691569570519
+  },
+  "sf_hd/mbc_scratch+m/real/wait_min": {
+   "mean": -0.06818068142349762,
+   "se": 0.021569859069361687,
+   "n": 20,
+   "abs": 4.174619385593037
+  },
+  "pune_hd/rule/real/reward": {
+   "mean": 7.6684273507135385,
+   "se": 6.949765254808005,
+   "n": 12,
+   "abs": 2208.744394048602
+  },
+  "pune_hd/rule/imag/reward": {
+   "mean": 7.533438276888982,
+   "se": 3.208162915505727,
+   "n": 12
+  },
+  "pune_hd/rl_bc_pre/real/reward": {
+   "mean": -0.9809236652025675,
+   "se": 6.210809655289158,
+   "n": 12,
+   "abs": 2200.095043032686
+  },
+  "pune_hd/rl_bc_pre/imag/reward": {
+   "mean": -0.2735484061881455,
+   "se": 1.698943744875114,
+   "n": 12
+  },
+  "pune_hd/mbc_pre+m/real/reward": {
+   "mean": -0.6693954188642692,
+   "se": 5.963926160688453,
+   "n": 12,
+   "abs": 2200.406571279024
+  },
+  "pune_hd/mbc_scratch+m/real/reward": {
+   "mean": 3.0503002658736023,
+   "se": 6.190240858596707,
+   "n": 12,
+   "abs": 2204.1262669637617
+  },
+  "pune_hd/rule/real/pickups": {
+   "mean": 11.666666666666666,
+   "se": 5.57773351022717,
+   "n": 12,
+   "abs": 1803.1666666666667
+  },
+  "pune_hd/rule/imag/pickups": {
+   "mean": 12.777777777777771,
+   "se": 3.1973087729292056,
+   "n": 12
+  },
+  "pune_hd/rl_bc_pre/real/pickups": {
+   "mean": -1.0,
+   "se": 5.324329521027493,
+   "n": 12,
+   "abs": 1790.5
+  },
+  "pune_hd/rl_bc_pre/imag/pickups": {
+   "mean": 0.19444444444447603,
+   "se": 1.5962172947554287,
+   "n": 12
+  },
+  "pune_hd/mbc_pre+m/real/pickups": {
+   "mean": -4.083333333333333,
+   "se": 5.573827276212505,
+   "n": 12,
+   "abs": 1787.4166666666667
+  },
+  "pune_hd/mbc_scratch+m/real/pickups": {
+   "mean": 3.75,
+   "se": 5.127355334602112,
+   "n": 12,
+   "abs": 1795.25
+  },
+  "pune_hd/rule/real/welfare": {
+   "mean": -3.9982393159531284,
+   "se": 2.4499473421301445,
+   "n": 12,
+   "abs": 405.5777273819352
+  },
+  "pune_hd/rule/imag/welfare": {
+   "mean": -5.244339500888747,
+   "se": 0.8939793243818867,
+   "n": 12
+  },
+  "pune_hd/rl_bc_pre/real/welfare": {
+   "mean": 0.019076334797432537,
+   "se": 1.2199987424791938,
+   "n": 12,
+   "abs": 409.59504303268585
+  },
+  "pune_hd/rl_bc_pre/imag/welfare": {
+   "mean": -0.4679928506325221,
+   "se": 0.48948891894498153,
+   "n": 12
+  },
+  "pune_hd/mbc_pre+m/real/welfare": {
+   "mean": 3.4139379144690642,
+   "se": 1.7310104342649724,
+   "n": 12,
+   "abs": 412.9899046123575
+  },
+  "pune_hd/mbc_scratch+m/real/welfare": {
+   "mean": -0.6996997341263788,
+   "se": 1.522365921928371,
+   "n": 12,
+   "abs": 408.876266963762
+  },
+  "pune_hd/rule/real/rejected": {
+   "mean": 1.6666666666666667,
+   "se": 7.732588783384857,
+   "n": 12,
+   "abs": 617.0
+  },
+  "pune_hd/rl_bc_pre/real/rejected": {
+   "mean": 18.416666666666668,
+   "se": 8.814122907372159,
+   "n": 12,
+   "abs": 633.75
+  },
+  "pune_hd/mbc_pre+m/real/rejected": {
+   "mean": -0.9166666666666666,
+   "se": 9.653432686162091,
+   "n": 12,
+   "abs": 614.4166666666666
+  },
+  "pune_hd/mbc_scratch+m/real/rejected": {
+   "mean": -3.0833333333333335,
+   "se": 11.068285524165178,
+   "n": 12,
+   "abs": 612.25
+  },
+  "pune_hd/rule/real/offer_eta_min": {
+   "mean": -0.07654963367468337,
+   "se": 0.02145195510721736,
+   "n": 12,
+   "abs": 4.550477297538863
+  },
+  "pune_hd/rl_bc_pre/real/offer_eta_min": {
+   "mean": 0.031443962944729176,
+   "se": 0.018912340698112953,
+   "n": 12,
+   "abs": 4.658470894158276
+  },
+  "pune_hd/mbc_pre+m/real/offer_eta_min": {
+   "mean": 0.01105908816207087,
+   "se": 0.03517535121588207,
+   "n": 12,
+   "abs": 4.638086019375616
+  },
+  "pune_hd/mbc_scratch+m/real/offer_eta_min": {
+   "mean": -0.026656138598229646,
+   "se": 0.029707412281723692,
+   "n": 12,
+   "abs": 4.600370792615317
+  },
+  "pune_hd/rule/real/wait_min": {
+   "mean": -0.06994414244667808,
+   "se": 0.02479893275353183,
+   "n": 12,
+   "abs": 5.86268075825632
+  },
+  "pune_hd/rule/imag/wait_min": {
+   "mean": -0.027737305911656573,
+   "se": 0.010676315640228628,
+   "n": 12
+  },
+  "pune_hd/rl_bc_pre/real/wait_min": {
+   "mean": -0.010686604708822323,
+   "se": 0.013109593945821278,
+   "n": 12,
+   "abs": 5.921938295994175
+  },
+  "pune_hd/rl_bc_pre/imag/wait_min": {
+   "mean": -0.004265570428381012,
+   "se": 0.008064334521807008,
+   "n": 12
+  },
+  "pune_hd/mbc_pre+m/real/wait_min": {
+   "mean": 0.025947432930489695,
+   "se": 0.028007104801086757,
+   "n": 12,
+   "abs": 5.958572333633487
+  },
+  "pune_hd/mbc_scratch+m/real/wait_min": {
+   "mean": 0.0030119055609811873,
+   "se": 0.03434207188832722,
+   "n": 12,
+   "abs": 5.93563680626398
+  }
+ }
+}

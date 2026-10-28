@@ -8,9 +8,11 @@ the platform's usual dispatch, so the drivers have records; then one test-split 
 platform, all from the same copied season state and identical until t0:
     none        no repositioning after t0 (matching only)
     rule        the platform's own rebalancing (HDDispatch, as in all training data)
-    <agent>     matching + the agent's repositioning orders every 5 min (world/wm3/agent.py
+    <agent>     the platform's matching + the agent's repositioning orders every 5 min (world/wm3/agent.py
                 LiveAgentPolicy: the simulator's logs so far are rebuilt into the entity-level state
                 and the agent decides from it, exactly as in imagination)
+    <agent>+m   (stage 6) the agent's matching every 30 s + its repositioning every 5 min
+    <agent>+m-none   the agent's matching, no repositioning
 Measured over [t0, t0 + WINDOW_H]: riders picked up, cancellations, expired requests, waiting time,
 drivers moved and followed, drivers' income, km and driving costs, the drivers' welfare gain
 (agent.welfare) and the reward the agents were trained for (pickups + welfare).
@@ -70,8 +72,16 @@ def load_agent(tag, tabs):
         return AG.Agent(TR.load("wm3_exo", tabs)[0]).to(TR.DEV).eval()
     ck = torch.load(TR.MODELS / f"{tag}.pt", map_location=TR.DEV)
     a = AG.Agent(WM.WorldModel3(tabs, **ck["arch"])).to(TR.DEV)
-    a.load_state_dict(ck["state"])
+    AG.load_agent_state(a, ck["state"])
     return a.eval()
+
+
+def load_drivers(tag):
+    from world.wm3 import drivers as DR
+    pol = DR.DriverPolicy().eval()
+    if tag != "start":
+        pol.load_state_dict(torch.load(TR.MODELS / f"{tag}.pt", map_location="cpu")["state"])
+    return pol
 
 
 def run_day_with(season, date, policy, horizon_h, day_dir):
@@ -107,6 +117,21 @@ def run_day_with(season, date, policy, horizon_h, day_dir):
     return tb
 
 
+def arm_spec(arm):
+    """arm name -> (agent tag or None, repositioning mode, matching mode); '<agent>+m@<drivers>'
+    (stage 7): menus from <agent>, every driver choosing with the driver policy <drivers>
+    (data/wm3_models/<drivers>.pt, or 'start': take the platform's first option)."""
+    if "@" in arm:
+        return arm_spec(arm.split("@")[0])
+    if arm in ("rule", "none"):
+        return None, arm, "rule"
+    if arm.endswith("+m-none"):
+        return arm[:-7], "none", "agent"
+    if arm.endswith("+m"):
+        return arm[:-2], "agent", "agent"
+    return arm, "agent", "rule"
+
+
 def real_metrics(L, t0, t1, cost_per_km):
     e0, e1 = int(t0 // S.DT), int(t1 // S.DT)
     ev = L.ev[(L.ev.t_event > t0) & (L.ev.t_event <= t1)]
@@ -122,10 +147,19 @@ def real_metrics(L, t0, t1, cost_per_km):
     x = np.sort((inc1 - inc0)[on])
     gini = float((2 * np.arange(1, len(x) + 1) - len(x) - 1) @ x / (len(x) * max(x.sum(), 1e-9))) if len(x) > 1 else 0.0
     pk = cnt("pickup")
-    return {"pickups": pk, "cancels": cnt("customer_cancelled"), "expired": cnt("request_expired"),
+    hrs = (L.status[:, e0:e1] != 0).sum(1) * S.DT / 3600                     # online hours in the window
+    netd = (inc1 - inc0) - cost_per_km * km
+    act = hrs > 0.25
+    o = L.offers[(L.offers.t_sent > t0) & (L.offers.t_sent <= t1)]
+    return {"offers": len(o), "rejected": int((o.response == "rejected").sum()), "timeout": int((o.response == "timeout").sum()),
+            "offer_eta_min": float(o.eta_est_s.mean() / 60) if len(o) else np.nan,
+            "pickups": pk, "cancels": cnt("customer_cancelled"), "expired": cnt("request_expired"),
             "wait_min": float(((r.t_pickup - r.t_request) / 60).mean()) if len(r) else np.nan,
             "moved": cnt("dispatch_sent"), "followed": cnt("dispatch_accepted"), "income": float((inc1 - inc0).sum()),
             "gini": gini, "km": float(km.sum()), "cost": float((cost_per_km * km).sum()), "welfare": welfare,
+            "net_per_h": float(netd[act].sum() / hrs[act].sum() / E0) if act.any() else np.nan,
+            "net_per_h_p10": float(np.percentile(netd[act] / hrs[act], 10) / E0) if act.any() else np.nan,
+            "driver_hours": float(hrs.sum()),
             "reward": pk + welfare}
 
 
@@ -175,23 +209,28 @@ def run_seed(key, seed, args):
     for d in sorted(p for p in (root / f"seed{seed}").iterdir() if p.is_dir()):
         prior.update_light(d, 5000)
     tabs = TR.tables()
-    arms = ["rule", "none"] + [a for a in args.agents if a == "untrained" or (TR.MODELS / f"{a}.pt").exists()]
+    arms = ["rule", "none"] + [a for a in args.agents if arm_spec(a)[0] == "untrained" or (TR.MODELS / f"{arm_spec(a)[0]}.pt").exists()]
     agents = {}
     for arm in arms:
+        day_dir = root / f"seed{seed}_{arm}" / str(date.date())
         if arm in rec["arms"]:
+            if "net_per_h" not in rec["arms"][arm] and day_dir.exists():       # metrics added in stages 6-7
+                L = S.DayLog(gr, day_dir)
+                rec["arms"][arm].update(real_metrics(L, t0, t1, L.drivers.cost_per_km.to_numpy()))
+                rf.write_text(json.dumps(rec, indent=1, default=float))
             continue
         ta = time.time()
-        mode = arm if arm in ("rule", "none") else "agent"
-        if mode == "agent":
-            agents[arm] = agents.get(arm) or load_agent(arm, tabs)
-        pol = AG.LiveAgentPolicy(agents.get(arm), gr, rules, prior, t_start=t0, seed=seed, mode=mode)
-        day_dir = root / f"seed{seed}_{arm}" / str(date.date())
+        tag, mode, match = arm_spec(arm)
+        if tag is not None:
+            agents[tag] = agents.get(tag) or load_agent(tag, tabs)
+        pol = AG.LiveAgentPolicy(agents.get(tag), gr, rules, prior, t_start=t0, seed=seed, mode=mode, match=match,
+                                 drivers=load_drivers(arm.split("@")[1]) if "@" in arm else None)
         run_day_with(copy.deepcopy(state), date, pol, t1 / 3600 + 0.25, day_dir)
         L = S.DayLog(gr, day_dir)
         rec["arms"][arm] = {**real_metrics(L, t0, t1, L.drivers.cost_per_km.to_numpy()),
-                            "decisions": pol.decisions, "minutes": (time.time() - ta) / 60}
+                            "decisions": pol.decisions, "matches": pol.matches, "menus": pol.menus, "minutes": (time.time() - ta) / 60}
         print(f"  {key} seed {seed} {arm}: " + "  ".join(f"{k} {v:.2f}" if isinstance(v, float) else f"{k} {v}"
-                                                         for k, v in rec["arms"][arm].items() if k != "decisions"), flush=True)
+                                                         for k, v in rec["arms"][arm].items() if k not in ("decisions", "matches", "menus")), flush=True)
         rf.write_text(json.dumps(rec, indent=1, default=float))
     if args.no_imagine:
         return rec
@@ -208,14 +247,17 @@ def run_seed(key, seed, args):
                 W = AG.AgentWorld(env, rules, Lb, prior, e0, None, seed=s)
                 W.L = None
                 log0, inc0 = len(W.log), W.income.copy()
-                if arm in ("rule", "none"):
-                    W.setup(None, s, arm)
+                tag, mode, match = arm_spec(arm)
+                if tag is None:
+                    W.setup(None, s, mode)
                 else:
-                    agents[arm] = agents.get(arm) or load_agent(arm, tabs)
-                    W.setup(agents[arm], s, "agent")
+                    agents[tag] = agents.get(tag) or load_agent(tag, tabs)
+                    W.setup(agents[tag], s, mode, match=match)
+                    if "@" in arm:                                   # stage 7: menus, agent drivers
+                        W.drivers, W.override_driver = load_drivers(arm.split("@")[1]), {}
                 AG.rollout_many([W], H, chunk)
                 m = AG.outcome(W, log0, inc0)
-                draws.append({"draw": s, **m, "reward": m["pickups"] + m["welfare"]})
+                draws.append({"draw": s, **m, "reward": m["pickups"] + m["welfare"], "held": getattr(W, "n_held", 0)})
                 torch.cuda.empty_cache()
             rec["imagined"][arm] = draws
             im = pd.DataFrame(draws)[["pickups", "welfare", "reward", "moved"]].mean()

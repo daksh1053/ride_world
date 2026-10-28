@@ -292,3 +292,89 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
       v3_collapse/ (earlier versions), probe/
     Models (data/wm3_models/): rl_pre, rl_scratch (RL only, v4), bc_pre, bc_scratch
     (imitation), rl_bc_pre, rl_bc_scratch (imitation + RL).
+
+## Stage 6: the world model also matches riders to drivers (2026-10-28)
+    Goal: the agent decides not only where idle drivers go (stage 5) but which driver gets which
+    rider, and its offers are carried out in the simulator.
+
+    Matching head (world/wm3/agent.py, Agent.match_logits): every 30-s epoch the pending requests,
+    oldest first, each choose one idle driver (same mode, pickup ETA within the platform's limit,
+    not one who declined that request, not one taken by an earlier request) or "hold":
+        driver j  qm(h_request) . km(h_driver) / sqrt(d) + w_eta * pickup minutes
+        hold      MLP(h_request) + b_hold
+    so a whole assignment has a probability (product of the requests' choices). Same code in
+    imagination and in the simulator (LiveAgentPolicy match="agent"). The simulator's state is now
+    rebuilt every epoch: state.DayLog takes the simulator's tables in memory and, in live mode,
+    skips re-routing (every cut is in the past) and fills positions only for legs being driven:
+    ~1 s per rebuild in SF instead of 2-8 s, features identical to the full rebuild at every
+    check. With the rule matching, the refactored stepping reproduces stage 5 exactly.
+
+    Imitation (scripts/31_wm3_match_bc.py): the rule's offers (HDDispatch min-ETA assignment per
+    mode, airport queue) recorded in imagination every 2nd epoch from the 120+24 start states:
+    SF 15.4k train choices (100% of rule offers expressible), Pune 25.8k (99.3%; the rest are
+    airport-queue offers beyond the pickup limit). Cross-entropy + KL to the stage-5 agent's
+    repositioning (so it is kept) + the world model's own loss. Held-out: exact-driver accuracy
+    .86 SF / .90 Pune (pretrained, from rl_bc_pre), .87 / .90 (scratch, from rl_bc_scratch);
+    chosen pickup ETA 2.00 vs rule 1.96 min SF, 3.81 vs 3.84 Pune; repositioning KL < 0.01.
+    GRPO on matching (scripts/32_wm3_match_grpo.py): group = one pending request at one moment,
+    copies differing only in its choice (hold + 5 drivers from the agent), 20 imagined min,
+    reward pickups + welfare. The choice does matter (reward spread ~1.3 SF) but 40 iterations
+    did not improve the imitation agent (held-out imagined reward minus none, SF +4.2 -> +4.3,
+    Pune +0.4 -> -2.3): starting from min-ETA, which driver one rider gets changes little.
+    The scratch GRPO run was skipped; pretrained vs scratch is compared on the imitation agents.
+
+    Results in the simulator (20 SF + 12 Pune seeds, 2-h windows; 34_execute.png), reward minus
+    rule matching with no repositioning:
+                                              SF reward      pickups    Pune reward   pickups
+      platform rule (matching + rebalancing)  +25.0 +- 6.8   +25.4     +7.7 +- 7.0   +11.7
+      stage 5: rule matches, agent moves      +23.8 +- 5.7   +23.3     -1.0 +- 6.2    -1.0
+      agent matches + moves, pretrained       +22.7 +- 6.0   +22.4     -0.7 +- 6.0    -4.1
+      agent matches + moves, scratch          +11.5 +- 4.5   +11.4     +3.1 +- 6.2    +3.8
+    Paired (34_execute_paired.txt): the pretrained agent's own matching vs stage 5 (rule's
+    matching, same repositioning) -1.1 +- 3.9 SF, +0.3 +- 5.5 Pune: the world model matches as
+    well as the platform; drivers rejected fewer of its offers in SF (-10.7 +- 5.3 per 2 h;
+    Pune -19 +- 11). Pretrained vs scratch: +11.3 +- 3.5 SF (15 of 20 seeds), as in stage 5;
+    Pune -3.7 +- 5.4 (noise). Pune's rule beats both agents (-8.3 +- 4.5) through its
+    rebalancing, not its matching (stage 5 shows the same gap).
+    Models: data/wm3_models/mbc_pre.pt, mbc_scratch.pt (imitation), mrl_pre.pt (+ GRPO).
+
+## Stage 7: drivers as small agents that maximise their own earnings (2026-10-28)
+    Goal: the drivers become agents; the platform's world model gives each a menu of options with
+    the fare it will get, and each driver chooses to maximise its own earnings over its shift.
+
+    world/wm3/drivers.py. Every 30-s epoch the platform (mbc_pre) scores every allowed
+    (request, idle driver) pair; each idle driver sees its K = 4 best requests with, per option:
+    platform rank, pickup min, trip min, fare to the driver (quote incl. surge minus commission),
+    fare per engaged hour, km cost, net per hour, intercity, surge, the drop-off zone's requests
+    per idle driver and minutes to the driver's home. Own features: hours online, hours since
+    usual shift start, today's earnings, minutes idle, own zone's demand, cost per km, mode.
+    One small policy (two MLPs, ~10k weights) shared by every driver picks an option or declines;
+    drivers choose simultaneously and a request taken by several goes to the platform's best-scored
+    one. Chosen rides are accepted rides (imagination: rollout preaccept; simulator: HDWorld
+    preaccepted). Start policy: take the platform's first option (decline 4%).
+    GRPO (scripts/33_wm3_driver_grpo.py): group = one driver's menu at one moment (a driver who
+    would win at least one of its options -- otherwise its choice changes nothing; a first run that
+    sampled any driver got zero signal in Pune), copies = decline + each option, reward = that
+    driver's own net earnings over 30 imagined min (fares after commission minus km cost, a ride in
+    progress counted at its fare), in median fares. Declining cost the driver ~0.4 fares, the best
+    option beat the mean by ~0.5-0.9. Learned in ~20 iterations: never decline, take the
+    platform's first (nearest) option (P = .98 SF, 1.00 Pune) -- unpaid pickup time is what a
+    driver loses most, so self-interest agrees with the platform's ranking.
+
+    Results in the simulator (same seeds; 34_execute.png), minus single offers answered by the
+    simulator's people (same platform mbc_pre):
+                                    SF pickups   SF wait min   Pune pickups   Pune wait min  net/h
+      menus, start policy           -1.0 +- 4.2  -0.18 +- .03  +31.8 +- 4.3   -0.23 +- .03   +0.006 Pune
+      menus, earning-max. agents    -1.5 +- 3.1  -0.25 +- .04  +21.8 +- 6.6   -0.15 +- .02   +0.005 Pune
+    Menus with drivers who never reject cut rider waits in both cities and add ~1-2% pickups in
+    Pune (where people reject 22% of offers); drivers' earnings per online hour are unchanged in SF
+    and +1% in Pune (rides are limited by riders, not drivers). Trained vs start policy, paired:
+    drivers' own earnings per hour equal (SF +0.001, Pune -0.001 +- 0.002), the 10th-percentile
+    driver slightly up (SF +0.03 +- 0.02, Pune +0.003 +- 0.002), but in Pune riders lose (pickups
+    -10.1 +- 5.1, wait +0.08 +- 0.04 min; 3 of 12 seeds up): each driver gains by never passing,
+    the city does slightly worse. The world model predicted the same direction in imagination
+    (Pune -6 pickups per hour, 34_drivers_training.png). In SF the trained drivers shorten waits
+    (-0.07 +- 0.03 min).
+    Outputs: stage6/ 34_imitation.png, 34_training.png, 34_execute.png (+ .csv, _paired.txt),
+    31_*.csv, train_/eval_mrl_pre.csv; stage7/ 34_drivers_training.png, 34_execute.png (+ .csv,
+    _paired.txt), train_/eval_drv_pre.csv. Models: data/wm3_models/drv_pre.pt (driver policy).

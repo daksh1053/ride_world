@@ -267,6 +267,14 @@ class HDWorld(S.World):
     def on_offer_response(self, t, oid, kind):
         """Base acceptance logit plus surge (more likely) and, near shift end, direction."""
         _, aid, t_sent, i, k, eta, _, _ = self.offers[oid]
+        if (i, k) in getattr(self, "preaccepted", ()):           # a ride the driver chose from a menu (wm3 stage 7)
+            bias = self.dlat.accept_bias.iat[i]
+            self.dlat.at[i, "accept_bias"] = 1e3
+            try:
+                super().on_offer_response(t, oid, "")
+            finally:
+                self.dlat.at[i, "accept_bias"] = bias
+            return
         if kind != "timeout":
             s = self.r_surge[k]
             away = 0.0

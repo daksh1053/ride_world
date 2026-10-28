@@ -65,7 +65,7 @@ This folder holds one script per stage. Run them in order from inside the `ride_
 | `06b_wm_viewer.py` | It builds the page that compares the world model's imagined future with what really happened. |
 | `06c_wm_figures.py` | It draws the world model result figures and writes the results summary. |
 | `09_hd_season.py` to `15_pairs.py` | High-detail cities and world model 2 (see [World models](#world-models)). |
-| `16_wm3_world.py` to `30_wm3_rl_bc.py` | World model 3 (see [World models](#world-models)). |
+| `16_wm3_world.py` to `34_wm3_match_report.py` | World model 3 (see [World models](#world-models)). |
 | `07_city_summary.py` | It writes one summary row per city and draws the gallery of all road maps. |
 | `08_index.py` | It builds the start page that shows the cabs in every city. |
 | `run_city_pipeline.sh` | It runs the traffic, fleet, simulation and data generation stages for a list of cities. |
@@ -304,6 +304,29 @@ It reuses world model 2's simulated seasons (`data/<city>/hd_runs/`), so run ste
    .venv/bin/python scripts/29_wm3_rl_probe.py sf_hd 4 15                         # optional: noise of one driver's effect
    ```
 
+7. Let the world model also match riders to drivers (stage 6). Every 30 s each pending request, oldest first, picks one idle driver or waits; the agent first imitates the platform's matching, then GRPO (about 1 h per imitation, 2.5 h per GRPO run):
+
+   ```bash
+   .venv/bin/python scripts/31_wm3_match_bc.py --collect                                   # the rule's offers, imagined
+   .venv/bin/python scripts/31_wm3_match_bc.py --init-agent rl_bc_pre     --tag mbc_pre
+   .venv/bin/python scripts/31_wm3_match_bc.py --init-agent rl_bc_scratch --tag mbc_scratch
+   .venv/bin/python scripts/32_wm3_match_grpo.py --init-agent mbc_pre --tag mrl_pre
+   ```
+
+8. Drivers as small agents maximising their own earnings (stage 7). The platform (mbc_pre) shows each idle driver a menu of up to 4 rides with the fare it will get; one small policy shared by all drivers picks one or declines, trained with GRPO on each driver's own earnings (about 3 h):
+
+   ```bash
+   .venv/bin/python scripts/33_wm3_driver_grpo.py --platform mbc_pre --tag drv_pre
+   ```
+
+   Then carry stages 6 and 7 out in the simulator and draw the figures:
+
+   ```bash
+   .venv/bin/python scripts/27_wm3_rl_execute.py --city sf_hd   --seed0 700 --n-seeds 20 --no-imagine --agents mbc_pre+m mbc_scratch+m mbc_pre+m@start mbc_pre+m@drv_pre
+   .venv/bin/python scripts/27_wm3_rl_execute.py --city pune_hd --seed0 700 --n-seeds 12 --no-imagine --agents mbc_pre+m mbc_scratch+m mbc_pre+m@start mbc_pre+m@drv_pre
+   .venv/bin/python scripts/34_wm3_match_report.py --platform mbc_pre --drivers drv_pre
+   ```
+
 Outputs, all in `outputs/wm3/`:
 
 | Stage | Main files |
@@ -313,5 +336,7 @@ Outputs, all in `outputs/wm3/`:
 | 3. Rollouts | `20_kpis_<city>.png`, `20_errors.png`, `20_drivers.png`, `20_fairness.png`, `24_hourly.png`, `<city>_imagined_vs_real.html` (imagined and real side by side) |
 | 4. Orders | `23_effects.png`, `23_scatter.png`, `23_followers.png` |
 | 5. Choices (RL) | `stage5/28_execute.png` (every agent carried out in the simulator), `stage5/28_training.png`, `stage5/28_versions.png`, `stage5/28_scatter.png`, `stage5/28_paired.txt` |
+| 6. Matching | `stage6/34_execute.png` (the agent's matching carried out in the simulator), `stage6/34_imitation.png`, `stage6/34_training.png`, `stage6/34_execute_paired.txt` |
+| 7. Driver agents | `stage7/34_execute.png` (menus and earning-maximising drivers in the simulator), `stage7/34_drivers_training.png`, `stage7/34_execute_paired.txt` |
 
 `outputs/wm3/STEPS.md` has every number, the problems found and the fixes.

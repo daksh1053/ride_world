@@ -95,10 +95,17 @@ def _season_seed(day_dir: Path) -> int:
 class DayLog:
     """One simulated day: the logs plus per-epoch arrays of every driver's state."""
 
-    def __init__(self, graph: CityGraph, day_dir: Path):
+    def __init__(self, graph: CityGraph, day_dir: Path, tables: dict | None = None, live_e: int | None = None):
+        """tables: the day's tables already in memory (name -> DataFrame, as world.tables() plus
+        "drivers" and "drivers_latent") instead of the parquet files in day_dir (which then only
+        names the date and season). live_e: the logs end at epoch live_e (a simulator still running)
+        and only the state at live_e is needed: legs are not re-routed (every cut is in the past)
+        and positions are filled only for the legs being driven at live_e. Same state at live_e."""
         self.g, self.dir = graph, Path(day_dir)
         self.date = pd.Timestamp(self.dir.name)
-        rd = lambda n: pd.read_parquet(self.dir / f"{n}.parquet")  # noqa: E731
+        self.live_e = live_e
+        rd = lambda n: tables[n] if tables is not None else pd.read_parquet(self.dir / f"{n}.parquet")  # noqa: E731
+        self.surge_tab = tables.get("surge") if tables is not None else None
         self.drivers, self.latent = rd("drivers"), rd("drivers_latent")
         self.ev, self.legs, self.offers = rd("events"), rd("legs"), rd("offers")
         self.req, self.status_log, self.context = rd("requests"), rd("status"), rd("context")
@@ -129,6 +136,10 @@ class DayLog:
         lg["t_cut"] = np.nan
         lg["last_node"] = [int(n[-1]) for n in lg.nodes]
         ev = self.ev
+        if self.live_e is not None:                                  # every cut happened before live_e
+            self.n_untruncated = 0
+            self.legs = lg
+            return
         nodes_tab = pd.read_parquet(self.g.city.data_dir / "nodes.parquet")
         zones = pd.read_parquet(self.g.city.data_dir / "zones.parquet")
         zc = pd.Series(np.arange(len(nodes_tab)), index=nodes_tab.node_id).loc[zones.centre_node].to_numpy()
@@ -215,6 +226,11 @@ class DayLog:
             {k: i for i, k in enumerate(LEG_KINDS)}).fillna(-1).astype(int).to_numpy()
         self.leg_dest = np.array([n[-1] for n in self.legs.sort_values("leg_id").nodes], np.int64)
         self.leg_req = self.legs.sort_values("leg_id").request_id.to_numpy()
+        if self.live_e is not None:                                  # only the legs being driven at live_e
+            te = self.live_e * DT
+            t_beg = np.array([x[0] if len(x) else np.inf for x in lg.times])
+            t_fin = np.fmin(np.array([x[-1] if len(x) else -np.inf for x in lg.times]), np.nan_to_num(lg.t_cut.to_numpy(), nan=np.inf))
+            lg = lg[(np.ceil(t_beg / DT) <= self.live_e) & (np.ceil(t_fin / DT) > self.live_e) & (te >= 0)]
         for lid, d, nodes, times, tc in zip(lg.leg_id.to_numpy(), lg.driver_id.to_numpy(), lg.nodes, lg.times, lg.t_cut.to_numpy()):
             times = times.astype(np.float64)
             e0, e1 = int(np.ceil(times[0] / DT)), int(np.ceil(min(times[-1], tc if np.isfinite(tc) else np.inf) / DT))

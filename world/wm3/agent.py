@@ -6,7 +6,13 @@ choice is a categorical over [stay, zone_0 .. zone_Z-1] from the model's driver 
 states:
     stay      MLP(h_driver) + a bias + logsumexp of the zone scores (P(move) starts near P_MOVE0)
     zone z    q(h_driver) . k(h_zone) / sqrt(d) + w_tt * minutes to z  (unreachable zones masked)
-Matching (offers) stays the platform's rule (HDDispatch with rebalancing switched off).
+Matching (offers) is the platform's rule (HDDispatch with rebalancing switched off), or, from
+stage 6, the agent's own (match="agent"): every 30-s epoch the pending requests, oldest first,
+each pick one idle driver of their mode within the pickup limit (not one who declined them, not
+one an earlier request took) or "hold" (wait for the next epoch):
+    driver j  qm(h_request) . km(h_driver) / sqrt(d) + w_eta * pickup minutes
+    hold      MLP(h_request) + b_hold
+so a whole assignment has a probability (the product of the requests' choices) for RL.
 
 The same Agent works in three places:
   - inside an imagined world (world/wm3/rollout.py), for training with GRPO
@@ -44,6 +50,9 @@ P_MOVE0 = 0.03              # starting chance that a deciding driver is moved
 STAY_BIAS = math.log((1 - P_MOVE0) / P_MOVE0)
 IDLE = 1
 RO.KIND.setdefault("policy", max(RO.KIND.values()) + 1)
+RO.KIND.setdefault("match", max(RO.KIND.values()) + 1)
+MATCH_KEYS = ("mq.", "mk.", "hold.", "w_eta", "b_hold")
+B_HOLD0 = -4.0                # the rule never holds a request that has a driver in reach
 
 
 class Agent(nn.Module):
@@ -56,6 +65,27 @@ class Agent(nn.Module):
         self.stay = nn.Sequential(nn.Linear(d, d), nn.GELU(), nn.Linear(d, 1))
         self.w_tt = nn.Parameter(torch.zeros(()))
         self.b_stay = nn.Parameter(torch.tensor(STAY_BIAS))
+        # matching (stage 6)
+        self.mq = nn.Linear(d, d)
+        self.mk = nn.Linear(d, d)
+        self.hold = nn.Sequential(nn.Linear(d, d), nn.GELU(), nn.Linear(d, 1))
+        self.w_eta = nn.Parameter(torch.tensor(-0.5))
+        self.b_hold = nn.Parameter(torch.tensor(B_HOLD0))
+
+    def match_logits(self, b, rpos, dpos, feas, eta):
+        """b: collated snapshots; rpos: (B, n) positions of the deciding requests among the request
+        tokens (-1 = padding); dpos: (B, m) positions of the candidate drivers among the driver
+        tokens; feas: (B, n, m) bool; eta: (B, n, m) pickup minutes. Returns (B, n, 1 + m) logits
+        [hold, driver_1..driver_m], -inf where not allowed (before masking drivers taken earlier)."""
+        hD, hR, _, _ = self.wm.encode(b)
+        hD, hR = hD.float(), hR.float()
+        d = hD.shape[-1]
+        hr = torch.gather(hR, 1, rpos.clamp(min=0)[..., None].expand(-1, -1, d))
+        hd = torch.gather(hD, 1, dpos.clamp(min=0)[..., None].expand(-1, -1, d))
+        pair = torch.einsum("bnd,bmd->bnm", self.mq(hr), self.mk(hd)) / math.sqrt(d) + self.w_eta * eta
+        pair = pair.masked_fill(~feas, float("-inf"))
+        hold = self.hold(hr)[..., 0] + self.b_hold
+        return torch.cat([hold[..., None], pair], -1)
 
     def logits(self, b, pos, cand, tt):
         """b: a collated batch of one snapshot per element; pos: (B, n) long positions of the
@@ -142,15 +172,194 @@ def to_dispatches(dec, a):
     return [(int(d), int(x - 1)) for d, x in zip(dec["drv"], a) if x > 0]
 
 
+# ---------------------------------------------------------------------- matching (stage 6)
+def load_agent_state(agent, state):
+    """Load an agent checkpoint; checkpoints from before stage 6 have no matching head (it keeps
+    its fresh initialisation)."""
+    missing, unexpected = agent.load_state_dict(state, strict=False)
+    bad = [k for k in missing if not k.startswith(MATCH_KEYS)] + list(unexpected)
+    assert not bad, f"agent checkpoint mismatch: {bad[:5]}"
+    return agent
+
+
+def match_inputs(obs, f):
+    """Who can be offered to whom now (an Observation, from an imagined world or the simulator, and
+    the features f of the same moment): the pending requests, oldest first, and the idle drivers;
+    a pair is allowed when the modes agree, the pickup ETA (the platform's GPS estimate) is within
+    the limit and the driver has not declined that request (as HDDispatch). Only requests with an
+    allowed driver decide. None if there is nothing to decide."""
+    pend, idle = obs.pending, obs.idle
+    if not len(pend) or not len(idle):
+        return None
+    rp = {int(k): j for j, k in enumerate(f["R_id"])}
+    dp = {int(d): j for j, d in enumerate(f["D_id"])}
+    pend = pend[pend.request_id.isin(list(rp))].sort_values(["t_request", "request_id"], kind="stable")
+    idle = idle[idle.driver_id.isin(list(dp))]
+    if not len(pend) or not len(idle):
+        return None
+    req, drv = pend.request_id.to_numpy().astype(np.int64), idle.driver_id.to_numpy().astype(np.int64)
+    rm, dm = pend["mode"].to_numpy(), idle["mode"].to_numpy()
+    eta = np.full((len(req), len(drv)), np.inf)
+    for j in np.unique(rm):
+        ri, di = np.flatnonzero(rm == j), np.flatnonzero(dm == j)
+        if len(ri) and len(di):
+            e = obs.fleet["eta"](idle.node.to_numpy()[di][:, None], pend.origin_node.to_numpy()[ri][None, :], int(j))
+            eta[np.ix_(ri, di)] = np.asarray(e, float).T
+    for c, ex in enumerate(pend.excluded):
+        if ex:
+            eta[c, np.isin(drv, list(ex))] = np.inf
+    feas = eta <= obs.max_pickup_s
+    rk, dk = feas.any(1), feas.any(0)
+    if not rk.any():
+        return None
+    feas, eta = feas[rk][:, dk], eta[rk][:, dk]
+    req, drv = req[rk], drv[dk]
+    return {"req": req, "rpos": np.array([rp[int(k)] for k in req], np.int64), "drv": drv,
+            "dpos": np.array([dp[int(d)] for d in drv], np.int64), "feas": feas,
+            "eta": np.where(feas, eta / 60, 0.0).astype(np.float32)}
+
+
+def collate_matches(snaps, mis, device):
+    """One batch of snapshots plus padded matching inputs."""
+    b = WD.collate([{**s, **_empty_targets(s)} for s in snaps], device)
+    n = max(1, max(len(m["req"]) for m in mis))
+    m_ = max(1, max(len(m["drv"]) for m in mis))
+    B = len(snaps)
+    rpos, dpos = np.full((B, n), -1, np.int64), np.full((B, m_), -1, np.int64)
+    feas, eta = np.zeros((B, n, m_), bool), np.zeros((B, n, m_), np.float32)
+    for i, m in enumerate(mis):
+        a, c = len(m["req"]), len(m["drv"])
+        rpos[i, :a], dpos[i, :c], feas[i, :a, :c], eta[i, :a, :c] = m["rpos"], m["dpos"], m["feas"], m["eta"]
+    t = lambda x: torch.from_numpy(x).to(device)  # noqa: E731
+    return b, t(rpos), t(dpos), t(feas), t(eta)
+
+
+def _softmax_np(l):
+    l = l - np.max(l)
+    p = np.exp(l)
+    return p / p.sum()
+
+
+def choose_match(lg, seed, e, req, force=None):
+    """Sequential keyed draws: request j (oldest first) picks from [hold] + the drivers not taken by
+    requests before it. lg: (n, 1 + m) logits. force: {request_id: action} for forced choices
+    (GRPO branches; a forced driver already taken falls back to hold). Returns (n,) actions
+    (0 = hold, 1 + c = candidate driver c)."""
+    n, m1 = lg.shape
+    used = np.zeros(m1 - 1, bool)
+    a = np.zeros(n, np.int64)
+    u = RO.keyed_uniform(seed, e, "match", req)
+    for j in range(n):
+        l = lg[j].astype(np.float64).copy()
+        l[1:][used] = -np.inf
+        if force is not None and int(req[j]) in force:
+            x = int(force[int(req[j])])
+            a[j] = x if np.isfinite(l[x]) else 0
+        else:
+            a[j] = int(RO.pick(_softmax_np(l)[None], u[[j]])[0])
+        if a[j] > 0:
+            used[a[j] - 1] = True
+    return a
+
+
+def used_before(a, m):
+    """(n, m) bool: the candidate drivers taken by the requests before each one."""
+    U = np.zeros((len(a), m), bool)
+    for j in range(1, len(a)):
+        U[j] = U[j - 1]
+        if a[j - 1] > 0:
+            U[j, a[j - 1] - 1] = True
+    return U
+
+
+def seq_logprobs(lg, U):
+    """lg: (..., n, 1 + m) logits, U: (..., n, m) taken-before masks -> log-probabilities of each
+    request's choice given the drivers still free (torch)."""
+    mask = torch.cat([torch.zeros_like(U[..., :1]), U], -1)
+    return torch.log_softmax(lg.masked_fill(mask, float("-inf")), -1)
+
+
+def to_offers(mi, a):
+    return [(int(mi["drv"][x - 1]), int(k)) for k, x in zip(mi["req"], a) if x > 0]
+
+
+def rule_targets(mi, offers):
+    """The rule's offers as the agent's actions (0 = hold) and how many it made outside the agent's
+    choice set (e.g. the airport queue beyond the pickup limit)."""
+    col = {int(d): c for c, d in enumerate(mi["drv"])}
+    of = {int(k): int(d) for d, k in offers}
+    a = np.zeros(len(mi["req"]), np.int64)
+    miss = 0
+    for j, k in enumerate(mi["req"]):
+        d = of.get(int(k))
+        if d is None:
+            continue
+        c = col.get(d)
+        if c is not None and mi["feas"][j, c]:
+            a[j] = 1 + c
+        else:
+            miss += 1
+    return a, miss
+
+
+@torch.no_grad()
+def match_logits_many(items, device):
+    """items: [(agent, snap, mi)] -> list of (n, 1 + m) numpy logits (one batch per agent)."""
+    out = [None] * len(items)
+    for aid in {id(x[0]) for x in items}:
+        grp = [i for i, x in enumerate(items) if id(x[0]) == aid]
+        agent = items[grp[0]][0]
+        for c in range(0, len(grp), 8):
+            g = grp[c: c + 8]
+            b, rpos, dpos, feas, eta = collate_matches([items[i][1] for i in g], [items[i][2] for i in g], device)
+            with torch.autocast("cuda", torch.bfloat16, enabled=device.type == "cuda"):
+                lg = agent.match_logits(b, rpos, dpos, feas, eta)
+            lg = lg.float().cpu().numpy()
+            for j, i in enumerate(g):
+                mi = items[i][2]
+                out[i] = lg[j, :len(mi["req"]), :1 + len(mi["drv"])]
+    return out
+
+
+def menu_round(W, mi, lg, f):
+    """Stage 7 (world/wm3/drivers.py): every idle driver with an allowed request sees a menu (the
+    platform's K best requests for it, with the fare it will get) and takes one or declines; the
+    taken rides are accepted offers. Records the round in W.last_menu."""
+    from . import drivers as DR
+    menu, sc = DR.menus(mi, lg)
+    cols, opt, own, mask, fare = DR.features(W, mi, menu)
+    dl = DR.driver_logits(W.drivers, opt, own, mask, torch.device("cpu"))
+    drv = mi["drv"][cols]
+    a = DR.choose(dl, W.policy_seed, W.e, drv, W.override_driver.get(W.e) if hasattr(W, "override_driver") else None)
+    offers, lost = DR.settle(mi, menu, cols, a, sc)
+    W.preaccept = set(offers)
+    # the driver each request would go to if every driver showing it took it (platform's best)
+    owner = {}
+    for c in cols:
+        for r in menu[c]:
+            if r not in owner or sc[r, c] > sc[r, owner[r]]:
+                owner[r] = c
+    winnable = np.array([any(owner[r] == c for r in menu[c]) for c in cols], bool)
+    W.last_menu = {"drv": drv, "opt": opt, "own": own, "mask": mask, "fare": fare, "lg": dl, "a": a, "e": W.e,
+                   "offers": offers, "lost": lost, "winnable": winnable}
+    W.n_declined = getattr(W, "n_declined", 0) + int((a == 0).sum())
+    W.n_lost = getattr(W, "n_lost", 0) + lost
+    return offers
+
+
 # ---------------------------------------------------------------------- imagined worlds
 class AgentWorld(RO.ImaginedWorld):
     """An imagined world whose platform matches with HDDispatch and repositions with an agent
     (or with nothing / the platform's own rule, for baselines)."""
 
-    def setup(self, agent=None, policy_seed=0, mode="agent"):
+    def setup(self, agent=None, policy_seed=0, mode="agent", match="rule"):
         """mode: 'agent' (the agent repositions), 'rule' (the platform's own rebalancing every
-        5 min), 'none' (no repositioning)."""
-        self.agent, self.policy_seed, self.mode = agent, policy_seed, mode
+        5 min), 'none' (no repositioning). match: 'rule' (HDDispatch's min-ETA matching) or
+        'agent' (the agent's matching, every epoch)."""
+        self.agent, self.policy_seed, self.mode, self.match_mode = agent, policy_seed, mode, match
+        self.override_match = {}                             # {epoch: {request: action}} forced (branches)
+        self.last_match = None
+        self.n_held = 0
         self.match = HDDispatch(reposition_every=DECIDE_EVERY if mode == "rule" else 0, max_moves=60)
         self.match._n = int(self.e) - 1                      # the rule rebalances when e % 10 == 0
         self.override = {}                                   # {epoch: actions} forced choices (branches)
@@ -165,22 +374,9 @@ class AgentWorld(RO.ImaginedWorld):
         return leg
 
     def step_agent(self):
-        """One 30-s step: match, (every 5 min) reposition, then predict and apply the events.
-        Returns the decision record {snap, dec, p, a} at decision epochs, else None."""
-        act = self.match.act(self.observe())
-        self.apply_action(Action(offers=act.offers))
-        disp, rec = act.dispatches, None
-        if self.mode == "agent" and self.e % DECIDE_EVERY == 0:
-            f = self.features()
-            dec = decision_inputs(self, f)
-            p = probs(self.agent, self, f, dec)
-            a = self.override[self.e] if self.e in self.override else choose(p, self.policy_seed, self.e, dec["drv"])
-            rec = {"snap": snap_of(self, f), "dec": dec, "p": p, "a": a, "e": self.e}
-            disp = to_dispatches(dec, a)
-        self._dispatch(disp)
-        self.n_moved += len(self.orders_now)
-        self.advance()
-        return rec
+        """One 30-s step (as step_many on this world alone). Returns the repositioning decision
+        record at decision epochs, else None; the matching record is in self.last_match."""
+        return step_many([self])[0]
 
     def _on_board(self, t, k, push, t1):
         q = self.req.get(k)
@@ -252,57 +448,93 @@ def load_start(path, model, rules, router=None):
 
 # ---------------------------------------------------------------------- the live simulator
 class LiveAgentPolicy(Policy):
-    """Runs inside world/hd/sim.HDWorld. Matching: HDDispatch (no rebalancing). Every
-    DECIDE_EVERY epochs from t_start, the simulator's logs so far are rebuilt into the
-    entity-level state (state.DayLog, as stage 1) and the agent orders idle drivers.
-    Before t_start (and with agent=None) it is the platform's usual rule, so runs with
-    different agents are identical until t_start."""
+    """Runs inside world/hd/sim.HDWorld. Matching: HDDispatch (no rebalancing), or the agent's
+    (match="agent", every epoch). Repositioning (mode): the agent's every DECIDE_EVERY epochs,
+    the rule's or none. Whenever the agent decides, the simulator's logs so far are rebuilt into
+    the entity-level state (state.DayLog, as stage 1, in live mode) and the agent decides from it.
+    Before t_start it is the platform's usual rule, so all runs are identical until t_start."""
 
     name = "wm3_agent"
-    version = "1"
+    version = "2"
 
-    def __init__(self, agent, graph, rules, prior, t_start, seed=0, base_kw=None, mode="agent"):
+    def __init__(self, agent, graph, rules, prior, t_start, seed=0, base_kw=None, mode="agent", match="rule", drivers=None):
+        """drivers: a stage-7 DriverPolicy -- with match="agent", idle drivers then get menus and
+        choose (world/wm3/drivers.py); the rides they take are accepted (world/hd/sim.py preaccepted)."""
+        self.drivers = drivers
         self.agent, self.g, self.rules, self.prior = agent, graph, rules, prior
-        self.t_start, self.seed, self.mode = t_start, seed, mode
+        self.t_start, self.seed, self.mode, self.match_mode = t_start, seed, mode, match
         self.base = HDDispatch(**(base_kw or {}))
         self.match = HDDispatch(reposition_every=0)
         self.rule = HDDispatch(**(base_kw or {}))
         self.world = None                                    # set by the runner
         self.day_dir = None                                  # name gives the date and season seed
         self.decisions = []
+        self.matches = []
+        self.menus = []
 
     def act(self, obs):
         if obs.t < self.t_start:
             self.rule._n += 1                                 # keep the rule's 5-min phase
             return self.base.act(obs)
-        if self.mode == "rule":
-            return self.rule.act(obs)
-        act = self.match.act(obs)
         e = int(round(obs.t / S.DT))
-        if self.mode == "none" or e % DECIDE_EVERY:
-            return act
-        W = self.imagined_now(e)
-        W.apply_action(Action(offers=act.offers))
+        if self.match_mode == "rule":
+            if self.mode == "rule":
+                return self.rule.act(obs)
+            act = self.match.act(obs)
+            if self.mode == "none" or e % DECIDE_EVERY:
+                return act
+            W = self.imagined_now(e)
+            offers = act.offers
+        else:
+            self.rule._n += 1
+            W = self.imagined_now(e)
+            f = W.features()
+            mi = match_inputs(obs, f)
+            offers = []
+            if mi is not None:
+                dev = next(self.agent.parameters()).device
+                lg = match_logits_many([(self.agent, snap_of(W, f), mi)], dev)[0]
+                if self.drivers is not None:                 # menus; the drivers choose (stage 7)
+                    W.policy_seed, W.drivers = self.seed, self.drivers
+                    offers = menu_round(W, mi, lg, f)
+                    a = np.zeros(len(mi["req"]), np.int64)
+                    taken = {k: d for d, k in offers}
+                    col = {int(d): c for c, d in enumerate(mi["drv"])}
+                    for j, k in enumerate(mi["req"]):
+                        if int(k) in taken:
+                            a[j] = 1 + col[taken[int(k)]]
+                    self.world.preaccepted = getattr(self.world, "preaccepted", set()) | set(offers)
+                    self.menus.append({"t": obs.t, "n_menus": len(W.last_menu["drv"]), "declined": int((W.last_menu["a"] == 0).sum()),
+                                       "lost": W.last_menu["lost"], "taken": len(offers)})
+                else:
+                    a = choose_match(lg, self.seed, e, mi["req"])
+                    offers = to_offers(mi, a)
+                self.matches.append({"t": obs.t, "n_req": len(mi["req"]), "n_drv": len(mi["drv"]), "n_offers": len(offers),
+                                     "n_pending": len(obs.pending), "eta_min": float(np.mean([mi["eta"][j, x - 1] for j, x in enumerate(a) if x > 0]))
+                                     if len(offers) else np.nan})
+            if self.mode == "rule":                          # the rule's rebalancing on top of the agent's offers
+                used = {d for d, _ in offers}
+                o2 = copy.copy(obs)
+                o2.idle = obs.idle[~obs.idle.driver_id.isin(list(used))]
+                disp = self.rule._rebalance(o2, o2.idle) if e % DECIDE_EVERY == 0 and len(o2.idle) else []
+                return Action(offers=offers, dispatches=disp)
+            if self.mode == "none" or e % DECIDE_EVERY:
+                return Action(offers=offers)
+        W.apply_action(Action(offers=offers))
         f = W.features()
         dec = decision_inputs(W, f)
         p = probs(self.agent, W, f, dec)
         a = choose(p, self.seed, e, dec["drv"])
         disp = to_dispatches(dec, a)
         self.decisions.append({"t": obs.t, "n_deciding": len(dec["drv"]), "n_moved": len(disp)})
-        return Action(offers=act.offers, dispatches=disp, info=act.info)
+        return Action(offers=offers, dispatches=disp)
 
     def imagined_now(self, e):
-        """The entity-level state at epoch e from the simulator's tables so far."""
+        """The entity-level state at epoch e from the simulator's tables so far (in memory)."""
         tb = self.world.tables()
-        with tempfile.TemporaryDirectory(dir="/dev/shm") as tmp:
-            d = Path(tmp) / self.day_dir.parent.name / self.day_dir.name
-            d.mkdir(parents=True)
-            for name, df in tb.items():
-                df.to_parquet(d / f"{name}.parquet", index=False)
-            self.drivers_today.to_parquet(d / "drivers.parquet", index=False)
-            self.latent_today.to_parquet(d / "drivers_latent.parquet", index=False)
-            L = S.DayLog(self.g, d)
-            W = RO.ImaginedWorld(self.agent.wm, self.rules, L, self.prior, e, None, seed=self.seed)
+        tb["drivers"], tb["drivers_latent"] = self.drivers_today, self.latent_today
+        L = S.DayLog(self.g, self.day_dir, tables=tb, live_e=e)
+        W = RO.ImaginedWorld(self.agent.wm, self.rules, L, self.prior, e, None, seed=self.seed)
         W.L = None
         return W
 
@@ -314,10 +546,52 @@ def step_many(worlds):
     world model's forward passes are batched. Same result as step_agent() on each world.
     Returns the decision records (or None) per world."""
     recs = [None] * len(worlds)
-    for W in worlds:
-        act = W.match.act(W.observe())
+    am = [i for i, W in enumerate(worlds) if getattr(W, "match_mode", "rule") == "agent"]
+    for i, W in enumerate(worlds):
+        W.last_match = None
+        if i in am:
+            continue
+        obs = W.observe()
+        rec_m = getattr(W, "record_match", 0) and W.e % W.record_match == 0
+        if rec_m:                                    # the rule's offers as agent actions (imitation targets)
+            f = W.features()
+            mi = match_inputs(obs, f)
+        act = W.match.act(obs)
+        if rec_m and mi is not None:
+            a, miss = rule_targets(mi, act.offers)
+            W.last_match = {"snap": snap_of(W, f), "mi": mi, "a": a, "e": W.e, "miss": miss, "n_rule": len(act.offers)}
         W.apply_action(Action(offers=act.offers))
         W._pending_disp = act.dispatches
+    if am:                                           # the agent matches (one GPU batch per agent)
+        fs, mis = {}, {}
+        for i in am:
+            fs[i] = worlds[i].features()
+            mis[i] = match_inputs(worlds[i].observe(), fs[i])
+        live = [i for i in am if mis[i] is not None]
+        dev = next(worlds[live[0]].agent.parameters()).device if live else None
+        lgs = match_logits_many([(worlds[i].agent, snap_of(worlds[i], fs[i]), mis[i]) for i in live], dev) if live else []
+        for i, lg in zip(live, lgs):
+            W, mi = worlds[i], mis[i]
+            if getattr(W, "drivers", None) is not None:          # stage 7: menus, the drivers choose
+                offers = menu_round(W, mi, lg, fs[i])
+            else:
+                a = choose_match(lg, W.policy_seed, W.e, mi["req"], W.override_match.get(W.e))
+                W.last_match = {"snap": snap_of(W, fs[i]), "mi": mi, "lg": lg, "a": a, "e": W.e}
+                offers = to_offers(mi, a)
+                W.n_held += int((a == 0).sum())
+            W.apply_action(Action(offers=offers))
+        for i in am:
+            W = worlds[i]
+            if i not in live:
+                W.apply_action(Action())
+            W._pending_disp = []
+            if W.mode == "rule":                     # the rule's rebalancing on top of the agent's offers
+                W.match._n += 1
+                obs = W.observe()
+                if W.match.reposition_every and W.match._n % W.match.reposition_every == 0 and len(obs.idle):
+                    W._pending_disp = W.match._rebalance(obs, obs.idle)
+            else:
+                W.match._n += 1
     for i, W in enumerate(worlds):                 # the rule's choices as agent actions (imitation targets)
         if W.mode == "rule" and getattr(W, "record", False) and W.e % DECIDE_EVERY == 0:
             f = W.features()

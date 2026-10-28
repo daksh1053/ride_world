@@ -1,0 +1,198 @@
+{
+ "training": {
+  "sf_hd/single/net_per_h/first": 1.4081423492370375,
+  "sf_hd/single/net_per_h/last": 1.4083092298427313,
+  "sf_hd/menu_start/net_per_h/first": 1.412233078659045,
+  "sf_hd/menu_start/net_per_h/last": 1.4125275140961957,
+  "sf_hd/menu_agents/net_per_h/first": 1.412233078659045,
+  "sf_hd/menu_agents/net_per_h/last": 1.4122886195531148,
+  "sf_hd/single/net_per_h_p10/first": -0.08905607867771193,
+  "sf_hd/single/net_per_h_p10/last": -0.08378503866649874,
+  "sf_hd/menu_start/net_per_h_p10/first": -0.07823397944048044,
+  "sf_hd/menu_start/net_per_h_p10/last": -0.07639323744098603,
+  "sf_hd/menu_agents/net_per_h_p10/first": -0.07823397944048044,
+  "sf_hd/menu_agents/net_per_h_p10/last": -0.0754041679292031,
+  "sf_hd/single/pickups/first": 614.9166666666666,
+  "sf_hd/single/pickups/last": 614.3333333333334,
+  "sf_hd/menu_start/pickups/first": 615.6666666666666,
+  "sf_hd/menu_start/pickups/last": 614.8333333333334,
+  "sf_hd/menu_agents/pickups/first": 615.6666666666666,
+  "sf_hd/menu_agents/pickups/last": 615.1666666666666,
+  "sf_hd/single/welfare/first": 127.1767667083062,
+  "sf_hd/single/welfare/last": 126.8408315582664,
+  "sf_hd/menu_start/welfare/first": 128.3367635380201,
+  "sf_hd/menu_start/welfare/last": 128.46554896773742,
+  "sf_hd/menu_agents/welfare/first": 128.3367635380201,
+  "sf_hd/menu_agents/welfare/last": 127.72543818188761,
+  "pune_hd/single/net_per_h/first": 0.6098061376049229,
+  "pune_hd/single/net_per_h/last": 0.6100449127680572,
+  "pune_hd/menu_start/net_per_h/first": 0.6117101660544623,
+  "pune_hd/menu_start/net_per_h/last": 0.6118189530933292,
+  "pune_hd/menu_agents/net_per_h/first": 0.6117101660544623,
+  "pune_hd/menu_agents/net_per_h/last": 0.6085234223541524,
+  "pune_hd/single/net_per_h_p10/first": -0.3466751542963775,
+  "pune_hd/single/net_per_h_p10/last": -0.3468220416421827,
+  "pune_hd/menu_start/net_per_h_p10/first": -0.3495437185475516,
+  "pune_hd/menu_start/net_per_h_p10/last": -0.3503442806951631,
+  "pune_hd/menu_agents/net_per_h_p10/first": -0.3495437185475516,
+  "pune_hd/menu_agents/net_per_h_p10/last": -0.35088882296897855,
+  "pune_hd/single/pickups/first": 919.25,
+  "pune_hd/single/pickups/last": 919.0,
+  "pune_hd/menu_start/pickups/first": 932.25,
+  "pune_hd/menu_start/pickups/last": 932.25,
+  "pune_hd/menu_agents/pickups/first": 932.25,
+  "pune_hd/menu_agents/pickups/last": 926.5,
+  "pune_hd/single/welfare/first": 180.7029548998639,
+  "pune_hd/single/welfare/last": 181.04281461632306,
+  "pune_hd/menu_start/welfare/first": 180.94199135746052,
+  "pune_hd/menu_start/welfare/last": 181.07619756247507,
+  "pune_hd/menu_agents/welfare/first": 180.94199135746052,
+  "pune_hd/menu_agents/welfare/last": 178.98805348565654
+ },
+ "execute": {
+  "sf_hd/mbc_pre+m@start/real/net_per_h": {
+   "mean": 0.0009507210864904192,
+   "se": 0.005227587476870816,
+   "n": 20,
+   "abs": 1.7053849981795075
+  },
+  "sf_hd/mbc_pre+m@drv_pre/real/net_per_h": {
+   "mean": 0.0022486047864749724,
+   "se": 0.006305160934860838,
+   "n": 20,
+   "abs": 1.7066828818794921
+  },
+  "sf_hd/mbc_pre+m@start/real/net_per_h_p10": {
+   "mean": -0.04204962768734584,
+   "se": 0.030879836707091917,
+   "n": 20,
+   "abs": 0.19501256227540997
+  },
+  "sf_hd/mbc_pre+m@drv_pre/real/net_per_h_p10": {
+   "mean": -0.01383595708894548,
+   "se": 0.030943300587961492,
+   "n": 20,
+   "abs": 0.22322623287381038
+  },
+  "sf_hd/mbc_pre+m@start/real/pickups": {
+   "mean": -1.0,
+   "se": 4.172592277684158,
+   "n": 20,
+   "abs": 1208.45
+  },
+  "sf_hd/mbc_pre+m@drv_pre/real/pickups": {
+   "mean": -1.5,
+   "se": 3.137632362483735,
+   "n": 20,
+   "abs": 1207.95
+  },
+  "sf_hd/mbc_pre+m@start/real/wait_min": {
+   "mean": -0.18444674491830124,
+   "se": 0.028224193332347835,
+   "n": 20,
+   "abs": 3.990244824652218
+  },
+  "sf_hd/mbc_pre+m@drv_pre/real/wait_min": {
+   "mean": -0.2539136634599772,
+   "se": 0.04344596613915112,
+   "n": 20,
+   "abs": 3.920777906110542
+  },
+  "sf_hd/mbc_pre+m@start/real/welfare": {
+   "mean": -1.5787127326331245,
+   "se": 0.6511005866357221,
+   "n": 20,
+   "abs": 200.57605507517127
+  },
+  "sf_hd/mbc_pre+m@drv_pre/real/welfare": {
+   "mean": -0.490743960301694,
+   "se": 0.8858388043327204,
+   "n": 20,
+   "abs": 201.66402384750268
+  },
+  "sf_hd/mbc_pre+m@start/real/gini": {
+   "mean": 0.0014484154280735295,
+   "se": 0.0022531543328901168,
+   "n": 20,
+   "abs": 0.3824267903348128
+  },
+  "sf_hd/mbc_pre+m@drv_pre/real/gini": {
+   "mean": 0.003663373477509546,
+   "se": 0.001838848610232583,
+   "n": 20,
+   "abs": 0.3846417483842489
+  },
+  "pune_hd/mbc_pre+m@start/real/net_per_h": {
+   "mean": 0.006259170690161325,
+   "se": 0.0017003340090704846,
+   "n": 12,
+   "abs": 0.5914622252273617
+  },
+  "pune_hd/mbc_pre+m@drv_pre/real/net_per_h": {
+   "mean": 0.005375859003104097,
+   "se": 0.0021644732525576476,
+   "n": 12,
+   "abs": 0.5905789135403045
+  },
+  "pune_hd/mbc_pre+m@start/real/net_per_h_p10": {
+   "mean": 0.0034058816464262527,
+   "se": 0.004424080216955515,
+   "n": 12,
+   "abs": -0.11843310078293869
+  },
+  "pune_hd/mbc_pre+m@drv_pre/real/net_per_h_p10": {
+   "mean": 0.006012397596267251,
+   "se": 0.003885334744756827,
+   "n": 12,
+   "abs": -0.1158265848330977
+  },
+  "pune_hd/mbc_pre+m@start/real/pickups": {
+   "mean": 31.833333333333332,
+   "se": 4.276137689007866,
+   "n": 12,
+   "abs": 1819.25
+  },
+  "pune_hd/mbc_pre+m@drv_pre/real/pickups": {
+   "mean": 21.75,
+   "se": 6.647082978360668,
+   "n": 12,
+   "abs": 1809.1666666666667
+  },
+  "pune_hd/mbc_pre+m@start/real/wait_min": {
+   "mean": -0.22712284649546155,
+   "se": 0.028316039853579035,
+   "n": 12,
+   "abs": 5.7314494871380255
+  },
+  "pune_hd/mbc_pre+m@drv_pre/real/wait_min": {
+   "mean": -0.15192192505136162,
+   "se": 0.020860608813029688,
+   "n": 12,
+   "abs": 5.806650408582126
+  },
+  "pune_hd/mbc_pre+m@start/real/welfare": {
+   "mean": 2.1813939204506974,
+   "se": 1.7101325673998335,
+   "n": 12,
+   "abs": 415.1712985328083
+  },
+  "pune_hd/mbc_pre+m@drv_pre/real/welfare": {
+   "mean": 1.3157841059655577,
+   "se": 1.718719696253957,
+   "n": 12,
+   "abs": 414.305688718323
+  },
+  "pune_hd/mbc_pre+m@start/real/gini": {
+   "mean": -0.002111456810987844,
+   "se": 0.001239944334808095,
+   "n": 12,
+   "abs": 0.6512298539237921
+  },
+  "pune_hd/mbc_pre+m@drv_pre/real/gini": {
+   "mean": -0.0018637327417737604,
+   "se": 0.0009294773940279821,
+   "n": 12,
+   "abs": 0.6514775779930061
+  }
+ }
+}

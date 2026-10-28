@@ -267,7 +267,7 @@ class ImaginedWorld:
         self.hist = [(float(t), int(z), int(m), not dec) for t, z, m, dec in
                      zip(q.t_request, q.origin_zone, q["mode"].map({m: i for i, m in enumerate(S.MODES)}), q.status == "declined")]
         # surge as of the last 5-minute update
-        sg = pd.read_parquet(L.dir / "surge.parquet")
+        sg = L.surge_tab if getattr(L, "surge_tab", None) is not None else pd.read_parquet(L.dir / "surge.parquet")
         self.surge = np.ones((self.R.Z, 3))
         last = sg[(sg.t // 300).astype(int) == int(self.t // 300)]          # the update of this 5-min slot
         for r in last.itertuples():
@@ -543,9 +543,12 @@ class ImaginedWorld:
 
         ku = lambda kind, ids: keyed_uniform(self.seed, self.e, kind, ids)    # noqa: E731
         pos_on = {d: j for j, d in enumerate(on)}
+        pre = getattr(self, "preaccept", None) or ()
         for i, k, eta in self.offers_now:
             p = P["offer"][pos_on[i]].softmax(-1).numpy()
             a = int(pick(p, ku("offer", [i]))[0])
+            if (i, k) in pre:                         # a ride the driver chose from its menu (stage 7)
+                a = 0
             push(t0 + (15.0 if a == 2 else 4 + 11 * ku("offer_t", [i])[0]), "offer_answer", i, k, a)
         for i, z in self.orders_now:
             p = P["order"][pos_on[i]].softmax(-1).numpy()

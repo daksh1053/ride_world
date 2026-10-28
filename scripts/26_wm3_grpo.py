@@ -86,7 +86,7 @@ def _agent(path, version):
         ck = torch.load(path, map_location=_W["TR"].DEV)
         if _W["agent"] is None:
             _W["agent"] = AG.Agent(WM.WorldModel3(_W["tabs"], **ck["arch"])).to(_W["TR"].DEV).eval()
-        _W["agent"].load_state_dict(ck["state"])
+        AG.load_agent_state(_W["agent"], ck["state"])
         _W["version"] = version
     return _W["agent"]
 
@@ -343,7 +343,7 @@ def main():
         wm.load_state_dict(torch.load(TR.MODELS / f"{args.init}.pt", map_location=dev)["state"])
     agent = AG.Agent(wm).to(dev)
     if args.init_agent:                       # a whole agent, e.g. one that imitated the rule (30_wm3_rl_bc.py)
-        agent.load_state_dict(torch.load(TR.MODELS / f"{args.init_agent}.pt", map_location=dev)["state"])
+        AG.load_agent_state(agent, torch.load(TR.MODELS / f"{args.init_agent}.pt", map_location=dev)["state"])
     ref = copy.deepcopy(agent).eval()         # KL anchor: the starting agent
     for p in ref.parameters():
         p.requires_grad_(False)

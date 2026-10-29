@@ -65,7 +65,7 @@ This folder holds one script per stage. Run them in order from inside the `ride_
 | `06b_wm_viewer.py` | It builds the page that compares the world model's imagined future with what really happened. |
 | `06c_wm_figures.py` | It draws the world model result figures and writes the results summary. |
 | `09_hd_season.py` to `15_pairs.py` | High-detail cities and world model 2 (see [World models](#world-models)). |
-| `16_wm3_world.py` to `37_wm3_scorecard.py` | World model 3 (see [World models](#world-models)). |
+| `16_wm3_world.py` to `38_wm3_reports.py` | World model 3 (see [World models](#world-models)). |
 | `07_city_summary.py` | It writes one summary row per city and draws the gallery of all road maps. |
 | `08_index.py` | It builds the start page that shows the cabs in every city. |
 | `run_city_pipeline.sh` | It runs the traffic, fleet, simulation and data generation stages for a list of cities. |
@@ -340,6 +340,13 @@ It reuses world model 2's simulated seasons (`data/<city>/hd_runs/`), so run ste
    .venv/bin/python scripts/37_wm3_scorecard.py
    ```
 
+10. Readable HTML reports for stages 6-8: a one-hour map replay with every action drawn (offers, move orders, drivers' menus, shocks), side panels, and every figure explained (recording about 20 min, then 1 min to build):
+
+   ```bash
+   .venv/bin/python scripts/38_wm3_reports.py --collect
+   .venv/bin/python scripts/38_wm3_reports.py --build
+   ```
+
 Outputs, all in `outputs/wm3/`:
 
 | Stage | Main files |
@@ -349,8 +356,8 @@ Outputs, all in `outputs/wm3/`:
 | 3. Rollouts | `20_kpis_<city>.png`, `20_errors.png`, `20_drivers.png`, `20_fairness.png`, `24_hourly.png`, `<city>_imagined_vs_real.html` (imagined and real side by side) |
 | 4. Orders | `23_effects.png`, `23_scatter.png`, `23_followers.png` |
 | 5. Choices (RL) | `stage5/28_execute.png` (every agent carried out in the simulator), `stage5/28_training.png`, `stage5/28_versions.png`, `stage5/28_scatter.png`, `stage5/28_paired.txt` |
-| 6. Matching | `stage6/34_execute.png` (the agent's matching carried out in the simulator), `stage6/34_imitation.png`, `stage6/34_training.png`, `stage6/34_execute_paired.txt` |
-| 7. Driver agents | `stage7/34_execute.png` (menus and earning-maximising drivers in the simulator), `stage7/34_drivers_training.png`, `stage7/34_execute_paired.txt` |
-| 8. World-model test | `stage8/37_scorecard.png` (ten criteria), `stage8/35_long_errors.png`, `stage8/35_long_fan.png`, `stage8/35_long_rank.png`, `stage8/36_shock_effects.png`, `stage8/36_shock_scatter.png`, `stage8/37_ranking.png` |
+| 6. Matching | **`stage6/stage6_report.html`** (report with map replay), `stage6/34_execute.png` (the agent's matching carried out in the simulator), `stage6/34_imitation.png`, `stage6/34_training.png`, `stage6/34_execute_paired.txt` |
+| 7. Driver agents | **`stage7/stage7_report.html`** (report with map replay and drivers' menus), `stage7/34_execute.png` (menus and earning-maximising drivers in the simulator), `stage7/34_drivers_training.png`, `stage7/34_execute_paired.txt` |
+| 8. World-model test | **`stage8/stage8_report.html`** (report: scorecard, shock replays real vs imagined), `stage8/37_scorecard.png` (ten criteria), `stage8/35_long_errors.png`, `stage8/35_long_fan.png`, `stage8/35_long_rank.png`, `stage8/36_shock_effects.png`, `stage8/36_shock_scatter.png`, `stage8/37_ranking.png` |
 
 `outputs/wm3/STEPS.md` has every number, the problems found and the fixes.

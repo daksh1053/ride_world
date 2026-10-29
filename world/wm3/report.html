@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>/*TITLE*/</title>
+<style>
+:root{color-scheme:light;--bg:#f6f5f2;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#898781;--line:#e4e3df;--road:#d4d2cb;--road2:#b4b2aa;
+--idle:#898781;--blue:#2a78d6;--orange:#eb6834;--aqua:#1baf7a;--red:#d03b3b;--sa:#6f6d66;--sb:#7c5cd6;--soft:#efeee9;--good:#2f8f4e;--warn:#c98a12}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121211;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8e86;--line:#2e2e2b;--road:#393936;--road2:#55544f;--idle:#a3a29b;--blue:#3987e5;--orange:#d95926;--aqua:#199e70;--red:#e05252;--sa:#a8a69e;--sb:#9b82e8;--soft:#232321;--good:#4cb06c;--warn:#d9a03a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121211;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8e86;--line:#2e2e2b;--road:#393936;--road2:#55544f;--idle:#a3a29b;--blue:#3987e5;--orange:#d95926;--aqua:#199e70;--red:#e05252;--sa:#a8a69e;--sb:#9b82e8;--soft:#232321;--good:#4cb06c;--warn:#d9a03a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1680px;margin:0 auto;padding:22px 16px 60px}
+h1{font-size:24px;margin:0 0 4px;line-height:1.25}h2{font-size:19px;margin:34px 0 8px;padding-top:6px;border-top:1px solid var(--line)}h3{font-size:16px;margin:18px 0 6px}
+p,li{max-width:980px}.sub{color:var(--ink2);margin:0 0 14px}.muted{color:var(--ink2)}
+.short{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:8px;padding:12px 18px;margin:12px 0 4px;max-width:1100px}
+.short ul{margin:4px 0;padding-left:20px}.short li{margin:3px 0}
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:10px 0 4px}
+.flow .box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;max-width:260px;font-size:13.5px}
+.flow .box b{display:block;font-size:14px;margin-bottom:2px}.flow .arr{align-self:center;color:var(--ink3);font-size:20px}
+table.t{border-collapse:collapse;font-size:13.5px;margin:8px 0;font-variant-numeric:tabular-nums}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:5px 10px;text-align:right;vertical-align:top}
+table.t th:first-child,table.t td:first-child{text-align:left}table.t th{color:var(--ink2);font-weight:600}
+.good{color:var(--good);font-weight:600}.warn{color:var(--warn);font-weight:600}.bad{color:var(--red);font-weight:600}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;margin:14px 0}
+.fig img{width:100%;height:auto;display:block;background:#fff;border-radius:4px}
+.fig .cap{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px}@media(max-width:900px){.fig .cap{grid-template-columns:1fr}}
+.fig .cap div{max-width:none}.fig .cap h4{margin:0 0 3px;font-size:13.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:.03em}
+.fig .cap p,.fig .cap li{font-size:14px;max-width:none;margin:3px 0}
+/* replay */
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:10px 0}
+button,select{font:inherit;font-size:14px;padding:4px 11px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
+button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=range]{flex:1;min-width:180px}#tl{font-weight:600;font-variant-numeric:tabular-nums;min-width:120px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}.seg button{border:0;border-radius:0}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 340px;gap:12px}
+@media(max-width:1250px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.side{grid-column:1/-1}}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0}
+.card h3{margin:0 0 1px;font-size:14.5px;display:flex;align-items:center;gap:6px}.card .who{font-size:12.5px;color:var(--ink2);margin-bottom:4px}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block}
+canvas{width:100%;height:clamp(340px,64vh,700px);display:block;cursor:crosshair;touch-action:none;border-radius:4px}
+.k{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12.5px;color:var(--ink2);margin-top:6px;font-variant-numeric:tabular-nums}.k b{color:var(--ink)}
+.side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.side .card{padding:10px}.side h4{margin:0 0 6px;font-size:13px;color:var(--ink2);text-transform:uppercase;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center}
+#focus{font-size:13px}#focus table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;margin-top:4px}
+#focus th,#focus td{padding:2px 4px;border-bottom:1px solid var(--line);text-align:right;font-size:12.5px}#focus th:first-child,#focus td:first-child{text-align:left}
+#focus tr.ch td{font-weight:700;color:var(--blue)}#focus .lab{color:var(--ink2)}
+#feed{font-size:12.5px;max-height:230px;overflow:auto;font-variant-numeric:tabular-nums}#feed div{padding:2px 0;border-bottom:1px solid var(--line);cursor:pointer}#feed div:hover{background:var(--soft)}
+.tm{color:var(--ink3);margin-right:6px}
+.mini{display:grid;grid-template-columns:1fr;gap:6px}.mini svg{width:100%;height:78px;display:block}.mini .ml{font-size:12px;color:var(--ink2);display:flex;justify-content:space-between}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink2);margin:8px 0 0}.legend span{white-space:nowrap}
+.sw{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
+.ln{width:20px;height:0;display:inline-block;margin-right:4px;vertical-align:3px;border-top:2.5px solid}
+.howto{font-size:14px;color:var(--ink2)}.howto li{margin:2px 0}
+#loading{padding:30px;color:var(--ink2)}
+</style></head><body><main>
+/*INTRO*/
+<h2 id="replay">Watch it happen: one hour on the map</h2>
+<p class="sub" id="replaysub"></p>
+<div class="bar">
+  <span class="seg" id="cities"></span>
+  <select id="pair" style="display:none"></select>
+  <button id="play">Play</button>
+  <select id="sp"><option value="20">20x</option><option value="60" selected>60x</option><option value="150">150x</option></select>
+  <input type="range" id="sl" min="0" value="0"><span id="tl"></span>
+  <button id="fit">Reset view</button>
+</div>
+<div class="bar" id="layers"></div>
+<div id="loading">Loading the recording…</div>
+<div class="grid" id="grid" style="visibility:hidden">
+  <div class="card"><h3><span class="dot" style="background:var(--sa)"></span><span id="nA"></span></h3><div class="who" id="wA"></div><canvas id="c0"></canvas><div class="k" id="k0"></div></div>
+  <div class="card"><h3><span class="dot" style="background:var(--sb)"></span><span id="nB"></span></h3><div class="who" id="wB"></div><canvas id="c1"></canvas><div class="k" id="k1"></div></div>
+  <div class="side">
+    <div class="card"><h4><span>Driver in focus</span><button id="auto" class="on" title="Follow drivers who are acting right now">auto</button></h4><div id="focus"></div></div>
+    <div class="card"><h4><span>Actions, last 2 minutes</span><span class="seg"><button id="fa" class="on">left</button><button id="fb">right</button></span></h4><div id="feed"></div></div>
+    <div class="card"><h4><span>Since 12:00, left vs right</span></h4><div class="mini" id="mini"></div></div>
+  </div>
+</div>
+<div class="legend" id="legend"></div>
+<ul class="howto" id="howto"></ul>
+/*BODY*/
+</main><script>
+const D=/*DATA*/null;
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+async function gz(s){const b=Uint8Array.from(atob(s),c=>c.charCodeAt(0));const ds=new DecompressionStream("gzip");return await new Response(new Blob([b]).stream().pipeThrough(ds)).arrayBuffer()}
+const fmt=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=Math.floor(s%60);return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`+(x?`:${String(x).padStart(2,"0")}`:"")};
+let C=null,P=null,R=[null,null],G=null,t=0,playing=false,last=0,dirty=true,ci=0,pi=0,focus=null,auto=true,feedSide=1,lastE=-1,autoUntil=-1;
+const L={riders:true,offers:true,moves:true,menus:true,events:true};
+const cvs=[$("c0"),$("c1")],ctx=cvs.map(c=>c.getContext("2d")),rc=document.createElement("canvas");let W=0,H=0,view={s:1,ox:0,oy:0},bb=null;
+// ---------------------------------------------------------------- data
+async function loadCity(i){const c=D.cities[i];if(!c._g){const [x,y,u,v,k]=await Promise.all([gz(c.nodes.x),gz(c.nodes.y),gz(c.edges.u),gz(c.edges.v),gz(c.edges.cls)]);
+  c._g={NX:new Uint16Array(x),NY:new Uint16Array(y),EU:new Uint32Array(u),EV:new Uint32Array(v),EC:new Uint8Array(k)};
+  let a=1e9,b=0,cc=1e9,d=0;const g=c._g;for(let j=0;j<g.NX.length;j++){a=Math.min(a,g.NX[j]);b=Math.max(b,g.NX[j]);cc=Math.min(cc,g.NY[j]);d=Math.max(d,g.NY[j])}g.bb=[a,b,cc,d]}return c._g}
+async function loadRun(r){if(r._ok)return r;const [x,y,st,ro,rn]=await Promise.all([gz(r.x),gz(r.y),gz(r.st),gz(r.ro),gz(r.rn)]);
+  r.X=new Uint16Array(x);r.Y=new Uint16Array(y);r.ST=new Int8Array(st);r.RO=new Int32Array(ro);r.RN=new Int32Array(rn);
+  const idx=(arr,ne)=>{const s=new Int32Array(ne+2);let j=0;for(let e=0;e<=ne+1;e++){while(j<arr.length&&arr[j]<e)j++;s[e]=j}return s};
+  if(r.off)r.offI=idx(r.off.e,r.ne);if(r.disp)r.dispI=idx(r.disp.e,r.ne);if(r.dec)r.decI=idx(r.dec.e,r.ne);if(r.menus)r.menI=idx(r.menus.e,r.ne);
+  r.col=new Map();r.dids.forEach((d,j)=>r.col.set(d,j));
+  const xs=[],ys=[];for(const e of [0,Math.floor(r.ne/2),r.ne-1])for(let j=0;j<r.n;j++){const k=j*r.ne+e;if(r.X[k]!==65535){xs.push(r.X[k]);ys.push(r.Y[k])}}
+  xs.sort((a,b)=>a-b);ys.sort((a,b)=>a-b);const pc=(v,p)=>v[Math.floor(p*(v.length-1))];if(xs.length>20){const a=pc(xs,.01),b=pc(xs,.99),c=pc(ys,.01),d=pc(ys,.99),mx=(b-a)*.06,my=(d-c)*.06;r.bb=[a-mx,b+mx,c-my,d+my]}
+  r._ok=true;return r}
+// ---------------------------------------------------------------- view
+const sx=x=>(x-view.ox)*view.s,sy=y=>H-(y-view.oy)*view.s;
+function resize(){const d=devicePixelRatio||1;W=cvs[0].clientWidth;H=cvs[0].clientHeight;cvs.forEach((c,i)=>{c.width=W*d;c.height=H*d;ctx[i].setTransform(d,0,0,d,0,0)});rc.width=W*d;rc.height=H*d;rc.getContext("2d").setTransform(d,0,0,d,0,0);dirty=true}
+function fit(){const [a,b,c,d]=R[0]&&R[0].bb||G.bb;view.s=Math.min(W/(b-a),H/(d-c))*.96;view.ox=a-(W/view.s-(b-a))/2;view.oy=c-(H/view.s-(d-c))/2;dirty=true}
+function roads(){const r=rc.getContext("2d");r.clearRect(0,0,W,H);const g=G;for(const p of [0,1]){r.beginPath();r.strokeStyle=css(p?"--road2":"--road");r.lineWidth=p?1:.5;
+  for(let i=0;i<g.EU.length;i++){if((g.EC[i]>=2)!==!!p)continue;const a=g.EU[i],b=g.EV[i],x1=sx(g.NX[a]),y1=sy(g.NY[a]),x2=sx(g.NX[b]),y2=sy(g.NY[b]);
+    if((x1<0&&x2<0)||(x1>W&&x2>W)||(y1<0&&y2<0)||(y1>H&&y2>H))continue;r.moveTo(x1,y1);r.lineTo(x2,y2)}r.stroke()}dirty=false}
+function dpos(r,j,e,f){const k=j*r.ne+e;if(r.X[k]===65535)return null;let x=r.X[k],y=r.Y[k];if(e+1<r.ne&&r.X[k+1]!==65535){x+=(r.X[k+1]-x)*f;y+=(r.Y[k+1]-y)*f}return [sx(x),sy(y)]}
+const npos=n=>[sx(G.NX[n]),sy(G.NY[n])];
+function arrow(c,x1,y1,x2,y2,col,w,dash){c.strokeStyle=col;c.fillStyle=col;c.lineWidth=w;c.setLineDash(dash||[]);c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.setLineDash([]);
+  const a=Math.atan2(y2-y1,x2-x1),h=6;c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-h*Math.cos(a-.45),y2-h*Math.sin(a-.45));c.lineTo(x2-h*Math.cos(a+.45),y2-h*Math.sin(a+.45));c.closePath();c.fill()}
+function cross(c,X,Y,a){c.beginPath();c.moveTo(X-a,Y-a);c.lineTo(X+a,Y+a);c.moveTo(X+a,Y-a);c.lineTo(X-a,Y+a);c.stroke()}
+// ---------------------------------------------------------------- draw
+const OFFCOL=["--blue","--red","--idle","--idle"];
+function draw(){if(!R[0]||!R[1])return;if(dirty)roads();const ne=R[0].ne,e=Math.min(ne-1,Math.floor(t/D.dt)),f=Math.min(1,t/D.dt-e);
+  const col={1:css("--idle"),2:css("--blue"),3:css("--blue"),4:css("--orange"),5:css("--aqua"),6:css("--orange"),7:css("--idle")};
+  const rad=Math.max(1.7,Math.min(5,view.s*D.unit*20));
+  R.forEach((r,i)=>{const c=ctx[i];c.clearRect(0,0,W,H);c.drawImage(rc,0,0,W,H);const cnt=[0,0,0,0,0,0,0,0];
+    for(let j=0;j<r.n;j++){const st=r.ST[j*ne+e];cnt[st]++;if(!st)continue;const p=dpos(r,j,e,f);if(!p)continue;const [X,Y]=p;if(X<-5||X>W+5||Y<-5||Y>H+5)continue;
+      c.beginPath();c.arc(X,Y,rad,0,6.2832);if(st===7||st===6){c.strokeStyle=col[st];c.lineWidth=1.2;c.stroke()}else{c.fillStyle=col[st];c.fill()}}
+    let nr=0;if(L.riders){c.strokeStyle=css("--ink");c.lineWidth=1.3;const a=rad*1.05;for(let q=r.RO[e];q<r.RO[e+1];q++){nr++;const [X,Y]=npos(r.RN[q]);cross(c,X,Y,a)}}else nr=r.RO[e+1]-r.RO[e];
+    // events of the shock
+    if(L.events&&r.rm&&e<=r.rm.until){c.strokeStyle=css("--red");c.lineWidth=2;for(let q=0;q<r.rm.x.length;q++){const X=sx(r.rm.x[q]),Y=sy(r.rm.y[q]);cross(c,X,Y,rad*1.6)}}
+    if(L.events&&r.dec){c.strokeStyle=css("--red");c.lineWidth=1.5;for(let q=r.decI[Math.max(0,e-1)];q<r.decI[e+1];q++){const [X,Y]=npos(r.dec.node[q]);c.beginPath();c.arc(X,Y,rad*2.2,0,6.2832);c.stroke()}}
+    // repositioning orders: 3 minutes after they are sent
+    if(L.moves&&r.disp){for(let q=r.dispI[Math.max(0,e-5)];q<r.dispI[e+1];q++){const j=r.col.get(r.disp.d[q]);if(j===undefined)continue;const p=dpos(r,j,e,f);if(!p)continue;const [X2,Y2]=npos(r.disp.node[q]);
+      c.globalAlpha=r.disp.ok[q]===0?.55:.95;arrow(c,p[0],p[1],X2,Y2,css(r.disp.ok[q]===0?"--idle":"--aqua"),1.6,r.disp.ok[q]===0?[4,3]:null);c.globalAlpha=1}}
+    // offers: a line from the driver to the rider, for one minute
+    if(L.offers&&r.off){for(let q=r.offI[Math.max(0,e-1)];q<r.offI[e+1];q++){const j=r.col.get(r.off.d[q]);if(j===undefined)continue;const p=dpos(r,j,e,f);if(!p)continue;const [X2,Y2]=npos(r.off.node[q]);const rr=r.off.r[q];
+      c.strokeStyle=css(OFFCOL[rr]);c.lineWidth=rr===0?1.8:1.4;c.setLineDash(rr===0?[]:[4,3]);c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(X2,Y2);c.stroke();c.setLineDash([])}}
+    // menus: every option a thin line, the chosen ride thick
+    if(L.menus&&r.menus){const m=r.menus;for(let q=r.menI[e];q<r.menI[e+1];q++){const j=r.col.get(m.d[q]);if(j===undefined)continue;const p=dpos(r,j,e,f);if(!p)continue;
+      for(let o=0;o<m.k[q];o++){const [X2,Y2]=npos(m.node[q*4+o]);const ch=m.a[q]===o+1,won=ch&&m.won[q];c.strokeStyle=css(ch?"--blue":"--ink3");c.globalAlpha=won?1:ch?.3:.35;c.lineWidth=won?2.4:.8;c.setLineDash(ch&&!won?[3,3]:[]);c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(X2,Y2);c.stroke();c.setLineDash([]);c.globalAlpha=1}
+      if(m.a[q]===0){c.strokeStyle=css("--red");c.lineWidth=1.8;c.beginPath();c.arc(p[0],p[1],rad*2.4,0,6.2832);c.stroke()}}}
+    // focus driver
+    if(focus&&focus.side===i){const j=r.col.get(focus.d);if(j!==undefined){const p=dpos(r,j,e,f);if(p){c.strokeStyle=css("--ink");c.lineWidth=2.2;c.beginPath();c.arc(p[0],p[1],rad*3.4,0,6.2832);c.stroke();
+      const m=r.menus;if(m&&L.menus){for(let q=r.menI[e];q<r.menI[e+1];q++){if(m.d[q]!==focus.d)continue;c.font="600 12px system-ui";for(let o=0;o<m.k[q];o++){const [X2,Y2]=npos(m.node[q*4+o]);
+        const s=`${o+1}: ${C.cur}${m.fare[q*4+o].toFixed(C.dec)}`;const w=c.measureText(s).width;c.fillStyle=css("--surface");c.globalAlpha=.9;c.fillRect(X2+5,Y2-15,w+6,16);c.globalAlpha=1;c.fillStyle=css(m.a[q]===o+1?"--blue":"--ink");c.fillText(s,X2+8,Y2-3)}}}}}}
+    if(r.banner&&(r.bannerUntil===undefined||e<=r.bannerUntil)){c.font="600 13px system-ui";const s=r.banner,w=c.measureText(s).width;c.fillStyle=css("--red");c.globalAlpha=.92;c.fillRect(8,8,w+16,24);c.globalAlpha=1;c.fillStyle="#fff";c.fillText(s,16,25)}
+    const K=r.kpi;$("k"+i).innerHTML=`online <b>${r.n-cnt[0]}</b> · idle <b>${cnt[1]}</b> · to pickup <b>${cnt[2]+cnt[3]}</b> · with rider <b>${cnt[4]+cnt[6]}</b> · moving to an area <b>${cnt[5]}</b> · riders waiting <b>${nr}</b> · picked up since 12:00 <b>${K.pickups[e]}</b>`});
+  $("tl").textContent=`${fmt(R[0].w0+t)}  (+${Math.floor(t/60)} min)`;$("sl").value=Math.round(t/3);
+  if(e!==lastE){lastE=e;side(e)}}
+// ---------------------------------------------------------------- side panel
+function actions(r,e0,e1,dsel){const out=[];const tm=e=>fmt(r.w0+e*D.dt);
+  if(r.off)for(let q=r.offI[Math.max(0,e0)];q<r.offI[e1+1];q++){if(dsel!==undefined&&r.off.d[q]!==dsel)continue;const rr=r.off.r[q];
+    out.push({e:r.off.e[q],d:r.off.d[q],h:`<span class="tm">${tm(r.off.e[q])}</span>driver ${r.off.d[q]} offered a rider ${(r.off.eta[q]/10).toFixed(1)} min away · <b style="color:${css(OFFCOL[rr])}">${["accepted","rejected","no answer","—"][rr]}</b>`})}
+  if(r.disp)for(let q=r.dispI[Math.max(0,e0)];q<r.dispI[e1+1];q++){if(dsel!==undefined&&r.disp.d[q]!==dsel)continue;
+    out.push({e:r.disp.e[q],d:r.disp.d[q],h:`<span class="tm">${tm(r.disp.e[q])}</span>driver ${r.disp.d[q]} told to move to area ${r.disp.z[q]} · <b style="color:${css(r.disp.ok[q]===0?"--idle":"--aqua")}">${["declined","followed","—"][r.disp.ok[q]]}</b>`})}
+  if(r.menus){const m=r.menus;for(let q=r.menI[Math.max(0,e0)];q<r.menI[e1+1];q++){if(dsel!==undefined&&m.d[q]!==dsel)continue;const fs=[];for(let o=0;o<m.k[q];o++)fs.push(C.cur+m.fare[q*4+o].toFixed(C.dec));
+    out.push({e:m.e[q],d:m.d[q],h:`<span class="tm">${tm(m.e[q])}</span>menu for driver ${m.d[q]}: ${fs.join(", ")} → <b style="color:${css(m.a[q]?"--blue":"--red")}">${m.a[q]?("took #"+m.a[q]+(m.won[q]?"":" (lost to a better-placed driver)")):"declined all"}</b>`})}}
+  if(r.dec&&dsel===undefined)for(let q=r.decI[Math.max(0,e0)];q<r.decI[e1+1];q++)out.push({e:r.dec.e[q],d:-1,h:`<span class="tm">${tm(r.dec.e[q])}</span><b style="color:${css("--red")}">rider declined the price</b>`});
+  return out.sort((a,b)=>b.e-a.e)}
+function side(e){const r=R[feedSide];const acts=actions(r,e-4,e);
+  $("feed").innerHTML=acts.slice(0,60).map((a,k)=>`<div data-k="${k}">${a.h}</div>`).join("")||`<div class="muted">nothing in the last 2 minutes</div>`;
+  [...$("feed").children].forEach((el,k)=>{if(acts[k]&&acts[k].d>=0)el.onclick=()=>{focus={side:feedSide,d:acts[k].d};auto=false;$("auto").classList.remove("on");side(lastE);draw()}});
+  if(auto&&(!focus||e>autoUntil)){const pref=R[1].menus?"menus":(R[1].disp&&R[1].dispI[e+1]>R[1].dispI[Math.max(0,e-1)]?"disp":"off");let cand=null;
+    if(pref==="menus"){const m=R[1].menus;let best=-1;for(let q=R[1].menI[e];q<R[1].menI[e+1];q++){const sc=m.k[q]*2+m.won[q]*3+((m.d[q]*2654435761+e*40503)%1000)/1000;if(sc>best&&!(focus&&focus.d===m.d[q])){best=sc;cand=m.d[q]}}}
+    else if(pref==="disp"){const q=R[1].dispI[e+1]-1;cand=R[1].disp.d[q]}
+    else if(R[1].off&&R[1].offI[e+1]>R[1].offI[Math.max(0,e-1)]){cand=R[1].off.d[R[1].offI[e+1]-1]}
+    if(cand!==null){focus={side:1,d:cand};autoUntil=e+(pref==="menus"?2:4)}}
+  focusCard(e);mini(e)}
+function focusCard(e){const el=$("focus");if(!focus){el.innerHTML=`<span class="muted">Click any driver on either map to follow it.</span>`;return}
+  const r=R[focus.side],j=r.col.get(focus.d);const st=j===undefined?0:r.ST[j*r.ne+e];
+  const sname=["offline","idle","offered a ride","driving to the rider","with a rider","moving to an area","outside the city","on a break"][st];
+  let h=`<div><b>Driver ${focus.d}</b> <span class="lab">on the ${focus.side?"right":"left"} map · now ${sname}</span></div>`;
+  const m=r.menus;if(m){let qq=-1;for(let q=r.menI[Math.max(0,e-3)];q<r.menI[e+1];q++)if(m.d[q]===focus.d)qq=q;
+    if(qq>=0){h+=`<div class="lab" style="margin-top:6px">Menu at ${fmt(r.w0+m.e[qq]*D.dt)}: the rides the platform offered, with what the driver would get</div><table><tr><th>#</th><th>pickup</th><th>trip</th><th>fare to driver</th><th>net/hour</th></tr>`;
+      for(let o=0;o<m.k[qq];o++)h+=`<tr class="${m.a[qq]===o+1?"ch":""}"><td>${o+1}${m.a[qq]===o+1?" ✓":""}</td><td>${m.pick[qq*4+o].toFixed(1)} min</td><td>${m.trip[qq*4+o].toFixed(0)} min</td><td>${C.cur}${m.fare[qq*4+o].toFixed(C.dec)}</td><td>${C.cur}${m.net[qq*4+o].toFixed(0)}</td></tr>`;
+      h+=`</table><div class="lab" style="margin-top:3px">${m.a[qq]?(m.won[qq]?"The driver took ride #"+m.a[qq]+" and got it.":"The driver took ride #"+m.a[qq]+", but a closer driver also took it and won."):"The driver declined every ride."}</div>`}}
+  const acts=actions(r,0,e,focus.d).slice(0,6);h+=`<div class="lab" style="margin-top:6px">Its actions since 12:00</div>`+(acts.length?acts.map(a=>`<div>${a.h}</div>`).join(""):`<div class="muted">none yet</div>`);el.innerHTML=h}
+function mini(e){const box=$("mini");if(!box._init){box._init=true;box.innerHTML=D.mini.map((m,k)=>`<div><div class="ml"><span>${m.label}</span><span id="mv${k}"></span></div><svg id="ms${k}" viewBox="0 0 300 78" preserveAspectRatio="none"></svg></div>`).join("")}
+  D.mini.forEach((m,k)=>{const a=R[0].kpi[m.key],b=R[1].kpi[m.key],n=a.length;let lo=Math.min(0,...a,...b),hi=Math.max(1,...a,...b);const X=i=>4+i/(n-1)*292,Y=v=>72-(v-lo)/(hi-lo)*66;
+    const pl=(arr,col,w)=>`<polyline fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round" points="${arr.slice(0,e+1).map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1)).join(" ")}"/>`;
+    const full=(arr,col)=>`<polyline fill="none" stroke="${col}" stroke-width="1" opacity=".22" points="${arr.map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1)).join(" ")}"/>`;
+    $("ms"+k).innerHTML=`<line x1="4" x2="296" y1="${Y(0)}" y2="${Y(0)}" stroke="${css("--line")}"/>`+full(a,css("--sa"))+full(b,css("--sb"))+pl(a,css("--sa"),2)+pl(b,css("--sb"),2)+`<line x1="${X(e)}" x2="${X(e)}" y1="2" y2="76" stroke="${css("--ink3")}" stroke-dasharray="2 2"/>`;
+    $("mv"+k).innerHTML=`<b style="color:${css("--sa")}">${a[e]}</b> vs <b style="color:${css("--sb")}">${b[e]}</b>`})}
+// ---------------------------------------------------------------- controls
+async function choose(i,j){ci=i;pi=j;$("loading").style.display="";C=D.cities[ci];G=await loadCity(ci);P=C.pairs[pi];R=[await loadRun(P.A),await loadRun(P.B)];
+  $("nA").textContent=P.A.name;$("nB").textContent=P.B.name;$("wA").textContent=P.A.sub;$("wB").textContent=P.B.sub;$("replaysub").innerHTML=P.note;
+  $("sl").max=Math.round((R[0].ne-1)*D.dt/3);[...$("cities").children].forEach((b,k)=>b.classList.toggle("on",k===ci));
+  const ps=$("pair");ps.style.display=C.pairs.length>1?"":"none";ps.innerHTML=C.pairs.map((p,k)=>`<option value="${k}" ${k===pi?"selected":""}>${p.label}</option>`).join("");
+  $("loading").style.display="none";$("grid").style.visibility="visible";focus=null;lastE=-1;$("mini")._init=false;resize();fit();draw()}
+D.cities.forEach((c,k)=>{const b=document.createElement("button");b.textContent=c.name;b.onclick=()=>choose(k,Math.min(pi,c.pairs.length-1));$("cities").appendChild(b)});
+$("pair").onchange=ev=>choose(ci,+ev.target.value);
+D.layers.forEach(([k,lab])=>{const b=document.createElement("button");b.textContent=lab;b.className="on";b.onclick=()=>{L[k]=!L[k];b.classList.toggle("on",L[k]);draw()};$("layers").appendChild(b)});
+$("legend").innerHTML=D.legend;$("howto").innerHTML=D.howto;
+$("fa").onclick=()=>{feedSide=0;$("fa").classList.add("on");$("fb").classList.remove("on");side(lastE)};$("fb").onclick=()=>{feedSide=1;$("fb").classList.add("on");$("fa").classList.remove("on");side(lastE)};
+$("auto").onclick=()=>{auto=!auto;$("auto").classList.toggle("on",auto);if(auto){focus=null;autoUntil=-1}side(lastE);draw()};
+let drag=null;cvs.forEach((cv,i)=>{cv.onpointerdown=ev=>{drag={x:ev.clientX,y:ev.clientY,ox:view.ox,oy:view.oy,moved:false};cv.setPointerCapture(ev.pointerId)};
+  cv.onpointermove=ev=>{if(!drag)return;if(Math.abs(ev.clientX-drag.x)+Math.abs(ev.clientY-drag.y)>3)drag.moved=true;view.ox=drag.ox-(ev.clientX-drag.x)/view.s;view.oy=drag.oy+(ev.clientY-drag.y)/view.s;dirty=true;draw()};
+  cv.onpointerup=ev=>{if(drag&&!drag.moved){const b=cv.getBoundingClientRect(),mx=ev.clientX-b.left,my=ev.clientY-b.top,r=R[i],e=Math.min(r.ne-1,Math.floor(t/D.dt)),f=t/D.dt-e;let best=null,bd=144;
+      for(let j=0;j<r.n;j++){if(!r.ST[j*r.ne+e])continue;const p=dpos(r,j,e,f);if(!p)continue;const dd=(p[0]-mx)**2+(p[1]-my)**2;if(dd<bd){bd=dd;best=j}}
+      if(best!==null){focus={side:i,d:r.dids[best]};auto=false;$("auto").classList.remove("on");lastE=-1;draw()}}drag=null};
+  cv.addEventListener("wheel",ev=>{ev.preventDefault();const b=cv.getBoundingClientRect(),mx=ev.clientX-b.left,my=ev.clientY-b.top,wx=mx/view.s+view.ox,wy=(H-my)/view.s+view.oy;
+    view.s*=Math.exp(-ev.deltaY*.0015);view.ox=wx-mx/view.s;view.oy=wy-(H-my)/view.s;dirty=true;draw()},{passive:false})});
+$("sl").oninput=()=>{t=+$("sl").value*3;draw()};$("fit").onclick=()=>{fit();draw()};
+$("play").onclick=ev=>{playing=!playing;ev.target.textContent=playing?"Pause":"Play";last=performance.now();if(playing)requestAnimationFrame(loop)};
+function loop(now){if(!playing)return;const end=(R[0].ne-1)*D.dt;t=Math.min(end,t+(now-last)/1000*+$("sp").value);last=now;draw();if(t>=end){playing=false;$("play").textContent="Play"}else requestAnimationFrame(loop)}
+addEventListener("resize",()=>{if(!G)return;resize();fit();draw()});
+const HS=Object.fromEntries(location.hash.slice(1).split("&").filter(Boolean).map(x=>x.split("=")));
+choose(Math.min(+(HS.city||0),D.cities.length-1),+(HS.pair||0)).then(()=>{if(HS.t){t=+HS.t;draw()}}).catch(err=>{$("loading").textContent="Could not load the recording: "+err});
+</script></body></html>

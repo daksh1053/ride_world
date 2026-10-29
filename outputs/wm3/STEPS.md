@@ -462,3 +462,18 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     Next fixes, in order of value: a day-level latent inferred from the first hour (spread + drift);
     stop the demand encoder from feeding on its own imagined requests (drift); collect days with
     randomised surge (price); then learn travel times instead of the road graph's rule.
+
+## Reports for stages 6-8 (2026-10-29)
+    scripts/38_wm3_reports.py (+ 38_wm3_reports_text.py, template world/wm3/report.html) writes one self-contained
+    HTML page per stage: stage6/stage6_report.html, stage7/stage7_report.html, stage8/stage8_report.html.
+    Each: what the stage does in plain words, the result table, a one-hour map replay (seed 700, 12:00-13:00, both
+    cities) with two synced maps, and every figure with "what it shows / what to take from it".
+      stage 6  platform rule vs world-model agent in the simulator; offers drawn driver -> rider (accepted /
+               rejected / unanswered), move orders as arrows (followed / declined)
+      stage 7  single offers to simulated people vs menus + trained drivers; each menu's options drawn, the taken
+               ride bold, lost picks faint; side panel shows a driver's menu (pickup, trip, fare, net/hour, choice).
+               Re-run of seed 700 with a menu recorder (SF 11.4k menus/h, Pune 35.5k).
+      stage 8  each shock (60% / 30% drivers off, prices x1.5): simulator vs world model imagining from the 12:00
+               state; removed drivers and declined prices marked.
+    Side panels: driver in focus (click any driver), actions in the last 2 minutes, live left-vs-right charts.
+    URL hash deep links: #city=1&pair=2&t=1800.

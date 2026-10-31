@@ -115,6 +115,35 @@ Stage 4 of Ride World imports these methods without changing them.
 | `NOTES.md` | Detailed notes on every stage, the assumptions and the known limitations. |
 | `requirements.txt` | The Python packages and their versions. |
 
+## Running with the scripts
+
+The `run/` folder has one script to set up and one script per phase of the project slides.
+Each script prints a live progress line, saves a log per step and skips steps that are already done.
+If a step fails or you stop it with Ctrl-C, run the same command again to continue.
+
+```bash
+run/0_init.sh                   # set up .venv, packages and GPU check; safe to rerun (~15 min first time, ~10 s after)
+run/1_build_world.sh            # maps, traffic, ride company, paper methods, high-detail cities
+run/2_first_models.sh           # world models 1 and 2
+run/3_world_model3.sh           # world model 3: data, training, rollouts, order test
+run/4_decisions.sh              # repositioning, matching and driver agents
+run/5_is_it_a_world_model.sh    # 8 h rollouts, shocks, ranking, scorecard, HTML reports
+```
+
+| Script | Full run | `--eval-only` (uses existing data and models) |
+|---|---|---|
+| `0_init.sh` | ~15 min first time, ~10 s after | - |
+| `1_build_world.sh` | ~7 h | ~5 min |
+| `2_first_models.sh` | ~16.5 h | ~25 min |
+| `3_world_model3.sh` | ~8 h | ~1 h 40 min |
+| `4_decisions.sh` | ~44 h | ~6 min |
+| `5_is_it_a_world_model.sh` | ~6.5 h | ~30 min |
+
+Times are for a 16-core PC with a 4 GB RTX 3050; map downloads also depend on the internet connection.
+Useful options for every phase script: `--list` (steps, times and status), `--force` (run done steps again), `--only N`, `--from N`, `--dry-run`.
+Logs are in `logs/run/<phase>/`, and the time each finished step took is added to `logs/run/times.csv`.
+The commands each script runs are listed below.
+
 ## Setup
 
 ```bash

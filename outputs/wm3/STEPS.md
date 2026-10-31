@@ -477,3 +477,11 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
                state; removed drivers and declined prices marked.
     Side panels: driver in focus (click any driver), actions in the last 2 minutes, live left-vs-right charts.
     URL hash deep links: #city=1&pair=2&t=1800.
+
+## Run scripts (2026-10-31)
+    run/0_init.sh sets up .venv, packages and the GPU check and shows what is done; rerunning it changes nothing (~10 s).
+    run/1_build_world.sh ... run/5_is_it_a_world_model.sh follow the five phases of the slides.
+    Each prints a live line (elapsed / estimate, CPU and GPU use, last log line and its age), logs every step to
+    logs/run/<phase>/, skips steps whose outputs exist and resumes after a failure or Ctrl-C.
+    Estimates (16 cores, 4 GB RTX 3050), from the logged run times: phase 1 ~7 h, 2 ~16.5 h, 3 ~8 h, 4 ~44 h, 5 ~6.5 h;
+    --eval-only (figures and scores from existing data and models): 5 min, 25 min, 1 h 40 min, 6 min, 30 min.

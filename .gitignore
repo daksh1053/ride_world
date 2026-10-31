@@ -38,3 +38,14 @@ outputs/wm_trial/
 # world model v3: trained checkpoints
 !data/wm3_models/
 !data/wm3_models/**
+
+# run/ scripts: the folders of full runs and evaluations (large, made on your machine)
+runs/
+# the results shipped for "eval-precomputed" (see README, "Running with the scripts")
+!precomputed/
+!precomputed/**
+!precomputed/**/*.parquet
+# public SFCTA "TNCs Today" counts used by the high-detail SF demand (GHSL is downloaded by run/0_init.sh)
+!data/_external/
+!data/_external/sfcta/
+!data/_external/sfcta/*.json

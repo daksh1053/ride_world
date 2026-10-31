@@ -1,0 +1,37 @@
+{
+  "city": "Ann Arbor, MI",
+  "osm_query": "R135130",
+  "crs_metric": "EPSG:32617",
+  "currency": "USD",
+  "timezone": "America/Los_Angeles",
+  "processed_at": "2026-10-04T20:06:15+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 3307,
+  "n_edges": 8417,
+  "road_km": 1123.6,
+  "bounds_lonlat": [
+    -83.7978039,
+    42.2295591,
+    -83.6778031,
+    42.3230733
+  ],
+  "speed_from_osm_tag_frac": 0.395,
+  "road_km_by_class": {
+    "living_street": 0.6,
+    "motorway": 2.5,
+    "other": 0.1,
+    "primary": 23.3,
+    "residential": 799.0,
+    "secondary": 160.3,
+    "tertiary": 109.5,
+    "unclassified": 28.4
+  },
+  "n_zones": 80,
+  "h3_res": 8,
+  "n_pois": 6126,
+  "zone_nodes_min_median_max": [
+    15,
+    37,
+    105
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "requests": 1285,
+  "completion_rate": 0.845136186770428,
+  "cancel_rate": 0.15408560311284047,
+  "expire_rate": 0.0007782101167315176,
+  "mean_wait_min": 5.18606604754345,
+  "p90_wait_min": 8.88970403223566,
+  "mean_fare": 9.862421731123389,
+  "mean_distance_km": 4.252377837463443,
+  "intercity_trips": 59,
+  "offer_acceptance": 0.6962397179788484,
+  "offers_per_request": 1.3245136186770428,
+  "cancel_reasons": {
+    "customer_pre_match": 102,
+    "customer_long_eta": 60,
+    "customer_changed_mind": 36
+  },
+  "cohort_size": 56,
+  "mean_net_earnings": 126.10938750000001,
+  "F_var": 2045.7187111646654,
+  "F_min": 10.0504,
+  "gini_net_earnings": 0.19537306213825756,
+  "mean_hourly": 21.081449362077368,
+  "var_hourly": 11.158796786150232,
+  "min_hourly": 12.481535318215492,
+  "p10_hourly": 16.3160431574327,
+  "p90_hourly": 24.577435295289405,
+  "F_log_weighted_time": 57.83474264669114,
+  "F_log_defined": true,
+  "mean_u_dist_km": 10.58527396953529,
+  "var_u_dist_km": 128.1174323896946,
+  "day": {
+    "date": "2025-03-04",
+    "daytype": "weekday",
+    "demand_factor": 1.018,
+    "rain": "-",
+    "n_incidents": 1
+  }
+}

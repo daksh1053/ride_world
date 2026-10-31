@@ -1,0 +1,36 @@
+{
+  "city": "Coimbatore",
+  "osm_query": "",
+  "crs_metric": "EPSG:32643",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "processed_at": "2026-10-04T21:36:23+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 38227,
+  "n_edges": 96871,
+  "road_km": 7069.2,
+  "bounds_lonlat": [
+    76.8735311,
+    10.9357925,
+    77.0379674,
+    11.0980742
+  ],
+  "speed_from_osm_tag_frac": 0.018,
+  "road_km_by_class": {
+    "living_street": 7.3,
+    "primary": 157.5,
+    "residential": 5738.0,
+    "secondary": 226.5,
+    "tertiary": 367.9,
+    "trunk": 79.5,
+    "unclassified": 492.6
+  },
+  "n_zones": 61,
+  "h3_res": 7,
+  "n_pois": 2650,
+  "zone_nodes_min_median_max": [
+    15,
+    616,
+    1433
+  ]
+}

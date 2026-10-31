@@ -1,0 +1,42 @@
+{
+ "sf_hd": {
+  "day": "wm2_seed1/2025-03-12",
+  "idle_zone_match": 0.9998788759689923,
+  "busy_zone_match": 0.9999088173611744,
+  "pending_zone_match": 1.0,
+  "idle_total_abs_diff": 4,
+  "busy_total_abs_diff": 4,
+  "pending_total_abs_diff": 0,
+  "offer_responses": {
+   "accepted": 12008,
+   "rejected": 2308,
+   "timeout": 549
+  },
+  "orders_followed_declined": [
+   4050,
+   1473
+  ],
+  "median_step_m_moving": 160.98025236190333,
+  "events_per_step_mean": 68.7
+ },
+ "pune_hd": {
+  "day": "wm2_seed3/2025-03-12",
+  "idle_zone_match": 0.9999045339051508,
+  "busy_zone_match": 0.9999467674536211,
+  "pending_zone_match": 1.0,
+  "idle_total_abs_diff": 13,
+  "busy_total_abs_diff": 8,
+  "pending_total_abs_diff": 0,
+  "offer_responses": {
+   "accepted": 19660,
+   "rejected": 5860,
+   "timeout": 1008
+  },
+  "orders_followed_declined": [
+   10618,
+   3669
+  ],
+  "median_step_m_moving": 193.16166008913746,
+  "events_per_step_mean": 112.86617647058823
+ }
+}

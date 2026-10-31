@@ -485,3 +485,19 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     logs/run/<phase>/, skips steps whose outputs exist and resumes after a failure or Ctrl-C.
     Estimates (16 cores, 4 GB RTX 3050), from the logged run times: phase 1 ~7 h, 2 ~16.5 h, 3 ~8 h, 4 ~44 h, 5 ~6.5 h;
     --eval-only (figures and scores from existing data and models): 5 min, 25 min, 1 h 40 min, 6 min, 30 min.
+
+## Run scripts: three modes (2026-10-31)
+    Each phase script takes a mode: full-run (compute into runs/full_run/), eval-full-run (evaluate runs/full_run/
+    in runs/eval_full_run/), eval-precomputed (evaluate the shipped precomputed/ in runs/eval_precomputed/).
+    world/cities.py reads RIDE_WORLD_DATA / RIDE_WORLD_OUTPUTS (default data/, outputs/); 11_wm2_train and 18_wm3_train
+    take their model folder from it, so a full run never touches the original folders.
+    The files each evaluation reads were found by tracing every eval script's file opens (strace); they are EVAL_INPUTS
+    in each phase script. Tests on held-out days read 0.4-32 GB (wm2 stores 12 GB, wm2 plans 1.6 GB, wm2 twins 0.4 GB,
+    wm3 seasons/test days/twins), so they run in full-run; their small JSON scores feed scripts/39_saved_results.py.
+    precomputed/ = run/make_precomputed.sh from-original: 415 files, 207 MB (largest 23 MB).
+    Check: all five phases in eval-precomputed run in ~2 min; 04_results.md, cities_summary.md, wm/results.md,
+    35_long.json, 36_shock.json, 37_scorecard.json, 37_ranking.csv identical to outputs/. 28_summary.json and
+    34_summary.json gain the imagined stage 6-7 arms, which the stage 8 run (10-29) added to the simulator records
+    after those summaries were made (10-28).
+    Fixed: rasterio (land use) was missing from requirements.txt; SFCTA counts now in the repo, GHSL tiles downloaded
+    by run/0_init.sh (checked identical to the files used).

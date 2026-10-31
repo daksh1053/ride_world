@@ -1,0 +1,604 @@
+{
+ "sf_hd": {
+  "online@15min": {
+   "model_rel_err": 0.00515695067264574,
+   "persistence_rel_err": 0.021524663677130042,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 371.6666666666667
+  },
+  "online@30min": {
+   "model_rel_err": 0.012873248019500287,
+   "persistence_rel_err": 0.04341864716636197,
+   "truth_in_range": 0.5,
+   "truth_mean": 364.6666666666667
+  },
+  "online@60min": {
+   "model_rel_err": 0.022678443542611615,
+   "persistence_rel_err": 0.0933396992122225,
+   "truth_in_range": 0.5,
+   "truth_mean": 349.0833333333333
+  },
+  "idle@15min": {
+   "model_rel_err": 0.0942390942390942,
+   "persistence_rel_err": 0.10939060939060938,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 166.83333333333334
+  },
+  "idle@30min": {
+   "model_rel_err": 0.08640081799591004,
+   "persistence_rel_err": 0.135480572597137,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 163.0
+  },
+  "idle@60min": {
+   "model_rel_err": 0.1420289855072464,
+   "persistence_rel_err": 0.48561872909699,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 124.58333333333333
+  },
+  "to_pickup@15min": {
+   "model_rel_err": 0.142602495543672,
+   "persistence_rel_err": 0.19518716577540104,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 31.166666666666668
+  },
+  "to_pickup@30min": {
+   "model_rel_err": 0.195752539242844,
+   "persistence_rel_err": 0.27146814404432135,
+   "truth_in_range": 0.5,
+   "truth_mean": 30.083333333333332
+  },
+  "to_pickup@60min": {
+   "model_rel_err": 0.21604938271604937,
+   "persistence_rel_err": 0.294238683127572,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 40.5
+  },
+  "with_rider@15min": {
+   "model_rel_err": 0.0864635010630758,
+   "persistence_rel_err": 0.1041814316087881,
+   "truth_in_range": 0.25,
+   "truth_mean": 117.58333333333333
+  },
+  "with_rider@30min": {
+   "model_rel_err": 0.07783297847172935,
+   "persistence_rel_err": 0.0745209368346345,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 117.41666666666667
+  },
+  "with_rider@60min": {
+   "model_rel_err": 0.11484409310496269,
+   "persistence_rel_err": 0.11594202898550725,
+   "truth_in_range": 0.25,
+   "truth_mean": 126.5
+  },
+  "repositioning@15min": {
+   "model_rel_err": 0.22011251758087202,
+   "persistence_rel_err": 0.21729957805907174,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 39.5
+  },
+  "repositioning@30min": {
+   "model_rel_err": 0.1372549019607843,
+   "persistence_rel_err": 0.16368286445012786,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 32.583333333333336
+  },
+  "repositioning@60min": {
+   "model_rel_err": 0.22903885480572594,
+   "persistence_rel_err": 0.3220858895705521,
+   "truth_in_range": 0.25,
+   "truth_mean": 27.166666666666668
+  },
+  "break@15min": {
+   "model_rel_err": 0.28810720268006706,
+   "persistence_rel_err": 0.16080402010050251,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 16.583333333333332
+  },
+  "break@30min": {
+   "model_rel_err": 0.30888030888030893,
+   "persistence_rel_err": 0.3166023166023166,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 21.583333333333332
+  },
+  "break@60min": {
+   "model_rel_err": 0.28205128205128205,
+   "persistence_rel_err": 0.5082417582417582,
+   "truth_in_range": 0.25,
+   "truth_mean": 30.333333333333332
+  },
+  "waiting_riders@15min": {
+   "model_rel_err": 0.3155555555555556,
+   "persistence_rel_err": 0.45333333333333337,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 6.25
+  },
+  "waiting_riders@30min": {
+   "model_rel_err": 0.4852941176470588,
+   "persistence_rel_err": 0.3382352941176471,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 5.666666666666667
+  },
+  "waiting_riders@60min": {
+   "model_rel_err": 0.2777777777777778,
+   "persistence_rel_err": 0.4411764705882353,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 8.5
+  },
+  "new requests@15min": {
+   "model_rel_err": 0.07468958930276984,
+   "persistence_rel_err": 0.05702005730659028,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 145.41666666666666
+  },
+  "new requests@30min": {
+   "model_rel_err": 0.07252200535782626,
+   "persistence_rel_err": 0.045063145809414486,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 290.3333333333333
+  },
+  "new requests@60min": {
+   "model_rel_err": 0.07364080498408856,
+   "persistence_rel_err": 0.10205728116175876,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 619.75
+  },
+  "declined quotes@15min": {
+   "model_rel_err": 0.37804878048780477,
+   "persistence_rel_err": 0.43902439024390244,
+   "truth_in_range": 0.8333333333333334,
+   "truth_mean": 6.833333333333333
+  },
+  "declined quotes@30min": {
+   "model_rel_err": 0.2336769759450172,
+   "persistence_rel_err": 0.21649484536082472,
+   "truth_in_range": 0.75,
+   "truth_mean": 16.166666666666668
+  },
+  "declined quotes@60min": {
+   "model_rel_err": 0.20519262981574538,
+   "persistence_rel_err": 0.33668341708542715,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 33.166666666666664
+  },
+  "pickups@15min": {
+   "model_rel_err": 0.07384099014054961,
+   "persistence_rel_err": 0.09188168659534299,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 132.41666666666666
+  },
+  "pickups@30min": {
+   "model_rel_err": 0.0741561181434599,
+   "persistence_rel_err": 0.06645569620253165,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 263.3333333333333
+  },
+  "pickups@60min": {
+   "model_rel_err": 0.06531292620093955,
+   "persistence_rel_err": 0.09501439612062434,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 549.9166666666666
+  },
+  "completed trips@15min": {
+   "model_rel_err": 0.04063450673620166,
+   "persistence_rel_err": 0.07073011734028684,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 127.83333333333333
+  },
+  "completed trips@30min": {
+   "model_rel_err": 0.06767970686496388,
+   "persistence_rel_err": 0.08729388942774007,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 257.75
+  },
+  "completed trips@60min": {
+   "model_rel_err": 0.05964966832504146,
+   "persistence_rel_err": 0.1134950248756219,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 536.0
+  },
+  "cancellations@15min": {
+   "model_rel_err": 0.39999999999999997,
+   "persistence_rel_err": 0.29230769230769227,
+   "truth_in_range": 0.5,
+   "truth_mean": 5.416666666666667
+  },
+  "cancellations@30min": {
+   "model_rel_err": 0.33333333333333326,
+   "persistence_rel_err": 0.35820895522388063,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 11.166666666666666
+  },
+  "cancellations@60min": {
+   "model_rel_err": 0.327024185068349,
+   "persistence_rel_err": 0.3501577287066246,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 26.416666666666668
+  },
+  "offers@15min": {
+   "model_rel_err": 0.0906244850881529,
+   "persistence_rel_err": 0.0578348986653485,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 168.58333333333334
+  },
+  "offers@30min": {
+   "model_rel_err": 0.06938197567882728,
+   "persistence_rel_err": 0.04747626186906545,
+   "truth_in_range": 0.5,
+   "truth_mean": 333.5
+  },
+  "offers@60min": {
+   "model_rel_err": 0.08069565217391302,
+   "persistence_rel_err": 0.10655072463768117,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 718.75
+  },
+  "offers rejected@15min": {
+   "model_rel_err": 0.16367980884109917,
+   "persistence_rel_err": 0.12903225806451613,
+   "truth_in_range": 0.75,
+   "truth_mean": 23.25
+  },
+  "offers rejected@30min": {
+   "model_rel_err": 0.17957957957957957,
+   "persistence_rel_err": 0.11351351351351353,
+   "truth_in_range": 0.5,
+   "truth_mean": 46.25
+  },
+  "offers rejected@60min": {
+   "model_rel_err": 0.19714964370546317,
+   "persistence_rel_err": 0.17181314330958036,
+   "truth_in_range": 0.25,
+   "truth_mean": 105.25
+  },
+  "drivers going online@15min": {
+   "model_rel_err": 2.2666666666666666,
+   "persistence_rel_err": 2.433333333333333,
+   "truth_in_range": 0.25,
+   "truth_mean": 1.25
+  },
+  "drivers going online@30min": {
+   "model_rel_err": 1.9895833333333337,
+   "persistence_rel_err": 2.2187500000000004,
+   "truth_in_range": 0.16666666666666666,
+   "truth_mean": 2.6666666666666665
+  },
+  "drivers going online@60min": {
+   "model_rel_err": 1.403921568627451,
+   "persistence_rel_err": 1.7764705882352942,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 7.083333333333333
+  },
+  "drivers going offline@15min": {
+   "model_rel_err": 0.23432343234323438,
+   "persistence_rel_err": 0.3316831683168317,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 8.416666666666666
+  },
+  "drivers going offline@30min": {
+   "model_rel_err": 0.29372937293729384,
+   "persistence_rel_err": 0.2623762376237624,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 16.833333333333332
+  },
+  "drivers going offline@60min": {
+   "model_rel_err": 0.17873303167420806,
+   "persistence_rel_err": 0.14479638009049772,
+   "truth_in_range": 0.25,
+   "truth_mean": 36.833333333333336
+  }
+ },
+ "pune_hd": {
+  "online@15min": {
+   "model_rel_err": 0.008050057372346533,
+   "persistence_rel_err": 0.019685886402753875,
+   "truth_in_range": 0.0,
+   "truth_mean": 1549.3333333333333
+  },
+  "online@30min": {
+   "model_rel_err": 0.014857142857142857,
+   "persistence_rel_err": 0.03521088435374149,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 1531.25
+  },
+  "online@60min": {
+   "model_rel_err": 0.02596314907872698,
+   "persistence_rel_err": 0.06789503070910105,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 1492.5
+  },
+  "idle@15min": {
+   "model_rel_err": 0.02675942285041223,
+   "persistence_rel_err": 0.052893109540636044,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 754.6666666666666
+  },
+  "idle@30min": {
+   "model_rel_err": 0.07094710385010854,
+   "persistence_rel_err": 0.08431394950302754,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 729.4166666666666
+  },
+  "idle@60min": {
+   "model_rel_err": 0.0740690281562216,
+   "persistence_rel_err": 0.2862397820163488,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 611.6666666666666
+  },
+  "to_pickup@15min": {
+   "model_rel_err": 0.1545838128116609,
+   "persistence_rel_err": 0.14499424626006904,
+   "truth_in_range": 0.5,
+   "truth_mean": 72.41666666666667
+  },
+  "to_pickup@30min": {
+   "model_rel_err": 0.23119469026548675,
+   "persistence_rel_err": 0.10508849557522125,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 75.33333333333333
+  },
+  "to_pickup@60min": {
+   "model_rel_err": 0.10621680724773508,
+   "persistence_rel_err": 0.2099343955014058,
+   "truth_in_range": 0.5,
+   "truth_mean": 88.91666666666667
+  },
+  "with_rider@15min": {
+   "model_rel_err": 0.020050890585241735,
+   "persistence_rel_err": 0.04564885496183206,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 545.8333333333334
+  },
+  "with_rider@30min": {
+   "model_rel_err": 0.05475899938987186,
+   "persistence_rel_err": 0.04835265405735204,
+   "truth_in_range": 0.16666666666666666,
+   "truth_mean": 546.3333333333334
+  },
+  "with_rider@60min": {
+   "model_rel_err": 0.07785888077858882,
+   "persistence_rel_err": 0.13882650196518811,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 593.6666666666666
+  },
+  "repositioning@15min": {
+   "model_rel_err": 0.1221264367816092,
+   "persistence_rel_err": 0.13879310344827586,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 96.66666666666667
+  },
+  "repositioning@30min": {
+   "model_rel_err": 0.1909975669099757,
+   "persistence_rel_err": 0.11405109489051095,
+   "truth_in_range": 0.16666666666666666,
+   "truth_mean": 91.33333333333333
+  },
+  "repositioning@60min": {
+   "model_rel_err": 0.17606516290726815,
+   "persistence_rel_err": 0.23966165413533833,
+   "truth_in_range": 0.16666666666666666,
+   "truth_mean": 88.66666666666667
+  },
+  "break@15min": {
+   "model_rel_err": 0.2675026123301985,
+   "persistence_rel_err": 0.11807732497387669,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 79.75
+  },
+  "break@30min": {
+   "model_rel_err": 0.3139462163852409,
+   "persistence_rel_err": 0.16135084427767357,
+   "truth_in_range": 0.0,
+   "truth_mean": 88.83333333333333
+  },
+  "break@60min": {
+   "model_rel_err": 0.3117870722433461,
+   "persistence_rel_err": 0.30494296577946767,
+   "truth_in_range": 0.0,
+   "truth_mean": 109.58333333333333
+  },
+  "waiting_riders@15min": {
+   "model_rel_err": 0.4898550724637681,
+   "persistence_rel_err": 0.3652173913043478,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 9.583333333333334
+  },
+  "waiting_riders@30min": {
+   "model_rel_err": 0.4107142857142856,
+   "persistence_rel_err": 0.43749999999999994,
+   "truth_in_range": 0.5,
+   "truth_mean": 9.333333333333334
+  },
+  "waiting_riders@60min": {
+   "model_rel_err": 0.3552311435523115,
+   "persistence_rel_err": 0.3649635036496351,
+   "truth_in_range": 0.75,
+   "truth_mean": 11.416666666666666
+  },
+  "new requests@15min": {
+   "model_rel_err": 0.118533744433025,
+   "persistence_rel_err": 0.056526207605344304,
+   "truth_in_range": 0.16666666666666666,
+   "truth_mean": 243.25
+  },
+  "new requests@30min": {
+   "model_rel_err": 0.15518919228347358,
+   "persistence_rel_err": 0.05546968916366135,
+   "truth_in_range": 0.0,
+   "truth_mean": 485.25
+  },
+  "new requests@60min": {
+   "model_rel_err": 0.10601127610577303,
+   "persistence_rel_err": 0.07980624156277295,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 1049.4166666666667
+  },
+  "declined quotes@15min": {
+   "model_rel_err": 0.35282651072124754,
+   "persistence_rel_err": 0.3742690058479532,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 14.25
+  },
+  "declined quotes@30min": {
+   "model_rel_err": 0.25761772853185594,
+   "persistence_rel_err": 0.22991689750692523,
+   "truth_in_range": 0.4166666666666667,
+   "truth_mean": 30.083333333333332
+  },
+  "declined quotes@60min": {
+   "model_rel_err": 0.1904761904761904,
+   "persistence_rel_err": 0.23657142857142854,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 72.91666666666667
+  },
+  "pickups@15min": {
+   "model_rel_err": 0.06504712597902561,
+   "persistence_rel_err": 0.09299084030266828,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 209.25
+  },
+  "pickups@30min": {
+   "model_rel_err": 0.09789166836146701,
+   "persistence_rel_err": 0.07646939190563354,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 409.75
+  },
+  "pickups@60min": {
+   "model_rel_err": 0.08268983268983268,
+   "persistence_rel_err": 0.0752895752895753,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 863.3333333333334
+  },
+  "completed trips@15min": {
+   "model_rel_err": 0.012742542716478416,
+   "persistence_rel_err": 0.11120764552562988,
+   "truth_in_range": 0.6666666666666666,
+   "truth_mean": 191.83333333333334
+  },
+  "completed trips@30min": {
+   "model_rel_err": 0.04031402503713135,
+   "persistence_rel_err": 0.11436452365796732,
+   "truth_in_range": 0.3333333333333333,
+   "truth_mean": 392.75
+  },
+  "completed trips@60min": {
+   "model_rel_err": 0.050660563819827316,
+   "persistence_rel_err": 0.12202226152085717,
+   "truth_in_range": 0.25,
+   "truth_mean": 801.0833333333334
+  },
+  "cancellations@15min": {
+   "model_rel_err": 0.24726775956284153,
+   "persistence_rel_err": 0.2889344262295082,
+   "truth_in_range": 0.5,
+   "truth_mean": 20.333333333333332
+  },
+  "cancellations@30min": {
+   "model_rel_err": 0.14886731391585764,
+   "persistence_rel_err": 0.20970873786407768,
+   "truth_in_range": 0.5,
+   "truth_mean": 42.916666666666664
+  },
+  "cancellations@60min": {
+   "model_rel_err": 0.13443191673894192,
+   "persistence_rel_err": 0.2367736339982654,
+   "truth_in_range": 0.5833333333333334,
+   "truth_mean": 96.08333333333333
+  },
+  "offers@15min": {
+   "model_rel_err": 0.08957795004306632,
+   "persistence_rel_err": 0.07450473729543497,
+   "truth_in_range": 0.5,
+   "truth_mean": 290.25
+  },
+  "offers@30min": {
+   "model_rel_err": 0.14031809907061416,
+   "persistence_rel_err": 0.06654210980166715,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 579.8333333333334
+  },
+  "offers@60min": {
+   "model_rel_err": 0.09961149961149962,
+   "persistence_rel_err": 0.08638028638028637,
+   "truth_in_range": 0.25,
+   "truth_mean": 1251.25
+  },
+  "offers rejected@15min": {
+   "model_rel_err": 0.29983249581239524,
+   "persistence_rel_err": 0.19932998324958123,
+   "truth_in_range": 0.25,
+   "truth_mean": 49.75
+  },
+  "offers rejected@30min": {
+   "model_rel_err": 0.23682076236820762,
+   "persistence_rel_err": 0.1159772911597729,
+   "truth_in_range": 0.25,
+   "truth_mean": 102.75
+  },
+  "offers rejected@60min": {
+   "model_rel_err": 0.1930515759312321,
+   "persistence_rel_err": 0.16189111747851004,
+   "truth_in_range": 0.25,
+   "truth_mean": 232.66666666666666
+  },
+  "drivers going online@15min": {
+   "model_rel_err": 0.3460144927536231,
+   "persistence_rel_err": 0.9184782608695652,
+   "truth_in_range": 0.25,
+   "truth_mean": 15.333333333333334
+  },
+  "drivers going online@30min": {
+   "model_rel_err": 0.4424882629107981,
+   "persistence_rel_err": 1.4859154929577463,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 23.666666666666668
+  },
+  "drivers going online@60min": {
+   "model_rel_err": 0.4793388429752066,
+   "persistence_rel_err": 1.9834710743801651,
+   "truth_in_range": 0.08333333333333333,
+   "truth_mean": 40.333333333333336
+  },
+  "drivers going offline@15min": {
+   "model_rel_err": 0.3051948051948052,
+   "persistence_rel_err": 0.1883116883116883,
+   "truth_in_range": 0.25,
+   "truth_mean": 25.666666666666668
+  },
+  "drivers going offline@30min": {
+   "model_rel_err": 0.2794666666666667,
+   "persistence_rel_err": 0.152,
+   "truth_in_range": 0.25,
+   "truth_mean": 52.083333333333336
+  },
+  "drivers going offline@60min": {
+   "model_rel_err": 0.18837209302325578,
+   "persistence_rel_err": 0.19069767441860466,
+   "truth_in_range": 0.16666666666666666,
+   "truth_mean": 107.5
+  }
+ },
+ "drivers": {
+  "sf_hd": {
+   "online_auc": 0.6800709825090631,
+   "trips_r": 0.6290112968368675,
+   "income_r": 0.7379365454146862
+  },
+  "pune_hd": {
+   "online_auc": 0.6748022772863043,
+   "trips_r": 0.6615571562169027,
+   "income_r": 0.8560348781277284
+  }
+ },
+ "fairness": {
+  "sf_hd/gini_mae": 0.023452696915786175,
+  "sf_hd/gini_truth_mean": 0.5123160410343569,
+  "sf_hd/zero_share_mae": 0.03378821404146023,
+  "sf_hd/zero_share_truth_mean": 0.3013538785253891,
+  "pune_hd/gini_mae": 0.012959081908281786,
+  "pune_hd/gini_truth_mean": 0.7733143634765848,
+  "pune_hd/zero_share_mae": 0.01982978184961533,
+  "pune_hd/zero_share_truth_mean": 0.555749824692589
+ }
+}

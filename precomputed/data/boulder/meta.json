@@ -1,0 +1,38 @@
+{
+  "city": "Boulder, CO",
+  "osm_query": "R112298",
+  "crs_metric": "EPSG:32613",
+  "currency": "USD",
+  "timezone": "America/Los_Angeles",
+  "processed_at": "2026-10-04T20:05:03+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 3176,
+  "n_edges": 8092,
+  "road_km": 975.5,
+  "bounds_lonlat": [
+    -105.2979027,
+    39.9645131,
+    -105.2027067,
+    40.0686935
+  ],
+  "speed_from_osm_tag_frac": 0.894,
+  "road_km_by_class": {
+    "living_street": 5.1,
+    "motorway": 7.4,
+    "other": 0.8,
+    "primary": 38.5,
+    "residential": 667.6,
+    "secondary": 59.7,
+    "tertiary": 116.3,
+    "trunk": 39.2,
+    "unclassified": 40.9
+  },
+  "n_zones": 65,
+  "h3_res": 8,
+  "n_pois": 6146,
+  "zone_nodes_min_median_max": [
+    15,
+    52,
+    110
+  ]
+}

@@ -38,7 +38,7 @@ from world.wm2 import models as WM
 from world.wm2 import pairs as WP
 
 CITIES = ["sf_hd", "pune_hd"]
-MODELS = Path(__file__).resolve().parents[1] / "data" / "wm2_models"
+MODELS = cities.DATA / "wm2_models"
 OUT = cities.OUTPUTS / "wm2" / "step3"                # set by --outdir: one folder per step
 DEV = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 C_IN = len(WD.OBS) + len(WD.ACT) + 12

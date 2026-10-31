@@ -1,0 +1,52 @@
+{
+  "bpr_default": [
+    0.15,
+    4.0
+  ],
+  "bpr_by_class": {
+    "motorway": [
+      0.83,
+      5.5
+    ],
+    "trunk": [
+      0.83,
+      5.5
+    ]
+  },
+  "lane_capacity_vph": {
+    "motorway": 1900,
+    "trunk": 1500,
+    "primary": 1100,
+    "secondary": 900,
+    "tertiary": 700,
+    "residential": 450,
+    "unclassified": 450,
+    "living_street": 250,
+    "service": 250,
+    "other": 300
+  },
+  "k_load_nodes_per_zone_per_iter": 10,
+  "msa_iters": 8,
+  "route_sigma": 0.25,
+  "load_node_weight": {
+    "motorway": 0.0,
+    "trunk": 2.0,
+    "primary": 4.0,
+    "secondary": 4.0,
+    "tertiary": 2.5,
+    "residential": 1.0,
+    "unclassified": 1.0,
+    "living_street": 0.5,
+    "service": 0.5,
+    "other": 0.5
+  },
+  "n_gateways": 4,
+  "external_share": 0.2,
+  "through_share": 0.15,
+  "targets_source": "ASSUMPTION: planned Indian tier-2 city, not in TomTom",
+  "daily_background_vehicle_trips": {
+    "weekday": 1916736.8498885052,
+    "weekend": 1730627.3561719605
+  },
+  "max_abs_tti_error": 0.009784481787685095
+}

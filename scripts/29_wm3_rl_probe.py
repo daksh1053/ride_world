@@ -49,5 +49,5 @@ for s in rng.choice(starts, nstart, replace=False):
     print(s.name, n, "deciding", flush=True)
 d = pd.DataFrame(rows); d["dr"] = d.dp + d.dw
 print(key); print(d.groupby("H")[["dp", "dw", "dr"]].agg(["mean", "std"]).round(3).to_string())
-(ROOT / "outputs/wm3/stage5/probe").mkdir(parents=True, exist_ok=True)
-d.to_csv(ROOT / f"outputs/wm3/stage5/probe/probe_{key}.csv", index=False)
+(cities.OUTPUTS / "wm3/stage5/probe").mkdir(parents=True, exist_ok=True)
+d.to_csv(cities.OUTPUTS / f"wm3/stage5/probe/probe_{key}.csv", index=False)

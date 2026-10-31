@@ -66,6 +66,7 @@ This folder holds one script per stage. Run them in order from inside the `ride_
 | `06c_wm_figures.py` | It draws the world model result figures and writes the results summary. |
 | `09_hd_season.py` to `15_pairs.py` | High-detail cities and world model 2 (see [World models](#world-models)). |
 | `16_wm3_world.py` to `38_wm3_reports.py` | World model 3 (see [World models](#world-models)). |
+| `39_saved_results.py` | It writes tables of the saved test scores of world models 2 and 3 (the evaluation step of phases 2 and 3). |
 | `07_city_summary.py` | It writes one summary row per city and draws the gallery of all road maps. |
 | `08_index.py` | It builds the start page that shows the cabs in every city. |
 | `run_city_pipeline.sh` | It runs the traffic, fleet, simulation and data generation stages for a list of cities. |
@@ -99,6 +100,12 @@ The `wm_models/`, `wm2_models/` and `wm3_models/` folders hold the trained world
 The large files such as road graphs, traffic arrays and simulated days are not in the repository.
 Running the scripts recreates them.
 
+### `run/`, `runs/` and `precomputed/`
+
+`run/` holds the setup script and one script per phase (see [Running with the scripts](#running-with-the-scripts)).
+`runs/` is made by those scripts and holds one folder per mode: `full_run/`, `eval_full_run/` and `eval_precomputed/`. It is not in the repository.
+`precomputed/` holds the saved results of the original run that the `eval-precomputed` mode evaluates.
+
 ### `reproduce/`
 
 This folder holds the reproductions of the two fairness papers.
@@ -117,32 +124,94 @@ Stage 4 of Ride World imports these methods without changing them.
 
 ## Running with the scripts
 
-The `run/` folder has one script to set up and one script per phase of the project slides.
-Each script prints a live progress line, saves a log per step and skips steps that are already done.
-If a step fails or you stop it with Ctrl-C, run the same command again to continue.
+The `run/` folder has one setup script and one script per phase of the project slides.
+Every phase script takes a mode as its first word, and each mode has its own folder, so results from different sources never mix.
+
+### The three modes
+
+| Mode | What it does | Reads from | Writes to |
+|---|---|---|---|
+| `full-run` | Computes the phase from scratch: simulations, training data, training, simulator runs of the agents, and tests on held-out days. | earlier phases' full runs in `runs/full_run/` | `runs/full_run/` |
+| `eval-full-run` | Evaluates **your** full run: makes the scores, figures, tables and reports from its saved results. | `runs/full_run/` | `runs/eval_full_run/` |
+| `eval-precomputed` | Runs **the same** evaluation on the results shipped in the repository, so you can check the evaluation without the multi-day full run. | `precomputed/` | `runs/eval_precomputed/` |
+
+How the folders are kept apart:
+
+- **A full run is self-contained.** It never reads the original development folders `data/` and `outputs/`; every input it uses is made by an earlier step of the same full run. Only the outside inputs are shared: the OpenStreetMap download cache, the GHSL population grid and the SFCTA ride counts.
+- **Both eval modes start from a copy.** Each copies exactly the files the evaluation reads (the list is `EVAL_INPUTS` in each phase script) into its own folder, deletes that phase's old eval results there, and evaluates. So the source folder is never changed, and every figure in `runs/eval_precomputed/` comes from `precomputed/` and every figure in `runs/eval_full_run/` comes from your full run.
+- **Missing inputs stop the eval with a list of what is missing.** If your full run has not reached a phase yet, `eval-full-run` says which full run to do first.
+
+`precomputed/` holds the saved results of the original run behind the slides and `outputs/wm3/STEPS.md`: 415 files, 207 MB.
+It contains trained models, simulator records of the executed agents, the 8-hour rollouts and shock runs, test scores and training logs.
+It was made with `run/make_precomputed.sh from-original`; `run/make_precomputed.sh from-full-run` replaces it with your own full run's results.
+
+### What counts as evaluation
+
+Evaluation steps turn saved results into scores, figures, tables and reports.
+Any step that needs the large data runs in `full-run` instead, because that data cannot be shipped:
+
+- simulations, training and the agents' simulator runs;
+- testing a model on held-out days, which reads 0.4 to 32 GB.
+
+The test steps save their scores as small files, and the eval modes read those files.
+Phase 3 is the extreme case: all of its tests need held-out days, so its evaluation step is the table of saved scores.
+
+| Phase script | What the evaluation makes |
+|---|---|
+| `1_build_world.sh` | comparison of the 11 paper methods in all cities (`04_dashboard.html`, `04_tradeoff.png`, `04_allcities.png`), city summary and map gallery |
+| `2_first_models.sh` | world model 1 figures, results table and imagined-vs-real page; tables of world model 2's saved scores (`wm2/saved_results.md`) |
+| `3_world_model3.sh` | tables of world model 3's saved scores for stages 1-4 (`wm3/saved_results.md`) |
+| `4_decisions.sh` | stage 5-7 figures: repositioning, matching and driver agents in the simulator and in imagination |
+| `5_is_it_a_world_model.sh` | 8-hour rollout and shock figures, policy ranking, the ten-criterion scorecard, the stage 6-8 HTML reports |
+
+The stage 5 figure of earlier RL versions (`28_versions.png`) draws the versions `v0`-`v3` only from `precomputed/`: they came from older code that a new full run does not repeat.
+The phase 5 evaluation shows figures made by the phase 4 evaluation, so run phase 4's evaluation first in the same mode; the script tells you if you forget.
+
+### Commands
 
 ```bash
-run/0_init.sh                   # set up .venv, packages and GPU check; safe to rerun (~15 min first time, ~10 s after)
-run/1_build_world.sh            # maps, traffic, ride company, paper methods, high-detail cities
-run/2_first_models.sh           # world models 1 and 2
-run/3_world_model3.sh           # world model 3: data, training, rollouts, order test
-run/4_decisions.sh              # repositioning, matching and driver agents
-run/5_is_it_a_world_model.sh    # 8 h rollouts, shocks, ranking, scorecard, HTML reports
+run/0_init.sh                                # setup; safe to run again (first time ~15 min, then ~5 s)
+
+run/1_build_world.sh list                    # steps, kind, estimated time, status in your full run
+run/1_build_world.sh eval-precomputed        # evaluate the shipped results (minutes)
+run/1_build_world.sh full-run                # compute phase 1 into runs/full_run/ (hours)
+run/1_build_world.sh eval-full-run           # evaluate your full run
 ```
 
-| Script | Full run | `--eval-only` (uses existing data and models) |
-|---|---|---|
-| `0_init.sh` | ~15 min first time, ~10 s after | - |
-| `1_build_world.sh` | ~7 h | ~5 min |
-| `2_first_models.sh` | ~16.5 h | ~25 min |
-| `3_world_model3.sh` | ~8 h | ~1 h 40 min |
-| `4_decisions.sh` | ~44 h | ~6 min |
-| `5_is_it_a_world_model.sh` | ~6.5 h | ~30 min |
+The same modes work for `2_first_models.sh`, `3_world_model3.sh`, `4_decisions.sh` and `5_is_it_a_world_model.sh`.
+Run full runs in phase order, because each phase uses the earlier phases' results.
+To evaluate everything that was shipped:
 
-Times are for a 16-core PC with a 4 GB RTX 3050; map downloads also depend on the internet connection.
-Useful options for every phase script: `--list` (steps, times and status), `--force` (run done steps again), `--only N`, `--from N`, `--dry-run`.
-Logs are in `logs/run/<phase>/`, and the time each finished step took is added to `logs/run/times.csv`.
-The commands each script runs are listed below.
+```bash
+for p in run/[1-5]_*.sh; do $p eval-precomputed; done
+```
+
+### Time per script
+
+| Script | `full-run` | each eval mode |
+|---|---|---|
+| `0_init.sh` | first time ~15 min (packages, GHSL download), then ~5 s | - |
+| `1_build_world.sh` | ~7.5 h | ~30 s |
+| `2_first_models.sh` | ~16.5 h | ~30 s |
+| `3_world_model3.sh` | ~8 h | ~5 s |
+| `4_decisions.sh` | ~44.5 h | ~15 s |
+| `5_is_it_a_world_model.sh` | ~6.5 h | ~1.5 min |
+
+These times are for a 16-core PC with a 4 GB RTX 3050.
+Full-run times are estimated from the logs of the original run; map downloads also depend on the internet connection.
+A full run of every phase needs about 200 GB of disk; the eval modes need under 1 GB.
+
+### Progress, logs and resuming
+
+- **Progress:** while a step runs, one line updates every second. It shows elapsed time against the estimate, CPU and GPU use, and the newest line of the step's log with how long ago it was written. When the output is not a terminal (for example with `nohup`), it prints a status line every minute instead.
+- **Logs:** each step logs to `runs/<mode folder>/logs/<phase>/`, and every finished step's time is added to `runs/<mode folder>/logs/times.csv`.
+- **Resuming:** `full-run` skips steps that are already done, so after a failure or Ctrl-C you run the same command again. `--force` reruns done steps.
+- **Eval modes:** these always run every evaluation step of the phase, from a fresh copy of the inputs.
+- **Other options:** `--only N[,M]`, `--from N`, `--dry-run` (show the commands), `-j N` (parallel jobs inside a step).
+
+The individual commands each script runs are listed in the sections below.
+The scripts find their folders through two environment variables, `RIDE_WORLD_DATA` and `RIDE_WORLD_OUTPUTS`, set by the run scripts.
+Without them, every script uses `data/` and `outputs/` as before.
 
 ## Setup
 

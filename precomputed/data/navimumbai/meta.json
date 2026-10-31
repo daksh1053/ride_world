@@ -1,0 +1,37 @@
+{
+  "city": "Navi Mumbai",
+  "osm_query": "R13180880",
+  "crs_metric": "EPSG:32643",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "processed_at": "2026-10-04T21:34:01+00:00",
+  "osmnx_version": "2.1.1",
+  "n_nodes": 6057,
+  "n_edges": 14554,
+  "road_km": 1358.8,
+  "bounds_lonlat": [
+    72.9845395,
+    19.0027069,
+    73.047123,
+    19.188706
+  ],
+  "speed_from_osm_tag_frac": 0.018,
+  "road_km_by_class": {
+    "living_street": 24.5,
+    "motorway": 31.0,
+    "primary": 85.7,
+    "residential": 835.0,
+    "secondary": 134.6,
+    "tertiary": 214.2,
+    "trunk": 6.1,
+    "unclassified": 27.7
+  },
+  "n_zones": 95,
+  "h3_res": 8,
+  "n_pois": 2026,
+  "zone_nodes_min_median_max": [
+    15,
+    61,
+    185
+  ]
+}

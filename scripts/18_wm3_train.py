@@ -27,7 +27,7 @@ from world.wm3 import data as WD
 from world.wm3 import model as WM
 
 DEV = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MODELS = Path(__file__).resolve().parents[1] / "data" / "wm3_models"
+MODELS = cities.DATA / "wm3_models"
 OUT = cities.OUTPUTS / "wm3" / "stage2"
 
 

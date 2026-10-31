@@ -9,12 +9,14 @@ formulation), not to the static graph G.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "data"
-OUTPUTS = ROOT / "outputs"
+# The run/ scripts point these at a separate folder per run (see README, "Running with the scripts").
+DATA = Path(os.environ.get("RIDE_WORLD_DATA") or ROOT / "data").absolute()
+OUTPUTS = Path(os.environ.get("RIDE_WORLD_OUTPUTS") or ROOT / "outputs").absolute()
 
 
 @dataclass(frozen=True)

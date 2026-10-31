@@ -32,7 +32,7 @@ PY=.venv/bin/python
 
 hdr "Python packages (requirements.txt)"
 SHA=$(sha256sum requirements.txt | cut -c1-16)
-if [ "$(cat .venv/.req_sha 2>/dev/null)" = "$SHA" ] && $PY -c "import torch, osmnx, geopandas, h3, numba, folium" 2>/dev/null; then
+if [ "$(cat .venv/.req_sha 2>/dev/null)" = "$SHA" ] && $PY -c "import torch, osmnx, geopandas, h3, numba, folium, rasterio" 2>/dev/null; then
   ok "already installed (requirements.txt unchanged)"
 else
   doing "installing; the first time this downloads about 3 GB (PyTorch with CUDA) and takes 10-20 min"
@@ -55,29 +55,38 @@ if torch.cuda.is_available():
     x = torch.randn(512, 512, device="cuda"); (x @ x).sum().item()
     print(f"  {G}ok{N}    a small computation on the GPU worked")
 else:
-    print(f"\n  {Y}warn{N}  no CUDA GPU found: phases 1-2 (simulation) work, model training will be very slow")
+    print(f"\n  {Y}warn{N}  no CUDA GPU found: the eval modes and the simulation steps work, training will be very slow")
 EOF
 
-hdr "Trained models kept in the repository"
-for f in data/wm_models/gru_cons_os.pt data/wm2_models/st4_skip_ros.pt data/wm3_models/wm3_exo.pt \
-         data/wm3_models/rl_bc_pre.pt data/wm3_models/mbc_pre.pt data/wm3_models/drv_pre.pt; do
-  if [ -f "$f" ]; then ok "$f"; else warn "missing $f (the phase that trains it will recreate it)"; fi
+hdr "External input data (only full-run needs it)"
+GH=data/_external/ghsl
+URL=https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/GHSL/GHS_POP_GLOBE_R2023A/GHS_POP_E2025_GLOBE_R2023A_54009_100/V1-0/tiles
+mkdir -p "$GH"
+for tile in R5_C8 R7_C26; do      # the GHSL population tiles around San Francisco and Pune
+  f="GHS_POP_E2025_GLOBE_R2023A_54009_100_V1_0_$tile"
+  if [ -f "$GH/$f.tif" ]; then ok "GHSL population tile $tile"
+  else
+    doing "downloading GHSL population tile $tile"
+    curl -fL --progress-bar -o "$GH/$f.zip" "$URL/$f.zip" || fail "download failed: $URL/$f.zip"
+    (cd "$GH" && unzip -oq "$f.zip" "$f.tif") || fail "could not unzip $GH/$f.zip"
+    ok "GHSL population tile $tile"
+  fi
 done
+if [ -f data/_external/sfcta/tnc_trip_stats.json ]; then ok "SFCTA ride counts (kept in the repository)"
+else warn "data/_external/sfcta is missing; restore it with: git checkout -- data/_external/sfcta"; fi
 
 hdr "Folders and disk space"
-mkdir -p logs/run && ok "logs go to $RW/logs/run/"
-chmod +x run/*.sh scripts/*.sh 2>/dev/null
+mkdir -p runs && ok "the phase scripts write to $RW/runs/"
+chmod +x run/*.sh 2>/dev/null
 FREE=$(df -BG --output=avail . | tail -1 | tr -dc 0-9)
-USED=$(du -sBG data/sf_hd data/pune_hd 2>/dev/null | awk '{s+=$1} END{print s+0}')
-if [ "$USED" -gt 50 ]; then ok "${FREE} GB free; the high-detail data is already here (${USED} GB)"
-elif [ "$FREE" -lt 150 ]; then warn "${FREE} GB free; rebuilding all data from scratch needs about 150 GB"
-else ok "${FREE} GB free (a full rebuild needs about 150 GB)"; fi
+if [ "$FREE" -lt 200 ]; then warn "${FREE} GB free; a full run of every phase needs about 200 GB"
+else ok "${FREE} GB free (a full run of every phase needs about 200 GB; the eval modes need under 1 GB)"; fi
 
-hdr "What is already done"
+hdr "Status of each phase"
 for s in run/[1-5]_*.sh; do bash "$s" --status; done
 
 echo
-echo "${G}${B}Setup complete${N} in $(( $(date +%s) - T0 )) s. Next:"
-echo "  run/1_build_world.sh --list     see the steps of a phase, their time and status"
-echo "  run/1_build_world.sh            run a phase (finished steps are skipped)"
-echo "  run/3_world_model3.sh --eval-only --force   rerun only the quick evaluation steps"
+echo "${G}${B}Setup complete${N} in $(( $(date +%s) - T0 )) s. Next, for example:"
+echo "  run/5_is_it_a_world_model.sh list           the steps of a phase, their time and status"
+echo "  run/5_is_it_a_world_model.sh eval-precomputed   evaluate the results shipped in precomputed/"
+echo "  run/1_build_world.sh full-run               compute phase 1 from scratch into runs/full_run/"

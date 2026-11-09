@@ -501,3 +501,55 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     after those summaries were made (10-28).
     Fixed: rasterio (land use) was missing from requirements.txt; SFCTA counts now in the repo, GHSL tiles downloaded
     by run/0_init.sh (checked identical to the files used).
+
+## Stage 7b: tuning the market so that "take the first ride at once" is not best; richer drivers (2026-11-09)
+    Goal: tune driver pay and availability so that accepting ASAP is no longer a driver's best
+    choice, and make the driver agents more complex.
+
+    Why ASAP won in stage 7: a request was on several drivers' menus and went to the platform's
+    best-scored taker, so a driver's options after the first were mostly ones it would lose anyway.
+
+    New pieces (riders keep paying the same fares, so the world model stays valid):
+      world/wm3/pay.py       driver pay schemes separate from rider fares, made budget-neutral
+                             (drivers paid in total what 'fare minus commission' pays); priced
+                             from trip records, so imagination and simulator use the same scheme.
+      exclusive menus        each request on the menus of its `share` best drivers (default 1), sent
+                             every `batch` epochs; a declined request is never shown to the same driver
+                             again (before this fix declining looked free: the same request came back
+                             30 s later).
+      availability           ImaginedWorld.cut_supply: a share of idle/break drivers log off and stay off.
+      world/wm3/drivers2.py  richer drivers: private types (daily income target with money above it
+                             worth less, shift length, pull home at shift end, cost per km); actions
+                             wait / take any of 6 options / drive to one of 3 busy nearby zones; idle
+                             drivers without a menu decide every 5 min; transformer policy over the
+                             driver, option and move tokens; aim = own utility over 45 imagined min.
+
+    Probe (scripts/40_wm3_market_probe.py, 41_wm3_market_tune.py): one driver's choice branched
+    (decline / each option), everyone else ASAP, 45 imagined min, priced under 8 pay schemes.
+    Gain of a cross-fitted learned choice over ASAP, median fares per choice (75-80 SF, 56-59 Pune choices):
+                                       options/menu   SF best scheme             Pune best
+      exclusive, no supply cut          1.1 / 1.1      ~0 (all schemes)          ~0
+      exclusive, 50% of idle cut        1.2 / 1.0      per_trip +0.06 +- 0.04    time_heavy +0.03 +- 0.02
+      shared by 3, 50% cut              1.7 / 1.2      per_trip +0.05 +- 0.05    time_heavy +0.02 +- 0.02
+      batched (2 min), 50% cut          1.4 / 1.1      per_trip +0.09 +- 0.03    km_heavy +0.02 +- 0.01
+    Declining always cost 0.13-0.57 fares. Menus almost never hold more than one ride, so pay
+    schemes barely matter; SF batched + per-trip pay is the one clear (3 s.e.) edge over ASAP.
+
+    Training (scripts/42_wm3_driver2_grpo.py, 591k-weight transformer, 4 layers x 128, 40 rounds):
+      run 1 (exclusive menus every 30 s, 50% cut, SF per_trip / Pune time_heavy, lr 1e-3): stopped at
+            round 20, agents worse than ASAP (SF -0.035 net/h); data/wm3_models/drv2_big_run1.pt.
+      run 2 (batched menus, 50% cut, SF per_trip / Pune km_heavy, lr 3e-3): data/wm3_models/drv2_big.pt.
+      25% of drivers on the agent vs the same drivers under ASAP, per online hour, median fares (+- s.e., 12 held-out starts):
+                       SF utility        SF net pay       Pune utility      Pune net pay
+        round 0       -0.038 +- .018    -0.043 +- .019   -0.015 +- .006    -0.018 +- .004
+        round 20      -0.018 +- .012    -0.024 +- .012   +0.004 +- .003    -0.007 +- .002
+        round 30      -0.001 +- .016    -0.004 +- .015   -0.006 +- .003    -0.011 +- .003
+        round 40      -0.023 +- .023    -0.028 +- .023   -0.012 +- .004    -0.015 +- .001
+      Batching itself costs riders ~5% of pickups in SF (599 -> 566 per hour) and ~3% in Pune.
+    Result: not met. The agents learn to match ASAP in SF (round 30) but not to beat it; in Pune
+    they stay slightly below. The market offers too few real choices: even with half the idle
+    drivers off the road, menus hold about one ride, so the edge a perfect chooser could get is a
+    few hundredths of a fare per hour, below the noise of the training signal.
+    Lessons: a decline must exclude the driver from that request, or declining looks free; the
+    best-of-several-branches gain is biased upward (use averages); per-round 'gains' swing a lot.
+    Simulator test (scripts/43_wm3_driver2_execute.py) is ready but was not run for this result.

@@ -1,0 +1,4 @@
+  sf_hd seed 702 single: pickups 57 wait 4.23 u/h 1.683 net/h 1.707 declined 0 moves 0 (3.7 min)
+  sf_hd seed 702 asap: pickups 61 wait 4.16 u/h 1.668 net/h 1.698 declined 0 moves 0 (3.9 min)
+  sf_hd seed 702 agents: pickups 58 wait 4.04 u/h 1.720 net/h 1.750 declined 6 moves 27 (5.4 min)
+  sf_hd seed 702 mixed: pickups 60 wait 4.14 u/h 1.662 net/h 1.693 declined 0 moves 10 (7.2 min)

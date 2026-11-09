@@ -154,6 +154,18 @@ def poisson_inv(lam, u):
     return poisson.ppf(u, lam).astype(np.int64)
 
 
+def trip_record(W, t, d, k, q, km_in, outside_km, minutes, fare):
+    """One finished ride, with what any driver pay scheme needs (world/wm3/pay.py)."""
+    g = W.g
+    oz = int(g.zone[q["origin"]])
+    dz = int(g.zone[q["dest"]]) if q["ext"] < 0 else int(g.zone[W.R.gw_pos[q["ext"]]])
+    acc = float(q.get("accept_t", q.get("pickup_t", t)))
+    return {"t": float(t), "driver": int(d), "req": int(k), "mode": int(q["mode"]), "accept_t": acc,
+            "pickup_t": float(q.get("pickup_t", t)), "oz": oz, "dz": dz, "ext": int(q["ext"]),
+            "pick_km": float(q.get("pick_km", 0.0)), "km_in": float(km_in), "outside_km": float(outside_km),
+            "minutes": float(minutes), "surge": float(q["surge"]), "fare": float(fare)}
+
+
 class ImaginedWorld:
     def __init__(self, model, rules: CityRules, L: S.DayLog, prior: FT.Prior, e0: int, policy, seed=0,
                  traffic="typical"):
@@ -669,6 +681,7 @@ class ImaginedWorld:
             self._idle(i, t)
             return
         q["status"], q["driver"] = "accepted", i
+        q["accept_t"], q["accept_node"] = t, int(self.node[i])
         self._status(i, PICKUP, t)
         self.d_req[i] = k
         leg = self._start_leg(i, q["origin"], t, "pickup", k)
@@ -728,7 +741,7 @@ class ImaginedWorld:
             self._offline(d, t)
 
     def _on_online(self, t, d, push, t1):
-        if self.st[d] != OFF:
+        if self.st[d] != OFF or d in getattr(self, "banned", ()):        # banned: taken off the road (supply cut)
             return
         cand = self.R.zone_nodes[int(self.home_zone[d])]
         self.node[d] = int(self.rng.choice(cand))
@@ -822,6 +835,8 @@ class ImaginedWorld:
         self.income[d] += net
         self.count["trips"][d] += 1
         self.log.append((t, "dropoff", d, k, -1, fare))
+        if hasattr(self, "trips"):                               # trip records for driver pay schemes (world/wm3/pay.py)
+            self.trips.append(trip_record(self, t, d, k, q, km_in, outside_km, minutes, fare))
         self.log.append((t, "settlement", d, k, -1, net))
 
     def _on_request(self, t, z, m, origin, dz, dnode, ext, hZ, k, push, t1):
@@ -846,6 +861,17 @@ class ImaginedWorld:
         self.req[k] = {"origin": origin, "dest": dnode, "ext": ext, "mode": m, "created": t, "quote": base * s, "surge": s,
                        "status": "pending", "n_offers": 0, "excluded": set(), "driver": -1, "arrive": np.nan}
         self.log.append((t, "request_created", -1, k, z, base * s))
+
+    def cut_supply(self, frac, seed):
+        """Availability: a share frac of the drivers idle or on a break now log off and stay off
+        (as the stage-8 supply shock, scripts/36_wm3_shock.py). Returns the drivers taken off."""
+        cand = np.flatnonzero((self.st == IDLE) | (self.st == BREAK))
+        g = np.random.default_rng(seed * 101 + int(frac * 100))
+        out = [int(d) for d in cand if g.random() < frac]
+        for d in out:
+            self._offline(d, self.t)
+        self.banned = set(getattr(self, "banned", set())) | set(out)
+        return out
 
     # ------------------------------------------------------------------ surge rule
     def _surge(self):

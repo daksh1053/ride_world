@@ -327,12 +327,21 @@ def menu_round(W, mi, lg, f):
     taken rides are accepted offers. Records the round in W.last_menu."""
     from . import drivers as DR
     menu, sc = DR.menus(mi, lg)
+    if W.e % DR.BATCH:                           # batched menus: none this epoch
+        menu = {}
     cols, opt, own, mask, fare = DR.features(W, mi, menu)
     dl = DR.driver_logits(W.drivers, opt, own, mask, torch.device("cpu"))
     drv = mi["drv"][cols]
     a = DR.choose(dl, W.policy_seed, W.e, drv, W.override_driver.get(W.e) if hasattr(W, "override_driver") else None)
     offers, lost = DR.settle(mi, menu, cols, a, sc)
     W.preaccept = set(offers)
+    if DR.MENU_MODE == "exclusive":              # a declined menu is not shown to the same driver again
+        for i, c in enumerate(cols):
+            if a[i] == 0:
+                for r in menu[c]:
+                    q = W.req.get(int(mi["req"][r]))
+                    if q is not None:
+                        q["excluded"].add(int(mi["drv"][c]))
     # the driver each request would go to if every driver showing it took it (platform's best)
     owner = {}
     for c in cols:
@@ -340,8 +349,11 @@ def menu_round(W, mi, lg, f):
             if r not in owner or sc[r, c] > sc[r, owner[r]]:
                 owner[r] = c
     winnable = np.array([any(owner[r] == c for r in menu[c]) for c in cols], bool)
+    reqs = np.full(mask.shape, -1, np.int64)
+    for i, c in enumerate(cols):
+        reqs[i, :len(menu[c])] = mi["req"][menu[c]]
     W.last_menu = {"drv": drv, "opt": opt, "own": own, "mask": mask, "fare": fare, "lg": dl, "a": a, "e": W.e,
-                   "offers": offers, "lost": lost, "winnable": winnable}
+                   "offers": offers, "lost": lost, "winnable": winnable, "reqs": reqs}
     W.n_declined = getattr(W, "n_declined", 0) + int((a == 0).sum())
     W.n_lost = getattr(W, "n_lost", 0) + lost
     return offers
@@ -491,6 +503,11 @@ class LiveAgentPolicy(Policy):
             f = W.features()
             mi = match_inputs(obs, f)
             offers = []
+            if getattr(self, "driver_v", 1) == 2:            # stage 7b: richer drivers (world/wm3/drivers2.py)
+                lg = match_logits_many([(self.agent, snap_of(W, f), mi)], next(self.agent.parameters()).device)[0] \
+                    if mi is not None else None
+                offers = self._drivers2_round(W, mi, lg, obs)
+                mi = None
             if mi is not None:
                 dev = next(self.agent.parameters()).device
                 lg = match_logits_many([(self.agent, snap_of(W, f), mi)], dev)[0]
@@ -529,6 +546,38 @@ class LiveAgentPolicy(Policy):
         self.decisions.append({"t": obs.t, "n_deciding": len(dec["drv"]), "n_moved": len(disp)})
         return Action(offers=offers, dispatches=disp)
 
+    def _drivers2_round(self, W, mi, lg, obs):
+        """Stage 7b in the simulator: exclusive menus and the drivers' own moves, decided on the
+        rebuilt state exactly as in imagination; taken rides are accepted (preaccepted), moves are
+        self_reposition legs started in the simulator now."""
+        from . import drivers2 as D2
+        W.policy_seed, W.drivers, W.driver_v, W.override_driver = self.seed, self.drivers, 2, {}
+        tp = self.world.r_times["dropoff"]
+        rd = self.world.r_driver
+        recent = np.flatnonzero((tp > obs.t - 3600) & (tp <= obs.t))
+        W.trips = [{"driver": int(rd[k]), "t": float(tp[k])} for k in recent]      # rides of the last hour (a feature)
+        offers, moves = D2.round_(W, mi, lg)
+        W.apply_action(Action(offers=offers))
+        w = self.world
+        for d, k in (W.last_menu or {}).get("declined", []):          # declined: not shown to this driver again
+            if 0 <= k < len(w.r_excluded):
+                w.r_excluded[k].add(d)
+        for d, z in moves:
+            if w.d_status[d] != 1 or not D2.self_move(W, d, z):          # 1 = IDLE in world/sim.py
+                continue
+            w.set_status(d, 5, obs.t)                                  # 5 = REPO
+            w.d_repo_zone[d] = z
+            w.log(obs.t, "driver_self_reposition", driver=d, node=int(w.d_node[d]), value=z)
+            leg = w.start_leg(d, int(w.zone_centre[z]), obs.t, "self_reposition")
+            w.push(leg.end, "reposition_end", d, w.d_leg_id[d])
+        w.preaccepted = getattr(w, "preaccepted", set()) | set(offers)
+        lm = W.last_menu
+        self.menus.append({"t": obs.t, "n_decide": 0 if lm is None else len(lm["drv"]),
+                           "n_menus": 0 if lm is None else int(lm["om"].any(1).sum()),
+                           "declined": 0 if lm is None else int(((lm["a"] == 0) & lm["om"].any(1)).sum()),
+                           "taken": len(offers), "moves": len(moves)})
+        return offers
+
     def imagined_now(self, e):
         """The entity-level state at epoch e from the simulator's tables so far (in memory)."""
         tb = self.world.tables()
@@ -536,6 +585,11 @@ class LiveAgentPolicy(Policy):
         L = S.DayLog(self.g, self.day_dir, tables=tb, live_e=e)
         W = RO.ImaginedWorld(self.agent.wm, self.rules, L, self.prior, e, None, seed=self.seed)
         W.L = None
+        if getattr(self, "driver_v", 1) == 2:            # drivers who declined a request are not offered it again
+            ex = self.world.r_excluded
+            for k, q in W.req.items():
+                if 0 <= k < len(ex):
+                    q["excluded"] = set(ex[k])
         return W
 
 
@@ -572,6 +626,13 @@ def step_many(worlds):
         lgs = match_logits_many([(worlds[i].agent, snap_of(worlds[i], fs[i]), mis[i]) for i in live], dev) if live else []
         for i, lg in zip(live, lgs):
             W, mi = worlds[i], mis[i]
+            if getattr(W, "driver_v", 1) == 2 and W.drivers is not None:     # stage 7b: richer drivers
+                from . import drivers2 as D2
+                offers, moves = D2.round_(W, mi, lg)
+                W.apply_action(Action(offers=offers))
+                for d, z in moves:
+                    D2.self_move(W, d, z)
+                continue
             if getattr(W, "drivers", None) is not None:          # stage 7: menus, the drivers choose
                 offers = menu_round(W, mi, lg, fs[i])
             else:
@@ -584,6 +645,11 @@ def step_many(worlds):
             W = worlds[i]
             if i not in live:
                 W.apply_action(Action())
+                if getattr(W, "driver_v", 1) == 2 and W.drivers is not None:  # free epoch: idle drivers may move
+                    from . import drivers2 as D2
+                    _, moves = D2.round_(W, None, None)
+                    for d, z in moves:
+                        D2.self_move(W, d, z)
             W._pending_disp = []
             if W.mode == "rule":                     # the rule's rebalancing on top of the agent's offers
                 W.match._n += 1

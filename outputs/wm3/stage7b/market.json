@@ -1,0 +1,39 @@
+{
+ "K": 6,
+ "menu": "exclusive",
+ "why": "scripts/41_wm3_market_tune.py: batched exclusive menus (every 2 min), supply cut 0.5, the pay scheme with the largest learned gain over ASAP per city (SF +0.09 +- 0.03, Pune +0.02 +- 0.01 median fares per choice)",
+ "sf_hd": {
+  "scheme": {
+   "name": "per_trip",
+   "share": 0.0,
+   "surge_mult": 1.0,
+   "per_trip": 1.0,
+   "per_km": 0.4,
+   "per_min": 0.4,
+   "pickup_per_min": 0.0,
+   "pickup_free_min": 5.0,
+   "surge_flat": 0.0,
+   "scale": 0.7846780907689377
+  },
+  "supply_cut": 0.5,
+  "share": 1,
+  "batch": 4
+ },
+ "pune_hd": {
+  "scheme": {
+   "name": "km_heavy",
+   "share": 0.0,
+   "surge_mult": 1.0,
+   "per_trip": 0.0,
+   "per_km": 1.5,
+   "per_min": 0.0,
+   "pickup_per_min": 0.0,
+   "pickup_free_min": 5.0,
+   "surge_flat": 0.0,
+   "scale": 0.8641862507605291
+  },
+  "supply_cut": 0.5,
+  "share": 1,
+  "batch": 4
+ }
+}

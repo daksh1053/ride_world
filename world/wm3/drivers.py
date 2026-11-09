@@ -59,16 +59,47 @@ class DriverPolicy(nn.Module):
         return torch.cat([ld[:, None], lo], -1)
 
 
-def menus(mi, lg, K=K_MENU):
+MENU_MODE = "shared"
+SHARE = 1          # exclusive menus: each request on the menus of its SHARE best-scored drivers
+BATCH = 1          # menus are sent every BATCH epochs (1 = every 30 s)
+
+
+def set_menu_size(K, mode=None, share=None, batch=None):
+    """Menu length used by menus() and features() from now on (default K_MENU = 4), and the menu
+    design: 'shared' (stage 7: each driver sees its K best requests, so a request is on several
+    menus and goes to the platform's best-scored driver among those who take it) or 'exclusive'
+    (stage 7b: each request is on the menus of its `share` best-scored drivers only -- share 1: every
+    option a driver sees is one it gets if it takes it); menus are sent every `batch` epochs."""
+    global K_MENU, MENU_MODE, SHARE, BATCH
+    K_MENU = int(K)
+    if mode is not None:
+        assert mode in ("shared", "exclusive"), mode
+        MENU_MODE = mode
+    if share is not None:
+        SHARE = int(share)
+    if batch is not None:
+        BATCH = int(batch)
+
+
+def menus(mi, lg, K=None):
     """mi: matching inputs (agent.match_inputs), lg: the platform's (n_req, 1 + m) logits.
     Returns {candidate driver column c: array of request rows (best first)} for drivers with any
     allowed request, and the score matrix (n_req, m) used to settle conflicts."""
+    K = K or K_MENU
     sc = np.where(mi["feas"], lg[:, 1:], -np.inf)
+    if MENU_MODE == "exclusive":                 # each request only on its SHARE best-scored drivers' menus
+        own = np.full(sc.shape, -np.inf)
+        top = np.argsort(-sc, 1, kind="stable")[:, :SHARE]
+        rows = np.arange(sc.shape[0])[:, None]
+        own[rows, top] = sc[rows, top]
+        sc_menu = own
+    else:
+        sc_menu = sc
     out = {}
     for c in range(sc.shape[1]):
-        ok = np.flatnonzero(np.isfinite(sc[:, c]))
+        ok = np.flatnonzero(np.isfinite(sc_menu[:, c]))
         if len(ok):
-            out[c] = ok[np.argsort(-sc[ok, c], kind="stable")][:K]
+            out[c] = ok[np.argsort(-sc_menu[ok, c], kind="stable")][:K]
     return out, sc
 
 

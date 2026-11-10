@@ -594,7 +594,7 @@ class ImaginedWorld:
             elif uc[j] < pc[j]:
                 push(t0 + S.DT * urt[j], "cancel", int(k))
         # new requests: counts per (zone, mode) by inversion
-        lam = P["rate"].clamp(-12, 6).exp().numpy()                    # (Z, 3)
+        lam = P["rate"].clamp(-12, 6).exp().numpy() * getattr(self, "demand_mult", 1.0)   # (Z, 3); demand_mult: a demand surge
         n_new = poisson_inv(lam, ku("n_new", np.arange(lam.size)).reshape(lam.shape))
         for m in range(3):
             if R.mode_list[m] is None:

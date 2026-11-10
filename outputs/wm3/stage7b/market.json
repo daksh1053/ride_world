@@ -1,7 +1,7 @@
 {
  "K": 6,
  "menu": "exclusive",
- "why": "scripts/41_wm3_market_tune.py: batched exclusive menus (every 2 min), supply cut 0.5, the pay scheme with the largest learned gain over ASAP per city (SF +0.09 +- 0.03, Pune +0.02 +- 0.01 median fares per choice)",
+ "why": "scripts/41_wm3_market_tune.py on probes with a demand surge: batched exclusive menus (every 2 min), supply cut 0.5, demand x3, per-trip pay (SF: choosing by pay per minute +0.32 +- 0.10, learned +0.21 +- 0.10 median fares per choice over ASAP; Pune: learned +0.04 +- 0.02)",
  "sf_hd": {
   "scheme": {
    "name": "per_trip",
@@ -13,27 +13,29 @@
    "pickup_per_min": 0.0,
    "pickup_free_min": 5.0,
    "surge_flat": 0.0,
-   "scale": 0.7846780907689377
+   "scale": 1.1008365127794748
   },
   "supply_cut": 0.5,
   "share": 1,
-  "batch": 4
+  "batch": 4,
+  "demand": 3.0
  },
  "pune_hd": {
   "scheme": {
-   "name": "km_heavy",
+   "name": "per_trip",
    "share": 0.0,
    "surge_mult": 1.0,
-   "per_trip": 0.0,
-   "per_km": 1.5,
-   "per_min": 0.0,
+   "per_trip": 1.0,
+   "per_km": 0.4,
+   "per_min": 0.4,
    "pickup_per_min": 0.0,
    "pickup_free_min": 5.0,
    "surge_flat": 0.0,
-   "scale": 0.8641862507605291
+   "scale": 1.131849418535816
   },
   "supply_cut": 0.5,
   "share": 1,
-  "batch": 4
+  "batch": 4,
+  "demand": 3.0
  }
 }

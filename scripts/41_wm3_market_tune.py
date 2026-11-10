@@ -58,8 +58,10 @@ def load(key):
     d = cities.get(key).data_dir / "wm3_rl" / "market_probe"
     out = {}
     for f in sorted(d.glob("probe_*_s*.pkl")):
-        menu, s = f.stem.split("_")[1], float(f.stem.split("_s")[-1])
-        out[(menu, s)] = pickle.loads(f.read_bytes())
+        parts = f.stem.split("_")
+        menu, s = parts[1], float(parts[2][1:])
+        dm = float(parts[3][1:]) if len(parts) > 3 else 1.0
+        out[(menu, s, dm)] = pickle.loads(f.read_bytes())
     return out
 
 
@@ -143,7 +145,7 @@ def main():
     rows = []
     for key in CITY:
         market = cities.get(key).market
-        for (menu, s), recs in load(key).items():
+        for (menu, s, dm), recs in load(key).items():
             trips = all_trips(recs)
             for name, mk in SCHEMES.items():
                 sch = mk(market)
@@ -153,14 +155,14 @@ def main():
                 if not len(df):
                     continue
                 base = df.asap
-                row = {"city": key, "menu": menu, "supply_cut": s, "scheme": name, "scale": sch.scale, "choices": len(df),
+                row = {"city": key, "menu": menu, "supply_cut": s, "demand": dm, "scheme": name, "scale": sch.scale, "choices": len(df),
                        "mean_options": df.n_opt.mean(), "asap": base.mean(), "first_is_best": df.first_best.mean()}
                 for p in ["decline", "net", "rate_0.0", "rate_1.0", "learned", "oracle"]:
                     if p in df:
                         g = df[p] - base
                         row[f"gain_{p}"], row[f"se_{p}"] = g.mean(), g.std() / np.sqrt(len(g))
                 rows.append(row)
-                print(f"{key} {menu:9s} cut {s:.1f} {name:12s} n {len(df):3d} opts {df.n_opt.mean():.1f} asap {base.mean():.2f} "
+                print(f"{key} {menu:9s} cut {s:.1f} dem {dm:.1f} {name:12s} n {len(df):3d} opts {df.n_opt.mean():.1f} asap {base.mean():.2f} "
                       f"first best {df.first_best.mean():.2f} | " + " ".join(
                           f"{p} {row.get('gain_' + p, np.nan):+.2f}+-{row.get('se_' + p, np.nan):.2f}"
                           for p in ["decline", "net", "rate_1.0", "learned", "oracle"]), flush=True)

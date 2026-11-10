@@ -72,6 +72,13 @@ def market_config(key):
     return PY.PayScheme(**c["scheme"]), float(c["supply_cut"]), int(m.get("K", 6)), int(c.get("share", 1)), int(c.get("batch", 1))
 
 
+def market_demand(key):
+    """The demand surge of the market (new-request rates times this; 1 = none)."""
+    from world import cities
+    m = json.loads((cities.OUTPUTS / "wm3" / OUT_NAME / "market.json").read_text())
+    return float(m[key].get("demand", 1.0))
+
+
 def worker_init(key, env_tag, platform, start_policy, arch):
     from world import cities
     from world.routing import LiveRouter
@@ -92,7 +99,7 @@ def worker_init(key, env_tag, platform, start_policy, arch):
     rules = RO.CityRules(g)
     p0 = D2.DriverPolicy2(**arch)
     p0.load_state_dict(torch.load(start_policy, map_location="cpu"))
-    _W.update(key=key, env=env, plat=plat, rules=rules, router=LiveRouter(g.net, g.traffic), supply=supply,
+    _W.update(key=key, env=env, plat=plat, rules=rules, router=LiveRouter(g.net, g.traffic), supply=supply, demand=market_demand(key),
               pol=D2.DriverPolicy2(**arch).eval(), p0=p0.eval(), asap=D2.asap_policy(), version=-1)
 
 
@@ -107,6 +114,7 @@ def setup(W, drivers, seed):
     W.setup(_W["plat"], policy_seed=seed, mode="agent", match="agent")
     W.driver_v, W.drivers, W.override_driver, W.trips = 2, drivers, {}, []
     W.n_declined, W.n_self_moves = 0, 0
+    W.demand_mult = _W["demand"]
     if _W["supply"] > 0 and not getattr(W, "banned", None):
         W.cut_supply(_W["supply"], seed)
     return W

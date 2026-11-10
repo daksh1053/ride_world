@@ -1,0 +1,53 @@
+  sf_hd: 1/60 choices branched, 1 usable, 0.5 min
+[W1111 00:07:44.168264664 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 18481152, total: 3953393664).
+[W1111 00:07:45.385382768 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 1703936, total: 3953393664).
+[W1111 00:07:49.439887498 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 20578304, total: 3953393664).
+[W1111 00:07:50.596728773 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 1703936, total: 3953393664).
+[W1111 00:07:52.272326576 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 20578304, total: 3953393664).
+[W1111 00:07:53.757942240 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 20578304, total: 3953393664).
+[W1111 00:07:54.420607036 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 7995392, total: 3953393664).
+[W1111 00:07:54.839555578 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 7995392, total: 3953393664).
+[W1111 00:07:57.534031267 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 5898240, total: 3953393664).
+[W1111 00:07:57.582561172 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 7995392, total: 3953393664).
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/scripts/40_wm3_market_probe.py", line 129, in run_probe
+    AG.rollout_many(ws, task["H"], CHUNK[_W["key"]])
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 716, in rollout_many
+    for i, r in enumerate(step_many(worlds[c: c + chunk])):
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 626, in step_many
+    lgs = match_logits_many([(worlds[i].agent, snap_of(worlds[i], fs[i]), mis[i]) for i in live], dev) if live else []
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 316, in match_logits_many
+    lg = agent.match_logits(b, rpos, dpos, feas, eta)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 80, in match_logits
+    hD, hR, _, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 158, in encode
+    bias = pad[:, None] - w[None, :, None, None] * dist[:, None]
+           ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 320.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 307.62 MiB is free. Process 888348 has 546.00 MiB memory in use. Process 888349 has 768.00 MiB memory in use. Including non-PyTorch memory, this process has 1004.00 MiB memory in use. Process 888344 has 1.08 GiB memory in use. Of the allocated memory 857.59 MiB is allocated by PyTorch, and 48.41 MiB is reserved by PyTorch but unallocated.
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/40_wm3_market_probe.py", line 188, in <module>
+    main()
+  File "/home/daksh/Desktop/btp/ride_world/scripts/40_wm3_market_probe.py", line 174, in main
+    for n, r in enumerate(res[k], 1):
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 873, in next
+    raise value
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 320.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 307.62 MiB is free. Process 888348 has 546.00 MiB memory in use. Process 888349 has 768.00 MiB memory in use. Including non-PyTorch memory, this process has 1004.00 MiB memory in use. Process 888344 has 1.08 GiB memory in use. Of the allocated memory 857.59 MiB is allocated by PyTorch, and 48.41 MiB is reserved by PyTorch but unallocated.

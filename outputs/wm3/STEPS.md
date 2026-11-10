@@ -553,3 +553,22 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     Lessons: a decline must exclude the driver from that request, or declining looks free; the
     best-of-several-branches gain is biased upward (use averages); per-round 'gains' swing a lot.
     Simulator test (scripts/43_wm3_driver2_execute.py) is ready but was not run for this result.
+
+    Stage 7b, demand surge (2026-11-11). Menus held about one ride, so give drivers more requests:
+    the world model's new-request rates times a demand factor (world/wm3/rollout.py demand_mult;
+    scripts/40_wm3_market_probe.py --demand). Batched exclusive menus (every 2 min), 60 SF / 40 Pune
+    branched choices each; gains over ASAP in median fares per choice (+- s.e.), from 41_tune.csv:
+      setting                 rides/menu SF/Pune  first ride best SF/Pune   SF best rule                 Pune best
+      50% cut, demand x2      2.1 / 1.2           0.52 / 0.77               km_heavy, rate +0.21 +- 0.10  ~0
+      50% cut, demand x3      2.9 / 1.5           0.40 / 0.50               per_trip, rate +0.32 +- 0.10  per_trip learned +0.04 +- 0.02
+                                                                            (learned +0.21 +- 0.10;
+                                                                             km_heavy rate +0.44 +- 0.19,
+                                                                             learned +0.40 +- 0.19)
+      70% cut, demand x3      - / 1.9             - / 0.53                  -                            per_trip learned +0.05 +- 0.04
+    With demand x3, taking the first ride is no longer the best choice in SF: it is the best branch
+    only 40% of the time, and a simple rule (take the option with the most net pay per engaged
+    minute) beats it by +0.32 +- 0.10 fares per choice, a cross-fitted value model by +0.21 +- 0.10.
+    Pune's rides are short and similar, so choosing gains little there even with 1.5-1.9 rides per menu.
+    market.json now: both cities 50% cut, demand x3, per-trip pay (budget-neutral scale 1.10 SF, 1.13 Pune).
+    The ×3 probes ran out of GPU memory with both cities at once (4 GB GPU); run one city at a time.
+    Training on this market: scripts/42_wm3_driver2_grpo.py --tag drv2_d3 --workers 2 1 (running).

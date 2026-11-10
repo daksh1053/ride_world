@@ -12,6 +12,8 @@ time, km, minutes, surge), the ride in progress at the end and the km driven. Dr
 fixed here: scripts/41_wm3_market_tune.py prices the same rides under any pay scheme
 (world/wm3/pay.py), so many schemes are compared on one set of imagined branches.
 
+--demand y: a demand surge; the world model's new-request rates are multiplied by y.
+
 --supply x: availability. A share x of the drivers idle or on a break at the start log off and stay
 off (the supply shock of stage 8, which the world model gets right in direction and size).
 
@@ -101,6 +103,7 @@ def run_probe(task):
         W.setup(_W["plat"], policy_seed=seed, mode="agent", match="agent")
         W.drivers, W.override_driver, W.trips = _W["p0"], {}, []
         removed = W.cut_supply(task["supply"], seed) if task["supply"] > 0 else []
+        W.demand_mult = task.get("demand", 1.0)
         for _ in range(int(rng.integers(task["warm"]))):
             AG.step_many([W])
         from world.wm3 import drivers as DR
@@ -127,7 +130,7 @@ def run_probe(task):
         recs = [PY.focal_record(Wx, d, t0, km0) for Wx in ws]
         pk = [sum(1 for x in Wx.log if x[1] == "pickup") for Wx in ws]
         idle = int((mr["mask"].any(1)).sum())
-        return {"key": _W["key"], "start": str(task["start"]), "seed": seed, "supply": task["supply"], "menu": task["menu"], "removed": len(removed),
+        return {"key": _W["key"], "start": str(task["start"]), "seed": seed, "supply": task["supply"], "demand": W.demand_mult, "menu": task["menu"], "removed": len(removed),
                 "t": t0, "driver": d, "kappa": float(W.kappa[d]), "money": W.money, "acts": acts, "opt": mr["opt"][i],
                 "own": mr["own"][i], "mask": mr["mask"][i], "options": option_details(W, mr["reqs"][i], mr["opt"][i]),
                 "branches": recs, "pickups": np.array(pk), "n_menus": idle, "online": int((W.st != 0).sum()),
@@ -145,6 +148,7 @@ def main():
     ap.add_argument("--menu", default="exclusive", choices=["shared", "exclusive"], help="menu design (world/wm3/drivers.py)")
     ap.add_argument("--share", type=int, default=1, help="exclusive menus: each request on its N best drivers' menus")
     ap.add_argument("--batch", type=int, default=1, help="menus every N epochs (30 s each)")
+    ap.add_argument("--demand", type=float, default=1.0, help="demand surge: new-request rates times this")
     ap.add_argument("--warm", type=int, default=20)
     ap.add_argument("--platform", default="mbc_pre")
     ap.add_argument("--env", default="wm3_exo")
@@ -161,7 +165,7 @@ def main():
     t0 = time.time()
     for k in args.cities:
         starts = sorted((cities.get(k).data_dir / "wm3_rl" / "starts").glob("train_*.pkl"))
-        tasks = [{"start": starts[rng.integers(len(starts))], "seed": int(rng.integers(1 << 30)), "supply": args.supply, "menu": args.menu,
+        tasks = [{"start": starts[rng.integers(len(starts))], "seed": int(rng.integers(1 << 30)), "supply": args.supply, "demand": args.demand, "menu": args.menu,
                   "H": args.H, "warm": args.warm} for _ in range(ng[k])]
         pools[k] = ctx.Pool(nw[k], initializer=worker_init, initargs=(k, args.env, args.platform, args.K, args.menu, args.share, args.batch))
         res[k] = pools[k].imap_unordered(run_probe, tasks)
@@ -174,7 +178,7 @@ def main():
         d = cities.get(k).data_dir / "wm3_rl" / "market_probe"
         d.mkdir(parents=True, exist_ok=True)
         tag = args.menu + (f"{args.share}" if args.share > 1 else "") + (f"b{args.batch}" if args.batch > 1 else "")
-        f = d / f"probe_{tag}_s{args.supply:.1f}.pkl"
+        f = d / (f"probe_{tag}_s{args.supply:.1f}" + (f"_d{args.demand:.1f}" if args.demand != 1 else "") + ".pkl")
         f.write_bytes(pickle.dumps(out))
         print(f"wrote {f} ({len(out)} records)", flush=True)
         pools[k].close()

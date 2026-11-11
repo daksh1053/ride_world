@@ -51,6 +51,8 @@ os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 ROOT = Path(__file__).resolve().parents[1]
 OUT_NAME = "stage7b"
 CHUNK = {"sf_hd": 8, "pune_hd": 4}
+if os.environ.get("DRV2_CHUNK"):          # worlds per world-model batch, "SF,Pune" (smaller saves GPU memory)
+    CHUNK = dict(zip(["sf_hd", "pune_hd"], map(int, os.environ["DRV2_CHUNK"].split(","))))
 ARMS = ("asap", "agents", "mixed")
 MIX_SHARE = 0.25
 _W = {}

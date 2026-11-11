@@ -572,3 +572,15 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     market.json now: both cities 50% cut, demand x3, per-trip pay (budget-neutral scale 1.10 SF, 1.13 Pune).
     The ×3 probes ran out of GPU memory with both cities at once (4 GB GPU); run one city at a time.
     Training on this market: scripts/42_wm3_driver2_grpo.py --tag drv2_d3 --workers 2 1 (running).
+
+    Training on the demand-x3 market (scripts/42_wm3_driver2_grpo.py --tag drv2_d3 --workers 2 1,
+    DRV2_CHUNK=4,4; the first try ran out of GPU memory in round 2, log 42_drv2_d3_oom.log).
+    25% of drivers on the agent vs the same drivers under ASAP, per online hour, median fares (+- s.e., 12 held-out starts):
+                     SF utility       SF net pay       Pune utility     Pune net pay     others' net pay SF / Pune
+      round 0      -0.043 +- .024   -0.044 +- .024   -0.007 +- .006   -0.007 +- .002   -0.014 / -0.000
+      round 10     +0.342 +- .046   +0.396 +- .049   +0.050 +- .008   +0.036 +- .006   -0.018 / -0.005
+    Round 10: the agents beat ASAP on all 12 held-out starts in both cities (SF +9% of ASAP's 4.45
+    net per hour, Pune +4% of 0.93). Taking the first ride is no longer the best a driver can do.
+    When every driver uses the agent: SF pickups 1169 -> 1267 per 2 h (+8%), rider wait 4.85 -> 5.35 min;
+    Pune pickups 1606 -> 1641 (+2%), wait 8.16 -> 8.53 min, more expired requests (156 -> 220).
+    The round-10 policy is saved as data/wm3_models/drv2_d3_it10.pt; training continues to round 40.

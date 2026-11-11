@@ -349,6 +349,19 @@ def page(data, title, intro, body, path):
     print(f"  wrote {path} ({len(html) / 1e6:.1f} MB)")
 
 
+def s7_day_dir(key):
+    """The recorded stage-7 day: the path saved in s7_menus.pkl, else the same day under this
+    city's data folder. None if neither exists."""
+    p = rep_dir(key) / "s7_menus.pkl"
+    if not p.exists():
+        return None
+    saved = Path(pickle.loads(p.read_bytes())["day_dir"])
+    for d in (saved, rep_dir(key) / "s7_drv_pre" / saved.name):
+        if (d / "drivers.parquet").exists():
+            return d
+    return None
+
+
 def build_all(keys):
     import importlib.util as iu
     spec = iu.spec_from_file_location("t38", Path(__file__).with_name("38_wm3_reports_text.py"))
@@ -356,6 +369,10 @@ def build_all(keys):
     spec.loader.exec_module(T)
     geos = {k: Geo(k) for k in keys}
     for stage in (6, 7, 8):
+        if stage == 7 and not all(s7_day_dir(k) for k in keys):
+            # The recorded stage-7 day is not shipped in precomputed/; it is made by --collect.
+            print("  stage 7 skipped: recorded day (wm3_reports/s7_drv_pre) not found; run --collect to make it", flush=True)
+            continue
         cs = []
         for key in keys:
             geo, rec = geos[key], base_rec(key)
@@ -368,7 +385,7 @@ def build_all(keys):
             elif stage == 7:
                 A, _ = real_run(geo, root(key) / f"seed{SEED}_mbc_pre+m" / date, t0, "Single offers", "one ride at a time; simulated people accept or reject")
                 mz = pickle.loads((rep_dir(key) / "s7_menus.pkl").read_bytes())
-                B, _ = real_run(geo, Path(mz["day_dir"]), t0, "Menus + driver agents", "up to 4 rides with fares; trained drivers choose")
+                B, _ = real_run(geo, s7_day_dir(key), t0, "Menus + driver agents", "up to 4 rides with fares; trained drivers choose")
                 B["menus"] = menus_pack(mz["rounds"], t0)
                 B.pop("off")
                 pairs.append({"label": "single offers vs menus", "A": A, "B": B, "note": T.REPLAY_NOTE[7]})

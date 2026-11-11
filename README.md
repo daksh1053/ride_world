@@ -5,6 +5,28 @@ It generates the data needed to train a learned world model of a ride-hailing ma
 It also tests the dispatch methods of two published fairness papers in every city.
 The world model itself is specified in `01_all_inputs_formulation.md`.
 
+## Quick start
+
+Run these from inside the `ride_world` folder.
+
+**1. Setup** (first time ~15 min: Python packages and two population maps; after that ~5 s):
+
+```bash
+run/0_init.sh
+```
+
+**2. All 5 phases, using the shipped results in `precomputed/`** (no simulation or training; a few minutes):
+
+```bash
+for p in run/[1-5]_*.sh; do $p eval-precomputed; done
+```
+
+The results go to `runs/eval_precomputed/outputs/`.
+Computing everything from scratch instead takes about 83 hours; see [Running with the scripts](#running-with-the-scripts) for the `full-run` mode.
+
+Setup needs Python 3.10 or newer with `venv` (on Ubuntu: `sudo apt install python3-venv`) and `unzip`.
+In this mode the stage 7 HTML report (`wm3/stage7/stage7_report.html`) is skipped, because the day it replays is not in `precomputed/`.
+
 ## Start here
 
 Open `outputs/index.html` in a browser.

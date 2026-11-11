@@ -274,6 +274,7 @@ def main():
     ap.add_argument("--hidden", type=int, default=128, help="driver policy width")
     ap.add_argument("--layers", type=int, default=4, help="self-attention layers")
     ap.add_argument("--heads", type=int, default=8)
+    ap.add_argument("--resume", action="store_true", help="continue from data/wm3_models/<tag>.pt and its CSVs")
     args = ap.parse_args()
 
     from world import cities
@@ -288,6 +289,18 @@ def main():
     opt = torch.optim.Adam(pol.parameters(), lr=args.lr)
     out = cities.OUTPUTS / "wm3" / OUT_NAME
     out.mkdir(parents=True, exist_ok=True)
+    it0, log, evals = 0, [], []
+    if args.resume:          # ref stays the seeded start policy; Adam state only if it was saved
+        ck = torch.load(TR.MODELS / f"{args.tag}.pt", map_location="cpu")
+        pol.load_state_dict(ck["state"])
+        if "opt" in ck:
+            opt.load_state_dict(ck["opt"])
+        it0 = int(ck["iter"])
+        rng = np.random.default_rng(args.seed + 1000 * it0)
+        log = pd.read_csv(out / f"train_{args.tag}.csv").query("iter <= @it0").to_dict("records")
+        ev = pd.read_csv(out / f"eval_{args.tag}.csv")
+        evals = [ev[ev.iter <= it0]]
+        print(f"resuming {args.tag} after round {it0}", flush=True)
     wpath = Path("/dev/shm") / f"drv2_{args.tag}.pt"
     p0path = Path("/dev/shm") / f"drv2_{args.tag}_start.pt"
     torch.save(ref.state_dict(), p0path)
@@ -317,11 +330,12 @@ def main():
         print(f"  eval it {it}: " + " | ".join(msg), flush=True)
         return df
 
-    log, evals, t0, version = [], [], time.time(), 0
+    t0, version = time.time(), it0
     save_w()
-    evals.append(evaluate(0, version))
-    pd.concat(evals).to_csv(out / f"eval_{args.tag}.csv", index=False)
-    for it in range(1, args.iters + 1):
+    if not args.resume:
+        evals.append(evaluate(0, version))
+        pd.concat(evals).to_csv(out / f"eval_{args.tag}.csv", index=False)
+    for it in range(it0 + 1, args.iters + 1):
         ng = dict(zip(["sf_hd", "pune_hd"], args.groups))
         tasks = [(k, {"path": str(wpath), "version": version, "start": starts[k][rng.integers(len(starts[k]))],
                       "seed": int(rng.integers(1 << 30)), "H": args.H, "warm": args.warm, "p_free": args.p_free})
@@ -387,7 +401,7 @@ def main():
         log.append(row)
         print(f"  it {it:4d} {row['min']:.1f} min  " + "  ".join(f"{k} {v:.3f}" for k, v in row.items() if k not in ("iter", "min")), flush=True)
         pd.DataFrame(log).to_csv(out / f"train_{args.tag}.csv", index=False)
-        torch.save({"state": pol.state_dict(), "arch": arch, "platform": args.platform, "iter": it, "args": vars(args),
+        torch.save({"state": pol.state_dict(), "opt": opt.state_dict(), "arch": arch, "platform": args.platform, "iter": it, "args": vars(args),
                     "market": json.loads((out / "market.json").read_text())}, TR.MODELS / f"{args.tag}.pt")
         if it % args.eval_every == 0 or it == args.iters:
             evals.append(evaluate(it, version))

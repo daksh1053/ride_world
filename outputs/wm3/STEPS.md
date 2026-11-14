@@ -590,3 +590,6 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     now almost never declines (SF 4 declines per 2 h when all drivers use it); it takes a ride other
     than the first. All drivers on the agent: SF pickups 1173 -> 1365 (+16%), wait 4.87 -> 5.84 min;
     Pune 1607 -> 1658 (+3%), wait 8.16 -> 9.00 min. Saved as data/wm3_models/drv2_d3_it20.pt.
+      round 30     +0.765 +- .083   +0.887 +- .095   +0.096 +- .009   +0.067 +- .008   -0.074 / -0.012
+    Round 30: level with round 20 (training has levelled off); declines back up (SF 209 per 2 h with
+    all drivers on it), rider wait 4.84 -> 6.13 min in SF. Saved as data/wm3_models/drv2_d3_it30.pt.

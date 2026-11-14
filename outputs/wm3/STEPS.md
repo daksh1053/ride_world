@@ -584,3 +584,9 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     When every driver uses the agent: SF pickups 1169 -> 1267 per 2 h (+8%), rider wait 4.85 -> 5.35 min;
     Pune pickups 1606 -> 1641 (+2%), wait 8.16 -> 8.53 min, more expired requests (156 -> 220).
     The round-10 policy is saved as data/wm3_models/drv2_d3_it10.pt; training continues to round 40.
+      round 20     +0.752 +- .075   +0.878 +- .085   +0.098 +- .011   +0.069 +- .008   -0.051 / -0.012
+    (Rounds 12+ resumed from the round-11 weights after a reboot, scripts/42 --resume; fresh optimizer.)
+    Round 20: 12/12 starts positive in both cities; SF +20% of ASAP's net per hour, Pune +7%. The agent
+    now almost never declines (SF 4 declines per 2 h when all drivers use it); it takes a ride other
+    than the first. All drivers on the agent: SF pickups 1173 -> 1365 (+16%), wait 4.87 -> 5.84 min;
+    Pune 1607 -> 1658 (+3%), wait 8.16 -> 9.00 min. Saved as data/wm3_models/drv2_d3_it20.pt.

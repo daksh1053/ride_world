@@ -5,7 +5,7 @@
 For each seed: the warmed-up season of stage 5 (scripts/27_wm3_rl_execute.py: fresh drivers and
 riders, never seen in training), one test day, all arms from the same state and identical until t0.
 At t0 the market of stage 7b starts (outputs/wm3/stage7b/market.json): a share of the drivers idle
-or on a break log off for the rest of the day (availability), and drivers are paid by the tuned
+or on a break log off for the rest of the day (availability), demand is multiplied by the market's demand factor from t0 on, and drivers are paid by the tuned
 scheme (applied to the simulator's finished rides afterwards; riders pay the same fares).
     single   the stage-6 platform (mbc_pre) offers one ride at a time; the simulator's people
              accept or reject as they do in all training data
@@ -87,9 +87,21 @@ class Live7b(AG.LiveAgentPolicy):
         return super().act(obs)
 
 
-def run_real(state, date, pol, t1, day_dir):
-    """EX.run_day_with with banned drivers kept offline (as scripts/36_wm3_shock.py)."""
+def run_real(state, date, pol, t1, day_dir, demand=1.0):
+    """EX.run_day_with with banned drivers kept offline (as scripts/36_wm3_shock.py) and, from t0,
+    a demand surge: (demand - 1) times the day's requests drawn again (own random numbers, the same
+    in every arm) and those from t0 on added, so all arms are identical before t0."""
     orig = HS.HDWorld.__init__
+    gen = EX.DM.generate
+
+    def generate(city, geo, date_, cust, clat, rng, **kw):
+        req = gen(city, geo, date_, cust, clat, rng, **kw)
+        if demand <= 1:
+            return req
+        g = np.random.default_rng(pol.seed * 7919 + pd.Timestamp(date_).dayofyear)
+        extra = gen(city, geo, date_, cust, clat, g, **{**kw, "scale": kw.get("scale", 1.0) * (demand - 1)})
+        extra = extra[extra.t_request >= pol.t_start]
+        return pd.concat([req, extra]).sort_values("t_request").reset_index(drop=True)
 
     def init(self, *a, **kw):
         orig(self, *a, **kw)
@@ -102,10 +114,12 @@ def run_real(state, date, pol, t1, day_dir):
         self.on_online = online
     HS.HDWorld.__init__ = init
     EX.HDWorld = HS.HDWorld
+    EX.DM.generate = generate
     try:
         return EX.run_day_with(state, date, pol, t1 / 3600 + 0.25, day_dir)
     finally:
         HS.HDWorld.__init__ = orig
+        EX.DM.generate = gen
 
 
 def sim_trips(L, t0, t1):
@@ -153,7 +167,7 @@ def run_seed(key, seed, args, scheme, supply, policies):
     t0 = float([8, 12, 17][seed % 3] * 3600)
     t1 = t0 + args.window_h * 3600
     rec = json.loads(rf.read_text()) if rf.exists() else {"key": key, "seed": seed, "date": str(date.date()), "t0": t0, "t1": t1,
-                                                          "supply_cut": supply, "drivers": args.drivers, "arms": {}}
+                                                          "supply_cut": supply, "demand": args.demand, "drivers": args.drivers, "arms": {}}
     state = EX.warm_state(key, seed, city.data_dir / EX.FOLDER, EX.WARMUP)
     gr = S.CityGraph(city)
     rules = RO.CityRules(gr)
@@ -173,7 +187,7 @@ def run_seed(key, seed, args, scheme, supply, policies):
             drivers = {"single": None, "asap": policies["asap"], "agents": policies["agents"],
                        "mixed": D2.Mixed([policies["asap"], policies["agents"]], grp)}[arm]
             pol = Live7b(agent, gr, rules, prior, t_start=t0, seed=seed, drivers=drivers, supply=supply)
-            run_real(copy.deepcopy(state), date, pol, t1, day_dir)
+            run_real(copy.deepcopy(state), date, pol, t1, day_dir, args.demand)
             L = S.DayLog(gr, day_dir)
             rec["arms"][arm] = {**EX.real_metrics(L, t0, t1, L.drivers.cost_per_km.to_numpy()), "removed": len(pol.removed),
                                 "menus": pol.menus, "minutes": (time.time() - ta) / 60}
@@ -210,6 +224,7 @@ def main():
     ap.add_argument("--window-h", type=float, default=2.0)
     args = ap.parse_args()
     scheme, supply, K, share, batch = G42.market_config(args.city)
+    args.demand = G42.market_demand(args.city)
     D2.configure(args.city, cities.get(args.city).market, scheme, K, share, batch)
     p0 = D2.asap_policy()
     ck = torch.load(TR.MODELS / f"{args.drivers}.pt", map_location="cpu")

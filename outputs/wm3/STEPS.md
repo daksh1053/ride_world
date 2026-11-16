@@ -593,3 +593,18 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
       round 30     +0.765 +- .083   +0.887 +- .095   +0.096 +- .009   +0.067 +- .008   -0.074 / -0.012
     Round 30: level with round 20 (training has levelled off); declines back up (SF 209 per 2 h with
     all drivers on it), rider wait 4.84 -> 6.13 min in SF. Saved as data/wm3_models/drv2_d3_it30.pt.
+    Training stopped in round 33 (GPU out of memory); round 32 saved; gains had levelled off by round 20.
+
+    Simulator test (scripts/43_wm3_driver2_execute.py --drivers drv2_d3_it20, 6 unseen days per city,
+    2 h from t0, half the idle drivers off and demand x3 from t0, per-trip pay):
+                         SF pickups  wait   net/h      Pune pickups  wait   net/h
+      single offers        1422      6.12   3.02         2772        9.24   0.484
+      all take first       1501      5.07   3.19         2848        7.99   0.507
+      all on the agent     1688      5.36   3.54         2982        8.44   0.548
+      25% on the agent: their net pay vs the same drivers taking the first ride, per online hour:
+        SF +0.499 +- 0.043 (6/6 days), Pune +0.054 +- 0.007 (6/6); the others: SF -0.106 +- 0.021, Pune -0.007 +- 0.003.
+    Result: met in the simulator too. With this market, taking the first ride is not the best a
+    driver can do; the agent trained only in the world model beats it on unseen simulator days
+    (SF +16%, Pune +11% of net per hour), and with all drivers on it pickups rise (SF +12%, Pune +5%)
+    at a cost of ~0.3-0.45 min more rider wait. The world model overstated the SF gain (+0.88 vs +0.50)
+    and understated the cost to other drivers (-0.05 vs -0.11).

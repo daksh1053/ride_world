@@ -608,3 +608,8 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
     (SF +16%, Pune +11% of net per hour), and with all drivers on it pickups rise (SF +12%, Pune +5%)
     at a cost of ~0.3-0.45 min more rider wait. The world model overstated the SF gain (+0.88 vs +0.50)
     and understated the cost to other drivers (-0.05 vs -0.11).
+
+### Stage 7b — larger driver policy, drv2_30m (30.2M weights), round 10
+- Run: outputs/wm3/stage7b/logs/run_big.sh (h768, 6 layers, lr 3e-4, DRV2_CHUNK=3,3, workers 1 1, --policy-device cuda). Rounds take ~27 min; no out-of-memory errors.
+- Round-10 focal net gain per hour (25% of drivers on the agent, 12 starts): SF +0.291±0.054 (12/12), Pune +0.015±0.004 (10/12).
+- The 0.6M drv2_d3 at round 10: SF +0.396±0.049, Pune +0.036±0.006. The larger model is learning more slowly so far: it still takes the first ride 83% (SF) and 96% (Pune) of the time, vs 75% and 88% for the 0.6M model.

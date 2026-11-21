@@ -81,7 +81,7 @@ def market_demand(key):
     return float(m[key].get("demand", 1.0))
 
 
-def worker_init(key, env_tag, platform, start_policy, arch):
+def worker_init(key, env_tag, platform, start_policy, arch, policy_device="cpu"):
     from world import cities
     from world.routing import LiveRouter
     from world.wm3 import agent as AG
@@ -102,7 +102,12 @@ def worker_init(key, env_tag, platform, start_policy, arch):
     p0 = D2.DriverPolicy2(**arch)
     p0.load_state_dict(torch.load(start_policy, map_location="cpu"))
     _W.update(key=key, env=env, plat=plat, rules=rules, router=LiveRouter(g.net, g.traffic), supply=supply, demand=market_demand(key),
-              pol=D2.DriverPolicy2(**arch).eval(), p0=p0.eval(), asap=D2.asap_policy(), version=-1)
+              pol=_on_device(D2.DriverPolicy2(**arch).eval(), policy_device), p0=p0.eval(), asap=D2.asap_policy(), version=-1)
+
+
+def _on_device(p, device):
+    """Rollout copy of the policy: on the GPU in half precision for large policies."""
+    return p.to(device).half() if device == "cuda" else p
 
 
 def _policy(path, version):
@@ -274,6 +279,7 @@ def main():
     ap.add_argument("--hidden", type=int, default=128, help="driver policy width")
     ap.add_argument("--layers", type=int, default=4, help="self-attention layers")
     ap.add_argument("--heads", type=int, default=8)
+    ap.add_argument("--policy-device", default="cpu", choices=["cpu", "cuda"], help="where workers run the policy in rollouts")
     ap.add_argument("--resume", action="store_true", help="continue from data/wm3_models/<tag>.pt and its CSVs")
     args = ap.parse_args()
 
@@ -308,7 +314,7 @@ def main():
     vstarts = {k: sorted((cities.get(k).data_dir / "wm3_rl" / "starts").glob("val_*.pkl"))[: args.eval_starts] for k in args.cities}
     ctx = mp.get_context("spawn")
     nw = dict(zip(["sf_hd", "pune_hd"], args.workers))
-    pool = {k: ctx.Pool(nw[k], initializer=worker_init, initargs=(k, args.env, args.platform, str(p0path), arch)) for k in args.cities}
+    pool = {k: ctx.Pool(nw[k], initializer=worker_init, initargs=(k, args.env, args.platform, str(p0path), arch, args.policy_device)) for k in args.cities}
     print(f"== {args.tag}: platform {args.platform}, H {args.H}, groups {args.groups}, market "
           + json.dumps(json.loads((out / "market.json").read_text())), flush=True)
 

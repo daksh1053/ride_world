@@ -250,19 +250,28 @@ def features(W, drivers, menu_rows, mi):
 
 
 @torch.no_grad()
+def _run(p, opt, mov, own, om, mm):
+    """One policy on numpy inputs, on whatever device and float type its weights are (large
+    policies run on the GPU in half precision during training rollouts)."""
+    w = next(p.parameters())
+    tt = lambda x: torch.from_numpy(x).to(w.device)  # noqa: E731
+    tf = lambda x: tt(x).to(w.dtype)  # noqa: E731
+    with torch.no_grad():
+        return p(tf(opt), tf(mov), tf(own), tt(om), tt(mm)).float().cpu().numpy()
+
+
 def logits(pol, drivers, opt, mov, own, om, mm):
     if not len(opt):
         return np.zeros((0, 1 + K + M_MOVES))
-    tt = lambda x: torch.from_numpy(x)  # noqa: E731
     if isinstance(pol, Mixed):
         out = np.zeros((len(opt), 1 + K + M_MOVES), np.float32)
         grp = pol.group[np.asarray(drivers, int)]
         for gi, p in enumerate(pol.policies):
             s = np.flatnonzero(grp == gi)
             if len(s):
-                out[s] = p(tt(opt[s]), tt(mov[s]), tt(own[s]), tt(om[s]), tt(mm[s])).float().numpy()
+                out[s] = _run(p, opt[s], mov[s], own[s], om[s], mm[s])
         return out
-    return pol(tt(opt), tt(mov), tt(own), tt(om), tt(mm)).float().numpy()
+    return _run(pol, opt, mov, own, om, mm)
 
 
 def choose(lg, seed, e, drivers, force=None):

@@ -613,3 +613,4 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
 - Run: outputs/wm3/stage7b/logs/run_big.sh (h768, 6 layers, lr 3e-4, DRV2_CHUNK=3,3, workers 1 1, --policy-device cuda). Rounds take ~27 min; no out-of-memory errors.
 - Round-10 focal net gain per hour (25% of drivers on the agent, 12 starts): SF +0.291±0.054 (12/12), Pune +0.015±0.004 (10/12).
 - The 0.6M drv2_d3 at round 10: SF +0.396±0.049, Pune +0.036±0.006. The larger model is learning more slowly so far: it still takes the first ride 83% (SF) and 96% (Pune) of the time, vs 75% and 88% for the 0.6M model.
+- Round 20 (drv2_30m): SF +0.864±0.054 (12/12), others −0.085; Pune +0.067±0.008 (12/12), others −0.012. The 0.6M model at round 20 had SF +0.878±0.085 and Pune +0.069±0.008, so the 30M model has caught up but is not better. Its SF spread is smaller (s.e. 0.054 vs 0.085). Its first-ride share fell to 57% (SF) and 88% (Pune) at round 20.

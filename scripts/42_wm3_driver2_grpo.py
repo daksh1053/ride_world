@@ -34,6 +34,7 @@ import argparse
 import copy
 import importlib.util
 import json
+import shutil
 import os
 import sys
 import time
@@ -252,9 +253,14 @@ def run_eval(task):
         torch.cuda.empty_cache()
 
 
-def _clipped(new, old, A, clip):
-    ratio = torch.exp(new - old)
-    return torch.minimum(ratio * A, ratio.clamp(1 - clip, 1 + clip) * A).sum()
+def _clipped(new, old, A, clip, dual=3.0):
+    # Every action is tried, so an action the rollout policy almost never picked (p_old ~ 1e-20) is
+    # still in the sum. Plain PPO leaves ratio * A unbounded when A < 0, so one such action gave
+    # surrogates of -1e27 and collapsed the 30M policy (scripts/42 run of 2026-11-22). Fix: clamp the
+    # log ratio and use dual clipping, so a term with A < 0 stops pushing once ratio > dual.
+    ratio = torch.exp((new - old).clamp(-20.0, 20.0))
+    ppo = torch.minimum(ratio * A, ratio.clamp(1 - clip, 1 + clip) * A)
+    return torch.where(A < 0, torch.maximum(ppo, dual * A), ppo).sum()
 
 
 def main():
@@ -410,6 +416,7 @@ def main():
         torch.save({"state": pol.state_dict(), "opt": opt.state_dict(), "arch": arch, "platform": args.platform, "iter": it, "args": vars(args),
                     "market": json.loads((out / "market.json").read_text())}, TR.MODELS / f"{args.tag}.pt")
         if it % args.eval_every == 0 or it == args.iters:
+            shutil.copy(TR.MODELS / f"{args.tag}.pt", TR.MODELS / f"{args.tag}_it{it}.pt")   # keep each evaluated round
             evals.append(evaluate(it, version))
             pd.concat(evals).to_csv(out / f"eval_{args.tag}.csv", index=False)
     for p in pool.values():

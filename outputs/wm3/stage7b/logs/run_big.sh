@@ -16,5 +16,5 @@ run() {  # tag chunk workers... args...
     sleep 30
   done
 }
-run drv2_30m 3,3 --hidden 768 --layers 6 --heads 12 --lr 3e-4 --workers 1 1
-run drv2_60m 3,3 --hidden 768 --layers 13 --heads 12 --lr 2e-4 --workers 1 1
+run drv2_30m 3,3 --hidden 768 --layers 6 --heads 12 --lr 1e-4 --target-kl 0.03 --workers 1 1
+run drv2_60m 3,3 --hidden 768 --layers 13 --heads 12 --lr 7e-5 --target-kl 0.03 --workers 1 1

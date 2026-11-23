@@ -299,6 +299,8 @@ def main():
     ap.add_argument("--lr", type=float, default=3e-3)
     ap.add_argument("--clip", type=float, default=0.2)
     ap.add_argument("--beta", type=float, default=0.01)
+    ap.add_argument("--target-kl", type=float, default=0.0,
+                    help="stop a round's epochs once mean KL(rollout policy || policy) per decision passes this (0 = off)")
     ap.add_argument("--workers", type=int, nargs=2, default=[2, 2])
     ap.add_argument("--eval-every", type=int, default=10)
     ap.add_argument("--eval-starts", type=int, default=12)
@@ -329,6 +331,8 @@ def main():
         pol.load_state_dict(ck["state"])
         if "opt" in ck:
             opt.load_state_dict(ck["opt"])
+            for g_ in opt.param_groups:          # the saved state carries the old lr; use this run's
+                g_["lr"] = args.lr
         it0 = int(ck["iter"])
         rng = np.random.default_rng(args.seed + 1000 * it0)
         log = pd.read_csv(out / f"train_{args.tag}.csv").query("iter <= @it0").to_dict("records")
@@ -386,9 +390,20 @@ def main():
         T = lambda x, dt=torch.float32: torch.tensor(np.stack(x), dtype=dt)  # noqa: E731
         O, Mv, S_ = T([g["opt"] for g in groups]), T([g["mov"] for g in groups]), T([g["own"] for g in groups])
         OM, MM = T([g["om"] for g in groups], torch.bool), T([g["mm"] for g in groups], torch.bool)
-        stats = {"surr": 0.0, "kl": 0.0}
+        stats = {"surr": 0.0, "kl": 0.0, "kl_step": 0.0, "epochs": 0}
         for ep in range(args.epochs):
             lp = torch.log_softmax(pol(O, Mv, S_, OM, MM), -1)
+            if args.target_kl > 0:     # how far this round's updates have already moved the policy
+                with torch.no_grad():
+                    ks = []
+                    for i, g in enumerate(groups):
+                        po_ = torch.from_numpy(g["p_old"]).float()
+                        m_ = (po_ > 0) & torch.isfinite(lp[i])
+                        ks.append(float((po_[m_] * (po_[m_].log() - lp[i][m_])).sum()))
+                    stats["kl_step"] = float(np.mean(ks))
+                if ep > 0 and stats["kl_step"] > args.target_kl:
+                    break
+            stats["epochs"] = ep + 1
             with torch.no_grad():
                 lr_ = torch.log_softmax(ref(O, Mv, S_, OM, MM), -1)
             surr, kl = 0.0, 0.0
@@ -405,8 +420,10 @@ def main():
             loss.backward()
             torch.nn.utils.clip_grad_norm_(pol.parameters(), 1.0)
             opt.step()
-            stats["surr"] += float(surr.detach()) / max(len(groups), 1) / args.epochs
-            stats["kl"] += float(kl.detach()) / max(len(groups), 1) / args.epochs
+            stats["surr"] += float(surr.detach()) / max(len(groups), 1)
+            stats["kl"] += float(kl.detach()) / max(len(groups), 1)
+        stats["surr"] /= max(stats["epochs"], 1)
+        stats["kl"] /= max(stats["epochs"], 1)
         version += 1
         save_w()
         row = {"iter": it, "min": (time.time() - t0) / 60, "groups": len(groups), **stats,

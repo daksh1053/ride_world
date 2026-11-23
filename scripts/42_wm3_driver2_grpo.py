@@ -162,12 +162,22 @@ def run_group(task):
         d = int(mr["drv"][i])
         acts = np.flatnonzero(ok[i]).astype(int)
         t0, km0, inc0 = W.t, float(W.km[d]), float(W.income[d])
-        ws = []
-        for x in acts:
-            Wx = AG.clone(W)
-            Wx.override_driver = {W.e: {d: int(x)}}
-            ws.append(Wx)
-        AG.rollout_many(ws, task["H"], CHUNK[_W["key"]])
+        chunk = CHUNK[_W["key"]]
+        while True:                      # out of GPU memory (two workers share 4 GB): redo with smaller batches
+            ws = []
+            for x in acts:
+                Wx = AG.clone(W)
+                Wx.override_driver = {W.e: {d: int(x)}}
+                ws.append(Wx)
+            try:
+                AG.rollout_many(ws, task["H"], chunk)
+                break
+            except torch.OutOfMemoryError:
+                del ws
+                torch.cuda.empty_cache()
+                if chunk == 1:
+                    time.sleep(20)       # the other worker is holding the memory; wait and try again
+                chunk = max(1, chunk // 2)
         u = np.array([D2.driver_utility(Wx, d, t0, km0, inc0) for Wx in ws])
         lg = mr["lg"][i]
         p = np.exp(lg - lg[np.isfinite(lg)].max())
@@ -176,6 +186,12 @@ def run_group(task):
         return {"key": _W["key"], "opt": mr["opt"][i], "mov": mr["mov"][i], "own": mr["own"][i], "om": mr["om"][i],
                 "mm": mr["mm"][i], "p_old": p, "acts": acts, "rewards": u[:, 0] / W.money, "value": u[:, 1] / W.money,
                 "pickups": np.array(pk), "has_menu": bool(mr["om"][i].any()), "n_opt": int(mr["om"][i].sum())}
+    except torch.OutOfMemoryError:       # outside the rollout (warm-up / probe): free, wait, rerun this group
+        torch.cuda.empty_cache()
+        time.sleep(30)
+        if task.get("oom_tries", 0) >= 20:
+            raise
+        return run_group({**task, "oom_tries": task.get("oom_tries", 0) + 1})
     finally:
         torch.cuda.empty_cache()
 
@@ -249,6 +265,12 @@ def run_eval(task):
                 r["others_net_gain_per_h"] = float(((per["mixed"][1] - per["asap"][1])[(grp == 0) & (per["asap"][2] > 0.25)]).sum()
                                                    / per["asap"][2][(grp == 0) & (per["asap"][2] > 0.25)].sum()) / W.money
         return res
+    except torch.OutOfMemoryError:       # the other worker holds the GPU: free ours, wait, rerun this start
+        torch.cuda.empty_cache()
+        time.sleep(30)
+        if task.get("oom_tries", 0) >= 20:
+            raise
+        return run_eval({**task, "oom_tries": task.get("oom_tries", 0) + 1})
     finally:
         torch.cuda.empty_cache()
 

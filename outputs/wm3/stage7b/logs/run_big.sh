@@ -6,7 +6,7 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 ITERS=30
 run() {  # tag chunk workers... args...
   tag=$1; chunk=$2; shift 2
-  for try in $(seq 1 12); do
+  for try in $(seq 1 30); do
     done_it=$(tail -n +2 outputs/wm3/stage7b/train_$tag.csv 2>/dev/null | wc -l)
     [ "$done_it" -ge $ITERS ] && return 0
     res=""; [ -f data/wm3_models/$tag.pt ] && [ "$done_it" -ge 1 ] && res="--resume"

@@ -1958,3 +1958,1619 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 driver policy: 63,293,190 weights, {'h': 768, 'layers': 13, 'heads': 12}
 resuming drv2_60m after round 10
 == drv2_60m: platform mbc_pre, H 90, groups [24, 16], market {"K": 6, "menu": "exclusive", "why": "scripts/41_wm3_market_tune.py on probes with a demand surge: batched exclusive menus (every 2 min), supply cut 0.5, demand x3, per-trip pay (SF: choosing by pay per minute +0.32 +- 0.10, learned +0.21 +- 0.10 median fares per choice over ASAP; Pune: learned +0.04 +- 0.02)", "sf_hd": {"scheme": {"name": "per_trip", "share": 0.0, "surge_mult": 1.0, "per_trip": 1.0, "per_km": 0.4, "per_min": 0.4, "pickup_per_min": 0.0, "pickup_free_min": 5.0, "surge_flat": 0.0, "scale": 1.1008365127794748}, "supply_cut": 0.5, "share": 1, "batch": 4, "demand": 3.0}, "pune_hd": {"scheme": {"name": "per_trip", "share": 0.0, "surge_mult": 1.0, "per_trip": 1.0, "per_km": 0.4, "per_min": 0.4, "pickup_per_min": 0.0, "pickup_free_min": 5.0, "surge_flat": 0.0, "scale": 1.131849418535816}, "supply_cut": 0.5, "share": 1, "batch": 4, "demand": 3.0}}
+[W1124 18:22:04.189532069 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 18:22:04.626252207 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:05.341983275 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:05.804239992 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:06.531659138 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:06.786629211 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 16646144, total: 3953393664).
+[W1124 18:22:07.470507119 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:07.748240479 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:08.438297794 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:08.677006706 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:09.056011630 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:22:09.219531297 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 16646144, total: 3953393664).
+[W1124 18:22:09.253478749 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 18743296, total: 3953393664).
+[W1124 18:26:51.798931293 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 6160384, total: 3953393664).
+[W1124 18:26:51.802062959 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 8257536, total: 3953393664).
+[W1124 18:26:53.779196458 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 8257536, total: 3953393664).
+[W1124 18:26:54.041236461 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 18:26:54.059668638 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 18:30:55.172555737 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 18:30:55.179345109 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py:430: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  "b_wait": float(pol.b_wait), "b_move": float(pol.b_move), "w_rank": float(pol.w_rank)}
+  it   11 28.0 min  groups 40.000  surr -0.012  kl 0.020  kl_step 0.006  epochs 4.000  b_wait -3.000  b_move -8.001  w_rank -1.998  sf_hd/reward 2.726  sf_hd/best_gain 1.008  sf_hd/wait_vs_first -0.420  sf_hd/other_vs_first -0.191  sf_hd/move_vs_first -0.492  sf_hd/p_first 0.904  sf_hd/p_wait_menu 0.022  sf_hd/move_vs_wait_free -0.167  sf_hd/p_move_free 0.007  pune_hd/reward 0.317  pune_hd/best_gain 0.475  pune_hd/wait_vs_first -0.158  pune_hd/other_vs_first -0.119  pune_hd/move_vs_first -0.447  pune_hd/p_first 0.904  pune_hd/p_wait_menu 0.036  pune_hd/move_vs_wait_free -0.195  pune_hd/p_move_free 0.005
+[W1124 18:47:32.322717512 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 18:47:32.351682291 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 18:47:32.721279482 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 18:47:33.303869959 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 18:47:33.732527043 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 18:47:33.755111351 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 18:55:51.633303325 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 18:55:59.696900743 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 18:56:00.021940917 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 18:56:00.041017605 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 18:56:00.069094899 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 19:04:43.561439939 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 19:04:43.718750332 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 19:04:43.739156183 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+  it   12 60.0 min  groups 40.000  surr 0.009  kl 0.018  kl_step 0.002  epochs 4.000  b_wait -3.000  b_move -8.001  w_rank -1.997  sf_hd/reward 2.966  sf_hd/best_gain 1.023  sf_hd/wait_vs_first -0.244  sf_hd/other_vs_first 0.046  sf_hd/move_vs_first -0.511  sf_hd/p_first 0.934  sf_hd/p_wait_menu 0.009  sf_hd/move_vs_wait_free -0.346  sf_hd/p_move_free 0.010  pune_hd/reward -0.078  pune_hd/best_gain 0.527  pune_hd/wait_vs_first -0.453  pune_hd/other_vs_first -0.179  pune_hd/move_vs_first -0.278  pune_hd/p_first 0.914  pune_hd/p_wait_menu 0.031  pune_hd/move_vs_wait_free 0.167  pune_hd/p_move_free 0.007
+[W1124 19:20:16.510305893 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 19:20:16.517537022 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 19:28:32.763973232 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 19:28:32.772233823 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 19:28:46.041376543 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 19:28:46.048726238 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 19:28:46.048820946 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 19:30:42.443270438 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 19:31:09.405324445 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 19:31:09.412115018 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+  it   13 91.8 min  groups 39.000  surr -0.019  kl 0.032  kl_step 0.009  epochs 4.000  b_wait -3.000  b_move -8.001  w_rank -1.997  sf_hd/reward 2.704  sf_hd/best_gain 0.952  sf_hd/wait_vs_first 0.076  sf_hd/other_vs_first 1.310  sf_hd/move_vs_first -0.171  sf_hd/p_first 0.933  sf_hd/p_wait_menu 0.010  sf_hd/move_vs_wait_free -0.041  sf_hd/p_move_free 0.022  pune_hd/reward 0.209  pune_hd/best_gain 0.368  pune_hd/wait_vs_first 0.034  pune_hd/other_vs_first -0.148  pune_hd/move_vs_first -0.035  pune_hd/p_first 0.912  pune_hd/p_wait_menu 0.025  pune_hd/move_vs_wait_free -0.307  pune_hd/p_move_free 0.004
+[W1124 19:53:50.308860445 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 19:53:50.329452484 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 19:53:50.470212539 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 19:53:50.486548383 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+  it   14 120.4 min  groups 40.000  surr -0.027  kl 0.068  kl_step 0.008  epochs 4.000  b_wait -3.000  b_move -8.001  w_rank -1.997  sf_hd/reward 2.616  sf_hd/best_gain 0.982  sf_hd/wait_vs_first -0.642  sf_hd/other_vs_first -0.226  sf_hd/move_vs_first -0.878  sf_hd/p_first 0.925  sf_hd/p_wait_menu 0.007  sf_hd/move_vs_wait_free 0.534  sf_hd/p_move_free 0.088  pune_hd/reward 0.424  pune_hd/best_gain 0.305  pune_hd/wait_vs_first 0.107  pune_hd/other_vs_first 0.101  pune_hd/move_vs_first -0.084  pune_hd/p_first 0.971  pune_hd/p_wait_menu 0.014  pune_hd/move_vs_wait_free -0.283  pune_hd/p_move_free 0.022
+[W1124 20:16:30.017435988 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:16:30.192495722 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:16:30.797255623 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:16:31.972477453 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:16:32.965759659 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:16:32.309160746 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:16:32.330147267 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:33:23.194812283 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:33:23.547054815 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 20:33:24.238655373 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:33:24.570406561 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:33:25.233688737 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:33:25.564351346 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:33:25.585123998 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+  it   15 149.1 min  groups 40.000  surr -0.016  kl 0.095  kl_step 0.003  epochs 4.000  b_wait -3.000  b_move -8.001  w_rank -1.996  sf_hd/reward 2.579  sf_hd/best_gain 0.920  sf_hd/wait_vs_first -0.764  sf_hd/other_vs_first -0.260  sf_hd/move_vs_first -1.165  sf_hd/p_first 0.935  sf_hd/p_wait_menu 0.007  sf_hd/move_vs_wait_free -0.042  sf_hd/p_move_free 0.105  pune_hd/reward 0.189  pune_hd/best_gain 0.423  pune_hd/wait_vs_first -0.116  pune_hd/other_vs_first 0.173  pune_hd/move_vs_first -0.198  pune_hd/p_first 0.884  pune_hd/p_wait_menu 0.023  pune_hd/move_vs_wait_free 0.361  pune_hd/p_move_free 0.033
+[W1124 20:41:18.087307753 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:41:18.101950025 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:41:18.111536400 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:41:18.113091060 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:35.077516218 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:35.419286395 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:36.507403035 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:36.537298057 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:47:36.883981015 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:47:38.200295446 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:38.413390677 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:38.441384788 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:39.516572453 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:39.752650127 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:47:40.767279540 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:41.973050817 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:42.292507526 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:42.647893420 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:47:43.914166058 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:47:44.460643776 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:44.666898552 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:47:45.605912280 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:52.485496347 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:52.707876408 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:47:53.675562309 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:54.036649893 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:55.396990413 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:55.621265872 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:56.780490334 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:57.993266888 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:57.285758545 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:47:58.588705069 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:47:58.616459738 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:52:19.129575458 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:52:19.563662857 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:52:21.731673598 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:52:22.128239548 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:52:22.584930254 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:52:22.599891123 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:53:21.549245041 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:53:22.037614764 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 20:53:23.275630237 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:53:23.594076667 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 20:53:24.810257218 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:53:25.111203668 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 20:53:26.249925659 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:53:26.554865918 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 20:53:27.674727386 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:53:28.161162864 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 20:53:28.552805606 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 20:53:29.877802629 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:53:30.195438992 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:53:31.345539019 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 20:53:31.637976798 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 20:53:32.710774850 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 20:53:32.752293921 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:05:03.808436563 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:05:03.813521515 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+  it   16 181.8 min  groups 38.000  surr -0.031  kl 0.060  kl_step 0.021  epochs 4.000  b_wait -3.000  b_move -8.001  w_rank -1.996  sf_hd/reward 3.075  sf_hd/best_gain 0.864  sf_hd/wait_vs_first -0.476  sf_hd/other_vs_first -0.625  sf_hd/move_vs_first -0.625  sf_hd/p_first 0.912  sf_hd/p_wait_menu 0.006  sf_hd/move_vs_wait_free -0.404  sf_hd/p_move_free 0.078  pune_hd/reward 0.311  pune_hd/best_gain 0.373  pune_hd/wait_vs_first -0.064  pune_hd/other_vs_first -0.060  pune_hd/move_vs_first -0.281  pune_hd/p_first 0.958  pune_hd/p_wait_menu 0.006  pune_hd/move_vs_wait_free -0.338  pune_hd/p_move_free 0.076
+[W1124 21:16:22.424636621 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 7077888, total: 3953393664).
+[W1124 21:16:22.431102121 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:17:01.047068549 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:17:01.356104231 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:17:01.376558823 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 21:20:10.328309593 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:10.530217446 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 21:20:10.837703158 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:20:10.850281906 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 21:20:12.573239985 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:30.060438082 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:20:30.301102368 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:31.629565246 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:32.034230852 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:20:32.342952150 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:20:34.038490082 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:20:34.284071688 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:20:35.609016841 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:20:35.854571483 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:20:37.254143690 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:20:37.496690797 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:37.534026511 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:38.595527795 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:39.991434457 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:20:40.372733849 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:40.719572275 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:42.105462866 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:42.142291738 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:42.370515961 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:20:43.447967268 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:20:43.702591570 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:20:45.966796520 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:20:45.999880174 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:26:17.382907905 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:26:17.394114350 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:30:54.675057942 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:30:54.677071909 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:31:00.529404223 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:31:25.238725795 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:31:25.241105269 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:31:27.692754861 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:31:28.033327709 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 21:31:28.064239700 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 21:31:28.568123165 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:31:29.903741781 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 21:31:29.731906926 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:31:30.922045924 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 21:31:30.382447048 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 21:31:30.574069381 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 21:31:55.812508723 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:31:55.814089694 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:32:08.634505978 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:32:12.340983653 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 21:32:12.607018615 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 21:32:12.629175975 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 21757952, total: 3953393664).
+[W1124 21:32:26.344939353 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:32:26.347094648 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:32:56.388738402 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:32:56.388825493 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:33:24.969202494 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:33:24.973059374 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 21:33:26.694321217 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:33:26.696094019 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:33:56.726380495 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:33:56.726472556 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:33:58.403345833 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:33:58.408106170 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:34:25.832322326 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:34:25.837109737 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:34:27.965792248 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:34:27.967091596 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:34:46.116675779 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:34:46.120054642 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:34:57.201560972 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:34:57.203065821 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:06.489971388 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:06.490098714 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:26.764851838 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:26.764941705 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:27.235007742 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:27.235087329 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:47.033715185 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:47.033804390 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:57.261691122 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:35:57.261770951 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:07.403757714 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:07.403853251 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:27.296197287 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:27.296278789 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:27.667564112 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:27.667654009 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:48.936114451 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:48.936206963 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:57.324185445 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:36:57.324267738 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:08.302874689 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:08.302977330 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:27.356651635 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:27.356737384 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:28.564499568 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:28.564595536 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:48.831853199 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:48.831945921 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:37:57.384280783 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:37:57.384364598 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:09.204391322 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:09.204483824 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:27.416881065 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:27.416961163 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:29.466710471 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:29.466813923 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:49.738160189 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:49.738253262 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:57.442606984 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:38:57.442688115 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:39:10.103549574 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:39:10.103638420 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 21:39:27.477379723 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:39:27.477465002 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:39:30.365412021 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:39:30.365504493 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:39:50.634262898 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:39:50.634357093 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:39:57.503348688 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:39:57.503428166 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:11.993727029 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:11.993821475 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:27.530304881 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:40:27.532342681 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:31.263074035 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:31.263165535 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:51.532127361 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:51.532239410 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 21:40:57.558682869 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:40:57.558761585 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:41:11.894584755 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:41:11.894676766 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:41:32.193487919 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:41:32.193606450 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:41:52.475478514 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:41:52.475569453 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 9175040, total: 3953393664).
+[W1124 21:44:56.838088714 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:44:56.849350878 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:44:56.858191590 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 21:44:56.862094682 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 169, in run_group
+    Wx = AG.clone(W)
+         ^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 436, in clone
+    W2 = copy.deepcopy(W)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/nn/parameter.py", line 79, in __deepcopy__
+    self.data.clone(memory_format=torch.preserve_format), self.requires_grad
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 1.56 GiB memory in use. Process 644066 has 2.01 GiB memory in use. Of the allocated memory 1.45 GiB is allocated by PyTorch, and 6.98 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 149, in run_group
+    probe = AG.clone(W)
+            ^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 436, in clone
+    W2 = copy.deepcopy(W)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/nn/parameter.py", line 79, in __deepcopy__
+    self.data.clone(memory_format=torch.preserve_format), self.requires_grad
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 1.60 GiB memory in use. Process 644066 has 1.97 GiB memory in use. Of the allocated memory 1.49 GiB is allocated by PyTorch, and 7.33 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 169, in run_group
+    Wx = AG.clone(W)
+         ^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 436, in clone
+    W2 = copy.deepcopy(W)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/nn/parameter.py", line 79, in __deepcopy__
+    self.data.clone(memory_format=torch.preserve_format), self.requires_grad
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.12 GiB memory in use. Process 644066 has 1.45 GiB memory in use. Of the allocated memory 2.01 GiB is allocated by PyTorch, and 6.44 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 169, in run_group
+    Wx = AG.clone(W)
+         ^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 436, in clone
+    W2 = copy.deepcopy(W)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/nn/parameter.py", line 79, in __deepcopy__
+    self.data.clone(memory_format=torch.preserve_format), self.requires_grad
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.42 GiB memory in use. Process 644066 has 1.15 GiB memory in use. Of the allocated memory 2.31 GiB is allocated by PyTorch, and 7.78 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 12.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.42 GiB memory in use. Process 644066 has 1.15 GiB memory in use. Of the allocated memory 2.31 GiB is allocated by PyTorch, and 7.02 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 149, in run_group
+    probe = AG.clone(W)
+            ^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 436, in clone
+    W2 = copy.deepcopy(W)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/nn/parameter.py", line 79, in __deepcopy__
+    self.data.clone(memory_format=torch.preserve_format), self.requires_grad
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.46 GiB memory in use. Process 644066 has 1.11 GiB memory in use. Of the allocated memory 2.35 GiB is allocated by PyTorch, and 7.37 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.46 GiB memory in use. Process 644066 has 1.11 GiB memory in use. Of the allocated memory 2.35 GiB is allocated by PyTorch, and 6.62 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 149, in run_group
+    probe = AG.clone(W)
+            ^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 436, in clone
+    W2 = copy.deepcopy(W)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/nn/parameter.py", line 79, in __deepcopy__
+    self.data.clone(memory_format=torch.preserve_format), self.requires_grad
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 12.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.50 GiB memory in use. Process 644066 has 1.07 GiB memory in use. Of the allocated memory 2.39 GiB is allocated by PyTorch, and 8.97 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 149, in run_group
+    probe = AG.clone(W)
+            ^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 436, in clone
+    W2 = copy.deepcopy(W)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 259, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 143, in deepcopy
+    y = copier(memo)
+        ^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/nn/parameter.py", line 79, in __deepcopy__
+    self.data.clone(memory_format=torch.preserve_format), self.requires_grad
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 7.91 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 7.15 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 6.40 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 5.64 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 4.89 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 14.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 4.13 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 12.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 5.38 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 12.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 4.62 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 12.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 3.87 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 10.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 5.12 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 10.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.45 GiB is allocated by PyTorch, and 4.36 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 10.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.46 GiB is allocated by PyTorch, and 3.61 MiB is reserved by PyTorch but unallocated.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+           ^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 194, in run_group
+    return run_group({**task, "oom_tries": task.get("oom_tries", 0) + 1})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 194, in run_group
+    return run_group({**task, "oom_tries": task.get("oom_tries", 0) + 1})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 194, in run_group
+    return run_group({**task, "oom_tries": task.get("oom_tries", 0) + 1})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [Previous line repeated 17 more times]
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 141, in run_group
+    AG.step_many([W])
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 682, in step_many
+    lg = agent.logits(b, pos, cand, tt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/agent.py", line 94, in logits
+    hD, _, hZ, _ = self.wm.encode(b)
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/world/wm3/model.py", line 152, in encode
+    dist = torch.cdist(xy, xy) * 10.0                                   # km
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/functional.py", line 1535, in cdist
+    return _VF.cdist(x1, x2, p, None)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/daksh/Desktop/btp/ride_world/.venv/lib/python3.12/site-packages/torch/_native/registry.py", line 958, in eager_router
+    return _fallback.call_boxed(keyset, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 8.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.46 GiB is allocated by PyTorch, and 4.85 MiB is reserved by PyTorch but unallocated.
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 466, in <module>
+    main()
+  File "/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py", line 382, in main
+    groups = [g for k in args.cities for g in res[k].get() if g is not None]
+                                              ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/pool.py", line 774, in get
+    raise self._value
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 3.68 GiB of which 8.75 MiB is free. Process 644010 has 70.00 MiB memory in use. Including non-PyTorch memory, this process has 2.56 GiB memory in use. Process 644066 has 1.01 GiB memory in use. Of the allocated memory 2.46 GiB is allocated by PyTorch, and 4.85 MiB is reserved by PyTorch but unallocated.
+== Tue Nov 24 09:49:00 PM IST 2026 drv2_60m attempt 2 --resume (rounds done 16)
+driver policy: 63,293,190 weights, {'h': 768, 'layers': 13, 'heads': 12}
+resuming drv2_60m after round 16
+== drv2_60m: platform mbc_pre, H 90, groups [24, 16], market {"K": 6, "menu": "exclusive", "why": "scripts/41_wm3_market_tune.py on probes with a demand surge: batched exclusive menus (every 2 min), supply cut 0.5, demand x3, per-trip pay (SF: choosing by pay per minute +0.32 +- 0.10, learned +0.21 +- 0.10 median fares per choice over ASAP; Pune: learned +0.04 +- 0.02)", "sf_hd": {"scheme": {"name": "per_trip", "share": 0.0, "surge_mult": 1.0, "per_trip": 1.0, "per_km": 0.4, "per_min": 0.4, "pickup_per_min": 0.0, "pickup_free_min": 5.0, "surge_flat": 0.0, "scale": 1.1008365127794748}, "supply_cut": 0.5, "share": 1, "batch": 4, "demand": 3.0}, "pune_hd": {"scheme": {"name": "per_trip", "share": 0.0, "surge_mult": 1.0, "per_trip": 1.0, "per_km": 0.4, "per_min": 0.4, "pickup_per_min": 0.0, "pickup_free_min": 5.0, "surge_flat": 0.0, "scale": 1.131849418535816}, "supply_cut": 0.5, "share": 1, "batch": 4, "demand": 3.0}}
+[W1124 21:53:41.474144279 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 8257536, total: 3953393664).
+[W1124 21:53:41.708663145 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 21:53:42.663879887 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 21:53:42.685317498 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 21:58:09.188479612 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 21:58:09.203624718 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 21:58:09.216269102 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 21:58:09.220150450 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 21:59:39.936677753 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 21:59:39.355558722 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 21:59:40.918055811 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 21:59:40.326447911 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 21:59:41.912112937 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 21:59:41.935109385 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 22:01:23.912483605 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:02:20.242241667 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:02:20.458679491 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 22:02:21.720986696 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:02:22.943428108 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 22:02:23.090773811 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:02:23.118276749 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 22:06:36.986928055 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:06:36.994102061 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 22:08:50.736273957 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 22:08:50.740104766 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 14548992, total: 3953393664).
+[W1124 22:09:26.074837533 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:09:26.079882059 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 22:10:34.535154557 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 8257536, total: 3953393664).
+[W1124 22:10:34.760804939 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+[W1124 22:10:35.328704476 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:35.564947036 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:36.151367888 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:36.379830386 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:37.004031765 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:37.218423149 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:37.850818830 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:38.219730163 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 10354688, total: 3953393664).
+[W1124 22:10:38.255245633 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12451840, total: 3953393664).
+/home/daksh/Desktop/btp/ride_world/scripts/42_wm3_driver2_grpo.py:430: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  "b_wait": float(pol.b_wait), "b_move": float(pol.b_move), "w_rank": float(pol.w_rank)}
+  it   17 35.2 min  groups 39.000  surr 0.002  kl 0.074  kl_step 0.015  epochs 4.000  b_wait -3.000  b_move -8.001  w_rank -1.995  sf_hd/reward 2.961  sf_hd/best_gain 1.050  sf_hd/wait_vs_first -0.190  sf_hd/other_vs_first -0.703  sf_hd/move_vs_first -1.150  sf_hd/p_first 0.848  sf_hd/p_wait_menu 0.008  sf_hd/move_vs_wait_free -0.539  sf_hd/p_move_free 0.087  pune_hd/reward 0.032  pune_hd/best_gain 0.547  pune_hd/wait_vs_first 0.218  pune_hd/other_vs_first -0.026  pune_hd/move_vs_first -0.311  pune_hd/p_first 0.915  pune_hd/p_wait_menu 0.062  pune_hd/move_vs_wait_free -0.122  pune_hd/p_move_free 0.032
+[W1124 22:36:31.027801985 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 22:36:31.045564967 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 22:36:31.058110550 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 22:44:32.710699017 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 22:44:32.723291920 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 22:44:32.733646402 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 22:44:32.735123632 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 22:45:12.694916490 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 22:45:35.655411102 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 22:45:39.432146124 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 22:45:42.425355512 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+  it   18 63.5 min  groups 39.000  surr 0.009  kl 0.376  kl_step 0.042  epochs 2.000  b_wait -3.000  b_move -8.001  w_rank -1.995  sf_hd/reward 3.110  sf_hd/best_gain 0.924  sf_hd/wait_vs_first -0.347  sf_hd/other_vs_first 0.063  sf_hd/move_vs_first -0.281  sf_hd/p_first 0.587  sf_hd/p_wait_menu 0.087  sf_hd/move_vs_wait_free -0.333  sf_hd/p_move_free 0.036  pune_hd/reward 0.291  pune_hd/best_gain 0.444  pune_hd/wait_vs_first 0.016  pune_hd/other_vs_first -0.152  pune_hd/move_vs_first -0.457  pune_hd/p_first 0.653  pune_hd/p_wait_menu 0.218  pune_hd/move_vs_wait_free -0.088  pune_hd/p_move_free 0.018
+[W1124 22:57:05.620299357 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 22:57:05.636277683 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 22:57:05.648103291 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 23:00:01.859578448 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 23:00:01.878728962 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:00:02.904108011 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:03:11.888448067 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 23:03:12.909299763 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:05:15.675429321 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1124 23:14:12.025199062 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 23:14:12.025301712 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 23:14:12.528306184 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 23:14:12.528405838 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 23:14:13.134287111 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 23:14:13.364339428 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 21757952, total: 3953393664).
+[W1124 23:14:14.540105188 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 23:14:15.940061833 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 19660800, total: 3953393664).
+[W1124 23:14:15.969516989 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 21757952, total: 3953393664).
+[W1124 23:22:37.571923682 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 23:22:40.574542117 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:22:40.586120254 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:23:16.523973746 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 23:23:30.841093016 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 23:23:31.219307930 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:23:38.768309370 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 23:23:39.994486836 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+[W1124 23:23:40.273363168 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+[W1124 23:23:40.302683979 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 17563648, total: 3953393664).
+  it   19 99.0 min  groups 37.000  surr 0.000  kl 0.254  kl_step 0.061  epochs 1.000  b_wait -3.000  b_move -8.001  w_rank -1.995  sf_hd/reward 2.908  sf_hd/best_gain 1.055  sf_hd/wait_vs_first -0.066  sf_hd/other_vs_first 0.386  sf_hd/move_vs_first -0.712  sf_hd/p_first 0.737  sf_hd/p_wait_menu 0.029  sf_hd/move_vs_wait_free -0.134  sf_hd/p_move_free 0.088  pune_hd/reward 0.221  pune_hd/best_gain 0.397  pune_hd/wait_vs_first -0.031  pune_hd/other_vs_first 0.114  pune_hd/move_vs_first -0.188  pune_hd/p_first 0.838  pune_hd/p_wait_menu 0.134  pune_hd/move_vs_wait_free -0.143  pune_hd/p_move_free 0.095
+[W1124 23:59:39.704408226 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:59:39.718451598 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:59:39.730736872 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1124 23:59:39.734312081 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 15466496, total: 3953393664).
+[W1125 00:01:35.023866686 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 11272192, total: 3953393664).
+[W1125 00:01:35.037160993 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 13369344, total: 3953393664).
+  it   20 145.6 min  groups 39.000  surr -0.050  kl 0.210  kl_step 0.054  epochs 2.000  b_wait -3.000  b_move -8.001  w_rank -1.995  sf_hd/reward 2.892  sf_hd/best_gain 0.906  sf_hd/wait_vs_first 0.181  sf_hd/other_vs_first 0.376  sf_hd/move_vs_first -0.107  sf_hd/p_first 0.759  sf_hd/p_wait_menu 0.014  sf_hd/move_vs_wait_free -0.312  sf_hd/p_move_free 0.072  pune_hd/reward 0.161  pune_hd/best_gain 0.346  pune_hd/wait_vs_first -0.033  pune_hd/other_vs_first 0.143  pune_hd/move_vs_first -0.163  pune_hd/p_first 0.863  pune_hd/p_wait_menu 0.044  pune_hd/move_vs_wait_free 1.033  pune_hd/p_move_free 0.047
+  eval it 20: sf_hd: asap pickups 1171.4 wait 4.85 u/h 4.083 net/h 4.456 declined 0 moves 0; agents pickups 1277.3 wait 5.15 u/h 4.347 net/h 4.760 declined 1 moves 19; mixed pickups 1196.6 wait 4.92 u/h 4.149 net/h 4.534 declined 1 moves 5; 25% leave ASAP: their u/h +0.344 net/h +0.393, others net/h -0.019 | pune_hd: asap pickups 1609.1 wait 8.15 u/h 0.499 net/h 0.928 declined 0 moves 0; agents pickups 1648.5 wait 8.54 u/h 0.531 net/h 0.952 declined 15 moves 16; mixed pickups 1618.8 wait 8.26 u/h 0.503 net/h 0.933 declined 3 moves 4; 25% leave ASAP: their u/h +0.043 net/h +0.038, others net/h -0.006

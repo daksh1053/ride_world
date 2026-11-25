@@ -631,3 +631,13 @@ Plan, one stage at a time, each with a script, PNGs and an interactive page:
 - drv2_60m started 2026-11-24 ~11:40 (lr 7e-5, target-kl 0.03).
 - drv2_60m round 10 (lr 7e-5): no learning. SF −0.028±0.020 (3/12), Pune −0.007±0.003 (3/12); KL to the start policy 0.014, per-round KL ~0.001; first-ride share still about 0.91 (SF) and 0.94 (Pune). Rounds take ~32 min. The out-of-memory retries fired (22 errors in the log) without crashing the run. Resumed from round 10 with lr 2e-4; target-kl 0.03 still caps each round.
 - drv2_60m round 20 (lr 2e-4 from round 10): SF +0.393±0.067 (12/12), others −0.019; Pune +0.038±0.006 (12/12), others −0.006. With every driver on the agent: SF 1277 pickups and 19 moves, Pune 1649 pickups and 16 moves. The per-round KL limit cut rounds 18–20 short (1–2 epochs, KL per round 0.04–0.06), and KL to the start policy stayed ≤ 0.38. That is about where the 0.6M model was at round 10.
+- drv2_60m round 30 (final): SF +0.902±0.071 (12/12), others −0.068; Pune +0.036±0.010 (10/12), others −0.009. Every driver on the agent: SF 1369 pickups (most of any model), 5.68 min wait, 0.25 moves; Pune 1538 pickups (fewer than ASAP's ≈ 1608), 8.85 min wait, 0 moves. Warning: in rounds 26–30 the per-round KL reached 0.27–1.77 even with 1 epoch. The early stop cannot cut the first epoch, so lr 2e-4 is near the edge for 60M.
+- **Size comparison, round 30 (scripts/45_wm3_driver_size_compare.py → outputs/wm3/stage7b/45_size_compare.png, 45_size_compare.csv):**
+
+  | model | SF | Pune |
+  |---|---|---|
+  | 0.6M | +0.887±0.095 | +0.067±0.008 |
+  | 30M | +0.644±0.055 | +0.057±0.008 |
+  | 60M | +0.902±0.071 | +0.036±0.010 |
+
+  Larger driver policies do not do clearly better. The 60M model matches the 0.6M model in SF (difference well inside the error) and is worse in Pune, and 30M is below both. The large models need small, carefully chosen learning rates (two 30M collapses at lr 3e-4) and cost 50–100× more compute per decision. So the limit is the market/reward and the imagined-rollout signal, not model size; the 0.6M policy stays the default.

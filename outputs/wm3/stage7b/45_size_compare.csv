@@ -1,0 +1,25 @@
+model,label,city,round,gain,se,wins,n,others
+drv2_d3,0.6M (lr 3e-3),pune_hd,0,-0.0065,0.0022,2,12,-0.0
+drv2_d3,0.6M (lr 3e-3),sf_hd,0,-0.044,0.0242,4,12,-0.0139
+drv2_d3,0.6M (lr 3e-3),pune_hd,10,0.0361,0.0056,12,12,-0.0048
+drv2_d3,0.6M (lr 3e-3),sf_hd,10,0.3963,0.0488,12,12,-0.0184
+drv2_d3,0.6M (lr 3e-3),pune_hd,20,0.0691,0.008,12,12,-0.0116
+drv2_d3,0.6M (lr 3e-3),sf_hd,20,0.8775,0.0851,12,12,-0.0507
+drv2_d3,0.6M (lr 3e-3),pune_hd,30,0.0669,0.0079,12,12,-0.012
+drv2_d3,0.6M (lr 3e-3),sf_hd,30,0.8869,0.0954,12,12,-0.0737
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",pune_hd,0,-0.0065,0.0022,2,12,-0.0
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",sf_hd,0,-0.044,0.0242,4,12,-0.0139
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",pune_hd,10,0.0151,0.0035,10,12,-0.0035
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",sf_hd,10,0.2911,0.0537,12,12,-0.0439
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",pune_hd,20,0.0436,0.0071,12,12,-0.0084
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",sf_hd,20,0.6689,0.0569,12,12,-0.0589
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",pune_hd,30,0.0568,0.008,12,12,-0.009
+drv2_30m,"30M (lr 3e-4 to round 10, then 1e-4)",sf_hd,30,0.6443,0.0553,12,12,-0.0556
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",pune_hd,0,-0.0065,0.0022,2,12,-0.0
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",sf_hd,0,-0.044,0.0242,4,12,-0.0139
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",pune_hd,10,-0.0075,0.0031,3,12,-0.0004
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",sf_hd,10,-0.0285,0.02,3,12,-0.0104
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",pune_hd,20,0.038,0.0058,12,12,-0.0063
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",sf_hd,20,0.3935,0.0673,12,12,-0.0192
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",pune_hd,30,0.036,0.0097,10,12,-0.0095
+drv2_60m,"60M (lr 7e-5 to round 10, then 2e-4)",sf_hd,30,0.9017,0.0706,12,12,-0.0678
